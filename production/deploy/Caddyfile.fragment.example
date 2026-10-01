@@ -1,0 +1,15 @@
+# НЕ добавлен в общий Caddy. Требуются проверка текущего proxy и отдельное разрешение.
+# До публикации beta обязателен закрытый доступ + личный вход; сам блок этого не реализует.
+analytics.158-160-30-90.sslip.io {
+    @backend path /api /api/* /auth /auth/* /admin /admin/*
+    handle @backend {
+        reverse_proxy marketplace-production-web:8000
+    }
+    handle {
+        root * /srv/marketplace/production/frontend
+        try_files {path} /index.html
+        file_server
+    }
+}
+# Только read-only mount app/frontend/dist -> /srv/marketplace/production/frontend.
+# Caddy подключается лишь к marketplace-production-ingress. БД/worker туда не подключать.

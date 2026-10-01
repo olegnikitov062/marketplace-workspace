@@ -1,0 +1,40 @@
+{
+  "environment": "local",
+  "compose_project": "marketplace-local",
+  "db": {
+    "host": "postgres",
+    "port": 5432,
+    "name": "mw_local",
+    "web_role": "mw_local_web",
+    "worker_role": "mw_local_worker",
+    "migration_role": "mw_local_migrator",
+    "bootstrap_role": "mw_local_bootstrap"
+  },
+  "test_db": {
+    "host": "postgres-test",
+    "port": 5432,
+    "name": "mw_local_test",
+    "role": "mw_local_test_runner"
+  },
+  "data_policy": "synthetic-only",
+  "external_reads": false,
+  "external_writes": false,
+  "real_messages": false,
+  "source_connections": [],
+  "scheduled_jobs": [],
+  "worker_concurrency": 1,
+  "mail_backend": "local-file",
+  "startup_guard_required": true,
+  "public_registration": false,
+  "cookie_name": "mw_local_session",
+  "cookie_domain": null,
+  "cookie_secure": false,
+  "allowed_hosts": [
+    "localhost",
+    "127.0.0.1"
+  ],
+  "csrf_origins": [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173"
+  ]
+}

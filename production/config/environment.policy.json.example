@@ -1,0 +1,33 @@
+{
+  "environment": "production",
+  "compose_project": "marketplace-production",
+  "db": {
+    "host": "postgres",
+    "port": 5432,
+    "name": "mw_production",
+    "web_role": "mw_production_web",
+    "worker_role": "mw_production_worker",
+    "migration_role": "mw_production_migrator",
+    "bootstrap_role": "mw_production_bootstrap"
+  },
+  "test_db": null,
+  "data_policy": "separately-authorized-production",
+  "external_reads": false,
+  "external_writes": false,
+  "real_messages": false,
+  "source_connections": [],
+  "scheduled_jobs": [],
+  "worker_concurrency": 1,
+  "mail_backend": "local-file",
+  "startup_guard_required": true,
+  "public_registration": false,
+  "cookie_name": "mw_production_session",
+  "cookie_domain": null,
+  "cookie_secure": true,
+  "allowed_hosts": [
+    "analytics.158-160-30-90.sslip.io"
+  ],
+  "csrf_origins": [
+    "https://analytics.158-160-30-90.sslip.io"
+  ]
+}

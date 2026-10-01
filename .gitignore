@@ -1,0 +1,24 @@
+# Runtime data and secrets stay local; templates are deliberately tracked.
+.env
+.env.*
+!.env.example
+/local/config/*
+!/local/config/*.example
+/beta/config/*
+!/beta/config/*.example
+/production/config/*
+!/production/config/*.example
+**/data/
+**/logs/
+**/backups/
+**/.change-backups/
+**/app/
+node_modules/
+.venv/
+__pycache__/
+
+# E2-03 generated artifacts
+**/dist/
+*.pyc
+
+/artifacts/

@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-09-30T17:46:14+03:00",
+  "timezone": "Europe/Moscow",
+  "task": "E2-04",
+  "scope": "local synthetic ownership only",
+  "runtime_database_checked": false,
+  "postgresql_checked": false,
+  "beta_contacted": false,
+  "local_tools": {
+    "python": "3.14",
+    "django": "5.2.17",
+    "existing_venv": true,
+    "docker_in_path": false,
+    "psql_in_path": false,
+    "components_installed": false
+  },
+  "tests": {
+    "backend": "SQLite in-memory (offline settings)",
+    "discovered": 14,
+    "passed": 11,
+    "skipped": 3,
+    "skipped_checks": [
+      "PostgreSQL composite FK/bypassed ORM writes",
+      "PostgreSQL immutable ownership/history/delete triggers",
+      "PostgreSQL concurrent attribution row locks"
+    ]
+  },
+  "local_passed": [
+    "two synthetic organizations and cabinets",
+    "one user with independent organization roles",
+    "membership suspension/archive and absent membership deny",
+    "same-organization relationships and secret-reference rotation",
+    "cross-organization model validation",
+    "versioned observed cabinet/legal-entity history",
+    "archive retains rows and links",
+    "role/state/current-version constraints",
+    "migration 0002 reverse/forward preserves archived history (SQLite guards are no-op)",
+    "migration 0001 zero/forward on empty disposable SQLite schema",
+    "existing guard tests",
+    "Django system check",
+    "makemigrations --check --dry-run",
+    "pip check",
+    "AST parsing 13 Python source files"
+  ],
+  "prepared_not_executed": [
+    "PostgreSQL migration/constraint/concurrency tests",
+    "guarded beta/test recovery probe seed/verify",
+    "new synthetic PostgreSQL pg_dump/pg_restore with exact fixed database names"
+  ],
+  "remaining": [
+    "all PostgreSQL-only tests without skips",
+    "fresh PostgreSQL migration forward/reverse/forward",
+    "PostgreSQL dump/restore and retained archived ownership links",
+    "beta schema and role validation before completion"
+  ],
+  "not_performed": [
+    "server actions",
+    "new dependency/plugin installation",
+    "real source or personal data access",
+    "login/invitations/RBAC/RLS/UI/worker",
+    "commit/push/deploy/restart/external sends",
+    "other project changes"
+  ],
+  "instructions": "docs/E2-04_OWNERSHIP.md",
+  "backups": ".change-backups/2026-09-30/E2-04/"
+}
