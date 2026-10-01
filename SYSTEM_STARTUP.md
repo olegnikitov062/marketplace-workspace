@@ -1,5 +1,7 @@
 # E2-03 — проверенный запуск технической основы
 
+Актуально 01.10.2026 после E2-05 C2: основной web/БД beta обновлены до E2-05 из Git worktree 82b2004; прежний E2-03 image используется только как среда зависимостей. Ниже сохранена история E2-03. Текущий запуск и откат — в конце документа; base-only запуск web возвращает старые исходники.
+
 30.09.2026, Europe/Moscow (UTC+3). D1 сохранено. После отдельного разрешения Олега установлены зависимости нового проекта и запущена изолированная beta. E2-04 и следующие задачи не начинались.
 
 Исходники: `C:/Users/krolo/Documents/marketplace-workspace/backend/`, `frontend/`. Конфигурация запуска: `beta/deploy/compose.json`, `beta/deploy/beta.py`; версии образов: `beta/deploy/images.lock.json`. Полная инструкция: `C:/Users/krolo/Documents/marketplace-workspace/docs/RUNBOOK.md`. Протокол фактических проверок: [SYSTEM_STARTUP_CHECKS.json](SYSTEM_STARTUP_CHECKS.json).
@@ -40,3 +42,25 @@ Web: 384 MiB/0.25 CPU; PostgreSQL: 512 MiB/0.5 CPU; тестовый PostgreSQL:
 
 Имена серверных secret-файлов (без значений): db_bootstrap_password, db_migrator_password, db_web_password, db_test_bootstrap_password, db_test_runner_password, django_secret_key.
 
+
+
+## Текущая beta после E2-05 C2 — 2026-10-01T13:55:12+03:00
+
+Серверный основной Git checkout: `/home/adm_user/marketplace-workspace/beta/app/repository`, beta b1a9450 на момент применения. Работающий backend зафиксирован отдельно: `/home/adm_user/marketplace-workspace/beta/app/releases/82b200465e15b447a43ed3d36d4522f11742bee1/backend` (read-only), detached HEAD 82b200465e15b447a43ed3d36d4522f11742bee1; последующие pull основного checkout не меняют этот mount. Image: `marketplace-workspace/backend:e2-03-0210f27a7ab1`, ID sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b; requirements.lock совпал, новой сборки не было. Основные миграции accounts:2/auth:12/contenttypes:2/ownership:2/sessions:1 и точный DML/guard contract применены. Web ID b2d0be7a01c46d46d584b247394fca7e56021ef797d26840cbf75d355614faf8, StartedAt 2026-10-01T10:47:55.161037866Z, только private, опубликованных портов нет.
+
+Команды ниже воспроизводят **текущую конфигурацию web**, не являются разрешением будущего рестарта. Использовать после проверки поздних изменений и отдельного задания; не запускать общий prepare/start/bootstrap/up всего проекта:
+
+```sh
+cd /home/adm_user/marketplace-workspace/beta
+export BACKEND_IMAGE=marketplace-workspace/backend:e2-03-0210f27a7ab1
+release=/home/adm_user/marketplace-workspace/beta/app/releases/82b200465e15b447a43ed3d36d4522f11742bee1
+export ACCOUNTS_SOURCE="$release/backend"
+dc() { docker compose --project-name marketplace-beta --env-file /dev/null --project-directory /home/adm_user/marketplace-workspace/beta/deploy -f /home/adm_user/marketplace-workspace/beta/deploy/compose.json "$@"; }
+dc -f "$release/beta/deploy/compose.accounts-web.json" config --quiet
+dc -f "$release/beta/deploy/compose.accounts-web.json" up -d --no-deps web
+dc exec -T web python -m tools.verify_account_web_runtime </dev/null
+```
+
+C2 подтвердил actual SQL role/ACL/guards, live/ready 200, session 401/login GET 405. Полный lifecycle под ограниченной ролью отдельно подтверждён C1. В основной БД пока нет организаций/аккаунтов/членств/контактов/приглашений/сессий. TEMPORARY=true у main web сохранено из исходной политики; public routes/TLS/реальных писем/источников нет. Оба PostgreSQL не пересоздавались, C1-роли отключены. Startup/ownership JSON старых этапов сохраняются как исторические snapshots; текущее доказательство — SYSTEM_ACCOUNT_CHECKS.json, секция c2.
+
+Перед C2 сохранены новый `/home/adm_user/marketplace-workspace/beta/backups/database/e2-05-main-before-20261001T104501Z.dump` и соседний `.acl.json` (оба 0600), restore в mw_beta_test_e2_05_main_before сверён. Hashes/точный состав/ограничения — docs/E2-05_WEB_ROLE.md §8. Откат web: base-only `dc up -d --no-deps --force-recreate web`, затем guarded revoke из этого worktree по §4; только после проверки поздней работы/разрешения. Добавочную схему/данные/worktree/dumps сохранять, zero/live restore не применять. Удалять release, который смонтирован web, нельзя.

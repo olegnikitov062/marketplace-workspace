@@ -1,5 +1,7 @@
 # E2-02 — разделение локальной, beta и production сред
 
+Актуальное состояние beta после E2-05 C2 (01.10.2026): основной web/БД используют E2-05; Git worktree read-only поверх существующего образа, без новых сетей/портов. Точные текущие команды — SYSTEM_STARTUP.md, результат — SYSTEM_ACCOUNT_CHECKS.json/c2. Исторические разделы ниже сохраняются.
+
 Дата подготовки: 30.09.2026, Europe/Moscow (UTC+3). Автор решения — Олег. Основание: принятое D1, SYSTEM_ARCHITECTURE.md, разделы 2.1, 2.2, 3 и 3.1. Статус задачи находится только в SYSTEM_PLAN.md. Разделы 1–11 — историческая подготовка E2-02. Фактический запуск и проверки E2-03 — раздел 12 и SYSTEM_STARTUP.md.
 
 ## 1. Владение файлами и каталоги
@@ -152,3 +154,10 @@ Read-back подтвердил права каталогов, internal/IPv6/empt
 ## 12. Фактическая проверка после разрешённой E2-03
 Действующий compose: C:/Users/krolo/Documents/marketplace-workspace/beta/deploy/compose.json; guard: backend/config/guard.py; provisioning: backend/tools/bootstrap_roles.py. Точные пути/роли/лимиты/доказательства — SYSTEM_STARTUP.md и SYSTEM_STARTUP_CHECKS.json. Старые templates исторические, production не применена. Main/test PostgreSQL раздельны, internal сети, ingress пустая; реальные отправки, production и source URL запрещены до подключения. Только синтетические данные. Web не достигает собственного test PostgreSQL, не имеет DDL/admin/system DB доступа. Опубликованных портов нет; предложенный 18100 не используется. Caddy/HTTPS, полный firewall и пиковые нагрузки не проверены. D1 и SYSTEM_ARCHITECTURE.md не менялись. Дальнейшие конкретные разрешения нужны для публичного маршрута/Caddy, production, реальных источников и новых задач.
 
+
+
+## E2-05 C2 — 2026-10-01T13:55:12+03:00
+
+Изоляция E2-02 сохранена. Обновлён только marketplace-beta web, применены main schema migrations и точные DML/guards. Source — Git worktree `/home/adm_user/marketplace-workspace/beta/app/releases/82b200465e15b447a43ed3d36d4522f11742bee1/backend`, только чтение; image прежний E2-03, нет новых зависимостей/публикации портов/Caddy. Main/test PostgreSQL сохранили контейнеры и сети. Новые main backup/ACL snapshot находятся только в beta/backups/database, restore только в новой test БД mw_beta_test_e2_05_main_before без PUBLIC CONNECT. Сохраняются C1 БД и две NOLOGIN роли.
+
+Main web TEMPORARY=true сохранено, schema/database CREATE и чужой CONNECT запрещены. Все account/ownership business-таблицы основной beta пусты; locmem/example.invalid, внешние reads/writes/messages/schedules выключены. Production/другие проекты не затрагивались. История E2-02/E2-03 и старые JSON не переименованы в E2-05-доказательство. Актуальный протокол: SYSTEM_ACCOUNT_CHECKS.json/c2; запуск/откат: SYSTEM_STARTUP.md и docs/E2-05_WEB_ROLE.md §4/8.

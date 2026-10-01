@@ -1,5 +1,7 @@
 # E2-03 — инструкция воспроизведения
 
+Текущее состояние после E2-05 C2 (01.10.2026): основной web и БД обновлены, backend закреплён Git worktree 82b2004. Для обычного запуска нужен compose.accounts-web.json и ACCOUNTS_SOURCE — команды в SYSTEM_STARTUP.md. Исторический base-only запуск ниже означает возврат к E2-03 image-коду, а не текущую beta.
+
 Проверенная сборка e2-03-0210f27a7ab1. Production и внешние интеграции запрещены. Только новый проект; команды не изменяют другие Compose projects или Caddy.
 
 ## Локальные проверки Windows
@@ -85,3 +87,10 @@ C2 — отдельное разрешение после C1 той же рев�
 Подробный протокол: [E2-05_WEB_ROLE.md, раздел 7](E2-05_WEB_ROLE.md). На опубликованной 82b2004, PostgreSQL 17.11, отдельный C1 завершился PASS: настоящий ограниченный LOGIN, exact DML/guards, grant/revoke/reapply, HTTP lifecycle/CSRF и 13 SQL-отказов. Runtime source mount read-only/test-private подтверждён. БД/роль mw_beta_test_e2_05_web_v2 сохранены, роль NOLOGIN/PASSWORD NULL, контейнер удалён; первая попытка сохранена. Оба имени заняты, probe повторно не запускать.
 
 Главная beta/contenttypes:2, web/два PostgreSQL контейнера неизменны, readiness 200. C2 ещё не разрешён/не выполнен: требуются новый main backup/restore, main migrations/grants, фиксированный Git worktree 82b2004 и обновление только web с runtime smoke. Точные команды/откат в E2-05_WEB_ROLE.md §3/4. E2-05 остаётся «На проверке» до основной beta-проверки; A/B 63 PostgreSQL-теста и C1 — разные проверки, полный набор 68 в этом запуске не повторялся.
+
+
+## E2-05 завершена / C2 — 2026-10-01T13:55:12+03:00
+
+После отдельного разрешения C2 опубликованный Git backend 82b200465e15b447a43ed3d36d4522f11742bee1 развёрнут read-only worktree поверх прежнего E2-03 image. Новый main dump и ACL snapshot mode 0600, restore/fingerprints в новой mw_beta_test_e2_05_main_before успешны; 17 новых миграций и точные main web grants/guards применены. Пересоздан только web; C2 runtime/SQL smoke PASS (live/ready 200, anonymous session 401, login GET 405), PostgreSQL контейнеры прежние. Основные account/ownership записи пока отсутствуют, SMTP/источники/порты не включались. Main TEMPORARY=true осталось исходным, C1 temp denial не переносится на него как доказательство.
+
+[Протокол C2, hashes и откат](E2-05_WEB_ROLE.md) — раздел 8/4; текущие команды запуска — [SYSTEM_STARTUP.md](../SYSTEM_STARTUP.md), актуальные факты — SYSTEM_ACCOUNT_CHECKS.json/c2. Base-only web up возвращает E2-03 source; текущий web требует overlay и fixed ACCOUNTS_SOURCE. Имена всех C1/restore БД заняты, probes/restore-create повторно не запускать. Старые разделы выше описывают историю. E2-05 «Готово»; E2-06/UI/TLS/RBAC/worker/реальные аккаунты не входят в результат. Предварительные правила и сроки остаются предварительными.
