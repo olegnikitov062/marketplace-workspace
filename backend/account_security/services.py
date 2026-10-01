@@ -293,19 +293,29 @@ def finish_enrollment(request, device_id):
 def recover_with_code(request, username, password, code):
     if not allow_attempt("mfa_recovery", request.META.get("REMOTE_ADDR", ""), username):
         return False
+    # PBKDF2 must not hold User's row lock: on the bounded beta CPU another
+    # legitimate request can otherwise hit lock_timeout before we consume a code.
+    snapshot = User.objects.filter(username=User.normalize_username(username)).first()
+    if not available(snapshot) or not snapshot.check_password(password):
+        return False
+    match = None
+    for candidate in RecoveryCode.objects.filter(user=snapshot, used_at__isnull=True):
+        if check_password(code, candidate.verifier):
+            match = candidate
+            break
+    if match is None:
+        return False
     with transaction.atomic():
-        user = User.objects.select_for_update().filter(username=User.normalize_username(username)).first()
-        if not available(user) or not user.check_password(password):
+        user = User.objects.select_for_update().filter(pk=snapshot.pk).first()
+        if not available(user) or not constant_time_compare(user.password, snapshot.password):
             return False
         state = state_for(user, lock=True)
-        match = None
-        for candidate in RecoveryCode.objects.select_for_update().filter(user=user, used_at__isnull=True):
-            if check_password(code, candidate.verifier):
-                match = candidate
-        if match is None:
+        current = RecoveryCode.objects.select_for_update().filter(
+            pk=match.pk, user=user, used_at__isnull=True).first()
+        if current is None or not constant_time_compare(current.verifier, match.verifier):
             return False
-        match.used_at = timezone.now()
-        match.save(update_fields=["used_at"])
+        current.used_at = timezone.now()
+        current.save(update_fields=["used_at"])
         state.recovery_required = True
         state.save(update_fields=["recovery_required"])
         revoke_all_locked(user, state, "code_recovery")

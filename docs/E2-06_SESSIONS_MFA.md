@@ -1,6 +1,6 @@
 # E2-06 — сессии, MFA и восстановление владельца
 
-01.10.2026, Europe/Moscow. Статус: **На проверке**. Код подготовлен локально в beta; основная beta не обновлялась. Подготовка и исходное обследование: [E2-06_PREPARATION.md](E2-06_PREPARATION.md). Машиночитаемый результат: [SYSTEM_SECURITY_CHECKS.json](../SYSTEM_SECURITY_CHECKS.json). Разрешения E2-05 не распространяются на этапы ниже.
+01.10.2026, Europe/Moscow. Статус: **На проверке**. S0 и часть S1 выполнены после отдельного разрешения; PostgreSQL-suite выявил одну ошибку, исправление локальное и ждёт публикации/повторной проверки. Основная beta остаётся E2-05. Исторический план ниже сохраняется; фактический результат и правила продолжения — в конце документа. Подготовка и исходное обследование: [E2-06_PREPARATION.md](E2-06_PREPARATION.md). Машиночитаемый результат: [SYSTEM_SECURITY_CHECKS.json](../SYSTEM_SECURITY_CHECKS.json). Разрешения E2-05 не распространяются на этапы ниже.
 
 ## Принятые решения
 
@@ -113,8 +113,8 @@ Suite: новая Django test DB, все E2-06 + выбранные ownership/gu
 
 ```sh
 dump_name="e2-06-synthetic-$(date -u +%Y%m%dT%H%M%SZ).dump"
-dc exec -T -e E206_DUMP="$dump_name" postgres-test sh -eu -c 'umask 077; set -C; export PGPASSWORD="$(cat /run/secrets/db_test_bootstrap_password)"; pg_dump -U mw_beta_test_bootstrap -d mw_beta_test_e2_06_recovery --format=custom > "/backups/$E206_DUMP"'
-dc exec -T -e E206_DUMP="$dump_name" postgres-test sh -eu -c 'export PGPASSWORD="$(cat /run/secrets/db_test_bootstrap_password)"; exec pg_restore -U mw_beta_test_bootstrap --role=mw_beta_test_runner --no-owner --no-acl --exit-on-error -d mw_beta_test_e2_06_restore "/backups/$E206_DUMP"'
+dc exec -T -e E206_DUMP="$dump_name" postgres-test sh -eu -c 'umask 077; set -C; export PGPASSWORD="$(cat /run/secrets/db_test_bootstrap_password)"; pg_dump -U mw_beta_test_bootstrap -d mw_beta_test_e2_06_recovery --format=custom > "/backups/$E206_DUMP"' </dev/null
+dc exec -T -e E206_DUMP="$dump_name" postgres-test sh -eu -c 'export PGPASSWORD="$(cat /run/secrets/db_test_bootstrap_password)"; exec pg_restore -U mw_beta_test_bootstrap --role=mw_beta_test_runner --no-owner --no-acl --exit-on-error -d mw_beta_test_e2_06_restore "/backups/$E206_DUMP"' </dev/null
 dc -f "$release/beta/deploy/compose.security-check.json" run --rm --no-deps -T security-suite python -m tools.verify_security_recovery verify </dev/null
 ```
 
@@ -151,3 +151,24 @@ dc -f "$release/beta/deploy/compose.security-web.json" exec -T web python -m too
 Отзывать только новые ACL через `manage_security_web_grants revoke` после выключения потребителя, не старым E2-05 revoke. Reverse guard 0002→0001 допустим только как проверка в disposable test DB; zero удаляет security-данные и запрещён для используемой БД. Восстановление всегда в новую БД, сверка/карантин доступа, отдельная процедура включения; dump поверх живой БД запрещён. Нет prune/down -v/reset --hard/clean, удаления releases/dumps/ключей/старых тестовых БД.
 
 Локальный откат: сравнить manifest/hashes и поздние правки, обратный diff только E2-06, сохранить журнал добавлением отмены. Девять разрешённых пакетов можно удалить только после проверки отсутствия новых потребителей и восстановления прежнего lock; автоматическое удаление не выполняется. Рабочая beta пока E2-05 по последнему документированному состоянию; этот документ не меняет её запуск.
+
+
+## Фактический S0/S1 — 2026-10-01T17:07:24+03:00
+
+Олег отдельно разрешил S0/S1. Проверенная опубликованная ревизия: `3db1c0c64880985489b86b52aa725e0c839ca001`. Серверный Git обновлён fast-forward; отдельный release по указанному выше пути. Собран image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72`, lock равен Git, pip check успешен. Compose 5.1.3: только test-private, без ports/основных секретов, UID10001, read-only, 256 MiB/0.25 CPU. Весь код на сервер поступил из опубликованной beta; ручных source-правок нет.
+
+PostgreSQL 17.11: 61 тест за 493.226 с, 60 успешны, 1 ошибка, 0 skips. `test_same_recovery_code_has_one_successful_consumer` получил lock_timeout=2000ms на ownership_user: PBKDF2 выполнялся при удержании блокировки. Suite не принят. Disposable suite DB удалена штатным Django runner; основная/исторические тестовые БД не трогались.
+
+Независимый limited LOGIN probe **PASS**: точные DML, grant/revoke/reapply, настоящий HTTP/CSRF/MFA, 17 SQL-отказов. `mw_beta_test_e2_06_web` БД сохранена; одноимённая роль NOLOGIN, PASSWORD NULL. Повторно `verify_security_web_role` не запускать: имя занято.
+
+Новые `mw_beta_test_e2_06_recovery` и `mw_beta_test_e2_06_restore` сохранены. Dump `beta/backups/test/e2-06-synthetic-20261001T135847Z.dump`, 222907 bytes, 0600. Два соседних `.<database>.acl.json` сохранены закрыто. Restore --no-owner/--no-acl/--exit-on-error **PASS**: все проверяемые строки/миграции совпали; отдельно восстановленный ключ расшифровывает TOTP; wrong-key/replay отклонены; quarantine не расширяет членства. Проверки поведения откатились транзакционно, снимки сохранены. Точный ACL применён/отозван/повторно применён на восстановленной схеме в одной транзакции с существующей NOLOGIN-ролью: временный CONNECT переключался только внутри транзакции, после rollback исходные ACL/CONNECT совпали полностью; LOGIN повторно не включался.
+
+Только синтетические ключевые файлы: runtime `beta/config/secrets/e2_06_test_encryption_key`; encrypted envelope `beta/backups/test/e2-06-key-envelope/envelope.json`; пароль отдельно `beta/config/e2-06-test-key-recovery/backup-passphrase`; независимо восстановленный ключ `beta/config/e2-06-test-key-restored/key`. Файлы 0600/UID10001; родительские новые каталоги закрыты. Восстановление выполнялось без mount оригинала, затем равенство проверено boolean, без fingerprints/значений. Сам DB restore verifier запускался с восстановленным ключом в /run/secrets/mfa_encryption_key, оригинальный ключ не монтировался. Это не ключ основной beta, не выдача секрета владельцу и не передача в Telegram.
+
+Maintenance проверен в реальном Gunicorn старого dependency image на новом Git source, в отдельном контейнере network=none, без DB/key: live=200, auth/business/ready=503, no-store. Контейнер удалён. У web и обоих PostgreSQL до/после строго совпали ID/image/StartedAt/mounts/networks/ports; основной E2-05 read-only SQL/runtime smoke PASS. Никакого S2/основного ключа/миграций/прав/перезапуска web не было.
+
+Локальное исправление (следующий коммит): пароль и PBKDF2 резервного кода проверяются до блокировки. В короткой транзакции заново проверяются активность/тот же password hash, тот же verifier и used_at=NULL, затем код расходуется однократно. Хеширование/число итераций/лимиты не ослаблены, PostgreSQL timeouts/CPU не увеличены. Добавлены проверки отсутствия транзакции во время hash verification и отказа при смене пароля между проверкой и lock. Все 34 затронутых локальных теста прошли за 73.747 с; check/makemigrations --check успешны. Это ещё не повторный PostgreSQL результат.
+
+Продолжение уже разрешённого S1: Олег публикует коммит исправления; проверить remote SHA, получить его Git, создать новый detached release, сверить неизменность lock с image выше, задать SECURITY_SOURCE нового release. Выполнить только full security-suite на свежей свободной `mw_beta_test_e2_06_suite`; ожидается 63 теста без skips. Не запускать заново role/seed probes и не удалять занятые БД/роль/backup/key. Результаты SQL/restore относятся к 3db1c0c и не выдаются за тест исправленной функции. Реальный браузерный сценарий и полная operator CLI с фактической доверенной ролью/секретом ещё не выполнены; реальные аккаунты не создавались. S2 остаётся отдельным разрешением после S1.
+
+Технические замечания выполнения: два SSH banner timeout не выполнили команд; проверка Compose сначала сравнила строковый mem_limit с integer, затем тип был корректно нормализован, конфигурация не менялась. Первый блок восстановления выполнил seed и dump, но Docker exec получил stdin SSH и поглотил следующие команды; readback подтвердил существующий dump и пустую restore БД. Продолжение использовало тот же dump в эту пустую БД, без повторного seed/перезаписи. Рецепт выше исправлен добавлением </dev/null к stdin-free docker exec.

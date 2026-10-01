@@ -19,6 +19,49 @@ from account_security.models import Authenticator, RecoveryCode, AccountSession,
 from account_security.session_backend import SessionStore
 
 
+class RecoveryLockScopeTests(TransactionTestCase):
+    """Exercise the real hasher outside the transaction, without weaker test pins."""
+
+    def setUp(self):
+        self.password = secrets.token_urlsafe(24)
+        self.code = secrets.token_urlsafe(24)
+        self.user = User.objects.create_user("synthetic-lock-scope", self.password)
+        RecoveryCode.objects.create(user=self.user, verifier=make_password(self.code))
+
+    def request(self):
+        request = RequestFactory().post("/auth/mfa/recovery/", secure=True)
+        request.session = SessionStore()
+        request.user = AnonymousUser()
+        return request
+
+    def test_slow_password_and_code_checks_do_not_hold_transaction(self):
+        from unittest.mock import patch
+        from django.contrib.auth.hashers import check_password
+        original = User.check_password
+        def password_check(user, value):
+            self.assertFalse(connection.in_atomic_block)
+            return original(user, value)
+        def code_check(value, encoded):
+            self.assertFalse(connection.in_atomic_block)
+            return check_password(value, encoded)
+        with patch.object(User, "check_password", password_check), patch.object(services, "check_password", code_check):
+            self.assertTrue(services.recover_with_code(self.request(), self.user.username, self.password, self.code))
+        self.assertFalse(services.recover_with_code(self.request(), self.user.username, self.password, self.code))
+
+    def test_password_change_between_proof_and_lock_denies_recovery(self):
+        from unittest.mock import patch
+        from django.contrib.auth.hashers import check_password
+        def change_after_check(value, encoded):
+            valid = check_password(value, encoded)
+            self.user.set_password(secrets.token_urlsafe(24))
+            self.user.save(update_fields=["password"])
+            return valid
+        with patch.object(services, "check_password", change_after_check):
+            self.assertFalse(services.recover_with_code(self.request(), self.user.username, self.password, self.code))
+        self.assertFalse(AccountSession.objects.exists())
+        self.assertTrue(RecoveryCode.objects.filter(used_at__isnull=True).exists())
+
+
 @skipUnless(connection.vendor == "postgresql", "PostgreSQL row locks and independent connections required")
 class SecurityConcurrencyTests(TransactionTestCase):
     def setUp(self):
