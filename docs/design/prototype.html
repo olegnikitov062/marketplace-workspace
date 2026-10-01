@@ -1,7 +1,14 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><link rel="icon" href="data:,">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><link rel="icon" href="data:,">
+<script>
+// Restore the initial demo profile before the stylesheet and first paint.
+try {
+  const saved = JSON.parse(localStorage.getItem('mw-grid-v2:owner'));
+  document.documentElement.dataset.theme = saved?.schemaVersion === 2 && saved.preferences?.theme === 'dark' ? 'dark' : 'light';
+} catch { document.documentElement.dataset.theme = 'light'; }
+</script>
 <title>Товары — рабочее пространство</title><link rel="stylesheet" href="grid-style.css">
 </head>
 <body>
@@ -27,7 +34,7 @@
 <header class="topbar">
 <button class="icon-button mobile-toggle" id="menu-toggle" aria-label="Открыть меню" aria-expanded="false"><span data-icon="menu"></span></button>
 <div class="breadcrumbs">Рабочее пространство <span>/</span> <strong id="breadcrumb">Товары</strong></div>
-<div class="top-actions"><span class="demo-pill">Демонстрационные данные</span><label class="profile-label" for="profile">Демо-профиль</label><select id="profile" aria-label="Демо-профиль"><option value="owner">Руководитель</option><option value="manager">Менеджер</option></select><span class="avatar" aria-hidden="true">Д</span></div>
+<div class="top-actions"><span class="demo-pill">Демонстрационные данные</span><button id="theme-toggle" class="btn theme-toggle" type="button" role="switch" aria-label="Тёмная тема" aria-checked="false" title="Включить тёмную тему"><span class="theme-label">Светлая</span></button><label class="profile-label" for="profile">Демо-профиль</label><select id="profile" aria-label="Демо-профиль"><option value="owner">Руководитель</option><option value="manager">Менеджер</option></select><span class="avatar" aria-hidden="true">Д</span></div>
 </header>
 <main id="main" class="workspace" tabindex="-1"></main>
 </div></div>
