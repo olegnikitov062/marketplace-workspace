@@ -349,3 +349,34 @@ Git: ветка codex/e2-03, исходный комплект untracked; чуж
 Повторная проверка: 14 локальных тестов, 11 успешных, 3 PostgreSQL-пропуска; Django system check и проверка отсутствия migration drift прошли. E2-04 остаётся «На проверке», PostgreSQL/beta/restore не проверены. До commit проверить точный index, неизменность source hashes, отсутствие секретных/runtime-путей и правильную ветку; после commit — состав/tree, отсутствие staged changes и неизменность main.
 
 Откат: сохранять рабочие файлы и поздние изменения. Если требуется отмена опубликованного/продвинутого коммита, отдельный обратный коммит с сохранением исходников; git revert коммита первого добавления файлов удалит их из дерева и рабочего каталога, поэтому автоматически его не запускать. Изменение ссылки beta назад допустимо только по отдельному запросу и после проверки отсутствия поздних коммитов/публикации, без reset --hard/clean и без удаления файлов. CHANGELOG не сокращать, добавить отмену.
+
+
+## 2026-10-01T10:20:28+03:00 (Europe/Moscow, UTC+3) — исключены локальные протоколы из списка Git
+
+По запросу Олега о многочисленных U-файлах добавлены точные корневые исключения в .gitignore для 18 существующих локальных документов/протоколов обследования и исторических проверок, а также .playwright-cli/ и output/. Эти файлы ранее сознательно не включались в первый коммит, но исключений для них не было. Файлы не удалены и не изменены. docs/design/ содержит исходники макета и не скрывается; SYSTEM_OWNERSHIP_CHECKS.json и рабочие SYSTEM_PLAN/ARCHITECTURE/ENVIRONMENTS/STARTUP продолжают отслеживаться.
+
+Изменены только .gitignore и CHANGELOG.md. Исходные копии: .change-backups/2026-10-01/gitignore-102028/.gitignore и .change-backups/2026-10-01/gitignore-102028/CHANGELOG.md. Новые правила:
+- `/SYSTEM_DISCOVERY.md`.
+- `/SYSTEM_DISCOVERY_AIRFLOW.json`.
+- `/SYSTEM_DISCOVERY_DB_ADDITIONAL.jsonseq`.
+- `/SYSTEM_DISCOVERY_DB_CHECKS.jsonseq`.
+- `/SYSTEM_DISCOVERY_DB_METADATA.json`.
+- `/SYSTEM_DISCOVERY_DB_PERIOD_QUALITY.jsonseq`.
+- `/SYSTEM_DISCOVERY_DB_QUALITY.jsonseq`.
+- `/SYSTEM_DISCOVERY_DEPLOYED_CODE.jsonseq`.
+- `/SYSTEM_DISCOVERY_DOMAIN_DETAILS.json`.
+- `/SYSTEM_DISCOVERY_FINANCE_PERIODS.jsonseq`.
+- `/SYSTEM_DISCOVERY_PILOT_CHECK.json`.
+- `/SYSTEM_DISCOVERY_PILOT_REPEAT.json`.
+- `/SYSTEM_DISCOVERY_READONLY_CHECKS.sql`.
+- `/SYSTEM_DISCOVERY_VARIANTS.json`.
+- `/SYSTEM_ENVIRONMENTS_BETA_PREPARATION.json`.
+- `/SYSTEM_ENVIRONMENTS_CHECKS.json`.
+- `/SYSTEM_ENVIRONMENTS_SERVER_CHECKS.json`.
+- `/SYSTEM_STARTUP_CHECKS.json`.
+- `/.playwright-cli/`.
+- `/output/`.
+
+Проверка: git check-ignore для всех перечисленных путей; git status и diff — только .gitignore/CHANGELOG и ранее неотслеживаемые исходники docs/design. Содержимое локальных протоколов/секретов не читалось, сервер/другие проекты не затрагивались. Изменение оформляется отдельным локальным коммитом beta без push.
+
+Откат: после сравнения текущего diff и сохранения поздних правок удалить только добавленный блок исключений либо вернуть .gitignore из копии, если поздних изменений нет. CHANGELOG не сокращать, добавить отмену. Исходные документы/артефакты не удалять. Общие reset/clean не использовать.
