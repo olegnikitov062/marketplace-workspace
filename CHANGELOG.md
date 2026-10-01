@@ -498,3 +498,39 @@ E2-05 оставлена «На проверке»: PostgreSQL/конкурен�
 Причина: сохранить фактические результаты A/B и оставшийся разрыв. Исходные копии пяти файлов до правок: .change-backups/2026-10-01/E2-05-beta/ с исходными относительными путями; manifest.json там содержит исходные/итоговые hashes. E2-05 оставлена «На проверке»: lifecycle под ограниченной web-ролью и необходимые DML/column grants ещё не проверены; test_runner их не заменяет. Пункт C требует отдельного плана/разрешения. Локальный коммит автора Oleg: «Подтверждены PostgreSQL-проверки и восстановление E2-05». Push выполняет Олег, агент push не выполнял. Код E2-05 не менялся; статусы/критерии остальных задач сохранены. Production/main/Caddy/FBS/WB/Finkos, реальные источники/данные/отправки, E2-06 и зависимости не затрагивались.
 
 Откат: сначала сравнить hashes и сохранить позднюю работу; вернуть только обратные изменения документов/протокола из этих копий, CHANGELOG не сокращать, добавить отмену. Главная beta не требует миграционного отката. Обновлённую серверную Git-копию не откатывать автоматически; возврат ревизии только после проверки чистоты/поздних коммитов и отдельного решения, без reset --hard/clean. Новые две БД/dump сохранять до отдельного решения очистки; перед удалением проверить точные имена/canonical path/принадлежность и отсутствие поздней работы. Старые БД/dump/config/secrets/data не трогать, общий prune не применять, поверх живой БД не восстанавливать.
+
+
+## 2026-10-01T12:14:52+03:00 (Europe/Moscow, UTC+3) — подготовлены права web и проверка E2-05 под ограниченной ролью
+
+Основание: «делай» после предложения подготовить конкретные DML-права/проверку; только локальная подготовка C, серверное применение отдельно. Публикация предыдущего 7ad6b67 подтверждена read-only ls-remote; агент push не выполнял. Причина: успешные A/B под test_runner не доказывают достаточность/ограниченность web-привилегий.
+
+Подготовлен точный column INSERT/UPDATE и DELETE только sessions, без blanket DML/sequence grants/GRANT OPTION/DDL/членства в миграторе. Apply/revoke проверяют beta/роль/миграции/ACL и работают транзакционно, отказываются при позднем расширении прав. PostgreSQL row locks требуют UPDATE колонки: явно предложены два SECURITY INVOKER BEFORE UPDATE OF id guards на Organization/Membership, запрещающие web менять id даже на прежний. Поля/связи/миграции E2-04 не менялись; guards применяются/отзываются вместе с SQL-привилегиями. Это не RBAC/RLS и не защита от произвольного SQL с INSERT membership: области и роли пользователя проверяет сервис E2-05.
+
+C1 probe создаёт только новую синтетическую БД/LOGIN-роль mw_beta_test_e2_05_web, отказывает при занятых именах, проверяет grant/revoke/reapply, настоящий limited LOGIN session_user, HTTP/CSRF lifecycle, SQL-отказы и невозможность RESET/SET ROLE эскалации. Callback блокировки отдельно выполняется runner. Пароль только в памяти; statement/error statement logging административного соединения отключён на создание verifier; finally отключает новую роль и удаляет verifier, БД сохраняется. Обрыв процесса требует отдельного readback/отключения своей роли. C2 пока лишь конкретный план backup/restore, Git worktree и read-only overlay существующего образа, main migration/grant и web-only update с откатом. Новых зависимостей/публичной доставки/сессий E2-06/дальнейших задач нет.
+
+Точный состав изменения (пять существующих и десять новых файлов):
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `docs/E2-05_ACCOUNTS.md`.
+- `docs/RUNBOOK.md`.
+- `backend/tools/account_web_grants.py`.
+- `backend/tools/manage_account_web_grants.py`.
+- `backend/tools/account_role_scenario.py`.
+- `backend/tools/verify_account_web_role.py`.
+- `backend/tools/verify_account_web_runtime.py`.
+- `backend/tests/test_account_role_preparation.py`.
+- `beta/deploy/compose.accounts-check.json`.
+- `beta/deploy/compose.accounts-web.json`.
+- `beta/deploy/e2_05_main_before_checks.sql`.
+- `docs/E2-05_WEB_ROLE.md`.
+
+Первые пять исходных файлов сохранены до правок в `.change-backups/2026-10-01/E2-05-web-role/` с исходными относительными путями. Служебный manifest.json содержит исходные/итоговые SHA-256 и список новых файлов, каталог исключён Git. Параллельные изменения docs/SYSTEM_DESIGN.md и docs/design/{grid-app.js,grid-style.css,guide.html,prototype.html} сохранены вне этого изменения/коммита.
+
+Проверки: 67 SQLite in-memory tests — 55 успешно, 12 прежних PostgreSQL/runtime skips; четыре новых теста повторно успешны после уточнений. Django check, makemigrations --check --dry-run, pip check, AST шести новых Python-файлов, JSON overlays/границы сервисов и whitespace прошли. Default SQL plan не делает Django setup/подключение. Проверены неизменность всех 101 строк задач, автор/состав commit и отсутствие посторонних путей в index. Новые PostgreSQL grants/guards/identity и Docker Compose runtime ещё не проверены. Прежние A/B: 63 PostgreSQL-теста и synthetic dump/restore на 342192b; это отдельное доказательство, не проверка новой подготовки.
+
+Сервер в этом изменении не опрашивался/не менялся: нет новых серверных БД/ролей/GRANT/миграций/рестартов. E2-05 «На проверке», точные C1/C2 требуют push Олега и отдельных разрешений. Последний подтверждённый web/главная БД остаются E2-03. Локальный коммит автора Oleg: «Подготовлены права web и проверка E2-05 под ограниченной ролью». Production/main/Caddy/FBS/WB/Finkos, реальные данные/источники/отправки не затронуты; токены/пароли/ссылки/персональные данные не включены в отчёты.
+
+Безопасный откат: сравнить hashes manifest с текущими файлами, сохранить позднюю работу; применять только обратный diff, CHANGELOG не сокращать, добавить отмену. Цельные пять копий возвращать только при отсутствии поздних изменений. Десять новых файлов удалять только при совпадении hashes и отсутствии поздних потребителей; отдельный согласованный reverse commit, без reset --hard/clean. Серверного отката сейчас нет. После будущего C1 сохранять новую БД/NOLOGIN роль; после будущего C2 сначала вернуть только web на исходный base compose/E2-03 image, затем guarded revoke точных DML/guards. Добавочные таблицы/данные/worktree/dumps сохранять; zero/live restore/общий prune запрещены.
+
+Уточнение 2026-10-01T12:16:29+03:00: перед окончательным оформлением того же локального коммита восстановлен исходный LF в SYSTEM_PLAN.md и SYSTEM_ACCOUNT_CHECKS.json, чтобы diff не содержал массовой смены окончаний строк. Промежуточные копии этих двух файлов и CHANGELOG сохранены в .change-backups/2026-10-01/E2-05-web-role/before-eol-normalization/. Семантика неизменна; повторно проверены hashes, состав и whitespace. Коммит не публиковался агентом.

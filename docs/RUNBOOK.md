@@ -71,3 +71,10 @@ API ready проверяется внутри web, публичных порто
 По отдельному разрешению Олега сервер получил опубликованную beta 342192b через Git pull --ff-only. 63 PostgreSQL-теста без skips, check/drift и синтетический dump/restore прошли. Существующий image E2-03, Git source read-only, только test-private. Сохранены БД mw_beta_test_e2_05_recovery/mw_beta_test_e2_05_restore и новый dump e2-05-20261001T083919Z.dump; seed повторно не запускать. Равенство данных/миграций и поведение восстановления подтверждены; старые dumps неизменны. Подробности/hashes: [SYSTEM_ACCOUNT_CHECKS.json](../SYSTEM_ACCOUNT_CHECKS.json), [E2-05_ACCOUNTS.md](E2-05_ACCOUNTS.md).
 
 Предыдущий раздел описывает состояние до разрешения A/B. Главная mw_beta и работающий web не обновлены, metadata/migrations/health проверены до/после. E2-05 остаётся на проверке из-за непроверенного lifecycle под ограниченной web-ролью. Пункт C, grants/основные миграции/web restart, Caddy/production и следующие задачи не разрешены и не выполнены.
+
+
+## 2026-10-01T12:14:52+03:00 — E2-05: подготовка ограниченной web-роли
+
+Исполняемый список DML/column grants и защитных row-lock triggers: `backend/tools/account_web_grants.py`; guarded `tools.manage_account_web_grants` по умолчанию только печатает план без подключения. [E2-05_WEB_ROLE.md](E2-05_WEB_ROLE.md) задаёт C1/C2, точные команды, предусловия и откат. C1 после push и отдельного разрешения создаёт только `mw_beta_test_e2_05_web` (БД/роль), проверяет HTTP lifecycle под настоящей ограниченной LOGIN-ролью, revoke/reapply и SQL-отказы, сохраняет БД и отключённую роль. Главная beta/web не входят в C1.
+
+C2 — отдельное разрешение после C1 той же ревизии: новый основной dump и проверка restore, detached Git worktree, main migration/grant, пересоздание только web с read-only source mount существующего образа. Не использовать общий up/build/prune, не передавать исходники архивом и не менять server source вручную. Сейчас C1/C2 не выполнены; локальные 55 успешных тестов и 12 PostgreSQL-пропусков не подтверждают новый SQL-контракт. Состояние: SYSTEM_ACCOUNT_CHECKS.json; прежние результаты A/B сохраняются.

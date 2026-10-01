@@ -1,0 +1,72 @@
+{
+  "services": {
+    "account-role-check": {
+      "restart": "no",
+      "mem_limit": "256m",
+      "cpus": "0.25",
+      "pids_limit": 128,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "image": "${BACKEND_IMAGE:?checked backend image required}",
+      "read_only": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "user": "10001:10001",
+      "tmpfs": [
+        "/tmp:size=64m,mode=1777"
+      ],
+      "networks": [
+        "test-private"
+      ],
+      "depends_on": {
+        "postgres-test": {
+          "condition": "service_healthy"
+        }
+      },
+      "environment": {
+        "ENVIRONMENT": "beta",
+        "PROCESS_MODE": "test",
+        "DB_HOST": "postgres-test",
+        "DB_PORT": "5432",
+        "DB_NAME": "mw_beta_test",
+        "DB_USER": "mw_beta_test_runner",
+        "DB_PASSWORD_FILE": "/run/secrets/db_test_runner_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false"
+      },
+      "secrets": [
+        "db_test_runner_password",
+        "django_secret_key",
+        "db_test_bootstrap_password"
+      ],
+      "command": [
+        "python",
+        "-m",
+        "tools.verify_account_web_role"
+      ],
+      "profiles": [
+        "maintenance"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/home/adm_user/marketplace-workspace/beta/app/repository/backend",
+          "target": "/workspace",
+          "read_only": true
+        }
+      ]
+    }
+  }
+}

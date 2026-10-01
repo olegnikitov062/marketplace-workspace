@@ -53,8 +53,8 @@
     "AST parse of 24 added/changed Python sources; whitespace check with existing CRLF honored"
   ],
   "prepared_not_executed": [
-    "restricted web-role DML grants and HTTP lifecycle verification; requires separate concrete grant/test plan",
-    "main mw_beta backup/migrations and working web update; separate authorization"
+    "C1: exact restricted web-role DML/guard apply-revoke and real LOGIN HTTP lifecycle/SQL denials; docs/E2-05_WEB_ROLE.md; separate authorization after user push",
+    "C2: main mw_beta backup/isolated restore, migrations, guarded grants, fixed Git worktree and web-only update; separate authorization after successful C1 of same revision"
   ],
   "provisional_user_confirmed": {
     "invitation_seconds": 86400,
@@ -185,5 +185,52 @@
     "django_migrations_update": false,
     "grants_changed": false
   },
-  "beta_verification_backups": ".change-backups/2026-10-01/E2-05-beta"
+  "beta_verification_backups": ".change-backups/2026-10-01/E2-05-beta",
+  "web_role_preparation": {
+    "timestamp": "2026-10-01T12:14:52+03:00",
+    "base_commit": "7ad6b67bab48b1e86aafb88c0c32264d4fcd74a7",
+    "base_publication_checked": true,
+    "server_contacted_this_preparation": false,
+    "server_changed": false,
+    "C1_executed": false,
+    "C2_executed": false,
+    "postgresql_new_privileges_checked": false,
+    "compose_runtime_checked": false,
+    "local_tests": {
+      "backend": "SQLite in-memory, config.accounts_local_checks",
+      "discovered": 67,
+      "passed": 55,
+      "skipped": 12,
+      "failed": 0,
+      "new_tests_rechecked": 4
+    },
+    "checks": [
+      "Django check",
+      "makemigrations --check --dry-run",
+      "pip check",
+      "Python AST",
+      "JSON overlay/service bounds",
+      "grant/revoke plan without connection"
+    ],
+    "exact_contract": "backend/tools/account_web_grants.py",
+    "instruction": "docs/E2-05_WEB_ROLE.md",
+    "test_database_and_role": "mw_beta_test_e2_05_web",
+    "test_role_final_state": "NOLOGIN PASSWORD NULL; verified by probe, not executed yet",
+    "ownership_fields_and_migrations_changed": false,
+    "proposed_ownership_process_guards": "Two invoker BEFORE UPDATE OF id triggers deny actual id update by web while permitting row locks; applied/revoked with privileges",
+    "backup_directory": ".change-backups/2026-10-01/E2-05-web-role",
+    "new_files": [
+      "backend/tools/account_web_grants.py",
+      "backend/tools/manage_account_web_grants.py",
+      "backend/tools/account_role_scenario.py",
+      "backend/tools/verify_account_web_role.py",
+      "backend/tools/verify_account_web_runtime.py",
+      "backend/tests/test_account_role_preparation.py",
+      "beta/deploy/compose.accounts-check.json",
+      "beta/deploy/compose.accounts-web.json",
+      "beta/deploy/e2_05_main_before_checks.sql",
+      "docs/E2-05_WEB_ROLE.md"
+    ],
+    "status": "На проверке"
+  }
 }
