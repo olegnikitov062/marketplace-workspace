@@ -1,13 +1,13 @@
 {
-  "checked_at": "2026-10-01T17:07:24+03:00",
+  "checked_at": "2026-10-01T17:31:37+03:00",
   "task": "E2-06",
   "status": "На проверке",
-  "environment": "Local Windows checks plus separately authorized PostgreSQL 17.11 beta test cluster; S1 incomplete after one concurrency failure",
+  "environment": "Local Windows checks plus authorized PostgreSQL 17.11 beta test cluster; corrected full suite PASS, browser/operator CLI and S2 remain open",
   "source": {
     "branch": "beta",
     "preparation_commit": "5eb4b42",
-    "published_beta_verified": "3db1c0c64880985489b86b52aa725e0c839ca001",
-    "implementation_revision": "containing Git commit",
+    "published_beta_verified": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
+    "implementation_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
     "push_performed": false,
     "server_contacted": true
   },
@@ -100,7 +100,6 @@
     "SQLite forward/reverse migration behavior; restore quarantine without membership change"
   ],
   "not_verified": [
-    "Corrected recovery path: full PostgreSQL suite with new Git revision (63 tests expected) under unchanged resource/time limits",
     "Real browser interaction with MFA pages",
     "Complete owner operator CLI with actual operator identity and privately provisioned emergency secret; no real account or secret issued",
     "Main beta E2-06 backup/restore/key/migrations/grants/runtime (S2 requires separate approval)",
@@ -114,15 +113,14 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes local corrective commit himself",
-    "Continue already authorized S1 after publication: new immutable Git release and full suite using unchanged image/lock; do not rerun occupied role/seed probes",
-    "S2 only after successful S1 and separate approval: main backup/restore/key/migrator grants/web-only switch",
+    "Oleg reviews and pushes this documentation commit himself",
+    "S2 only after remaining S1 acceptance and separate approval: main backup/restore/key/migrator grants/web-only switch",
     "Owner emergency-secret provisioning/recovery only upon separate explicit request"
   ],
   "secret_outputs": "No real accounts/messages/main-beta keys/Telegram transfers. Synthetic S1 keys and backups created privately outside Git and database; no values included in reports.",
   "s0_s1": {
     "authorized": "explicit S0/S1 approval in current chat; S2 not authorized",
-    "status": "S0 passed; S1 incomplete: one PostgreSQL concurrency failure, local fix awaits publication and PostgreSQL retest",
+    "status": "Historical initial S1 suite had one failure; corrected PostgreSQL retest PASS below; browser and complete operator CLI remain open",
     "tested_revision": "3db1c0c64880985489b86b52aa725e0c839ca001",
     "server_repository": "/home/adm_user/marketplace-workspace/beta/app/repository",
     "read_only_source": "/home/adm_user/marketplace-workspace/beta/app/releases/3db1c0c64880985489b86b52aa725e0c839ca001/backend",
@@ -220,7 +218,7 @@
       "main_restart": false
     },
     "local_fix": {
-      "revision": "containing Git commit, not yet published",
+      "revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
       "files": [
         "backend/account_security/services.py",
         "backend/account_security/tests/test_transactions.py"
@@ -235,7 +233,48 @@
       },
       "django_check": "PASS",
       "makemigrations_check": "no changes",
-      "postgresql_retest": "pending publication; server source never patched manually"
+      "postgresql_retest": "PASS: published revision, 63 tests, zero errors/failures/skips; see s1_retest"
     }
+  },
+  "s1_retest": {
+    "checked_at": "2026-10-01T17:31:37+03:00",
+    "published_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
+    "postgresql": "17.11",
+    "read_only_source": "/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e/backend",
+    "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+    "existing_image_reused": true,
+    "lock_schema_acl_tools_compose_unchanged_from": "3db1c0c64880985489b86b52aa725e0c839ca001",
+    "suite": {
+      "discovered": 63,
+      "passed": 63,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 493.704,
+      "exit_code": 0,
+      "database": "mw_beta_test_e2_06_suite",
+      "database_absent_after": true
+    },
+    "concurrent_recovery_code_single_consumer": "PASS",
+    "password_change_between_proof_and_lock": "PASS",
+    "limits_unchanged": {
+      "cpu": "0.25",
+      "memory": "256MiB",
+      "lock_timeout_ms": 2000
+    },
+    "occupied_role_or_seed_probes_repeated": false,
+    "preserved_e206_databases": 3,
+    "role_nologin_password_null": true,
+    "main_preservation": {
+      "container_ids_images_started_mounts_networks_ports_unchanged": true,
+      "mount_order_normalized_for_comparison": true,
+      "main_source": "82b200465e15b447a43ed3d36d4522f11742bee1",
+      "e205_readonly_sql_runtime_smoke": "PASS",
+      "main_migrations_grants_keys_restarts": false
+    },
+    "git_clean": true,
+    "oneoff_containers_remaining": false,
+    "s2_executed": false,
+    "limits": "Prior limited LOGIN/17 SQL denials and restore evidence stays pinned to 3db1c0c; no claim of rerunning those probes or completing browser/operator CLI/S2/business export."
   }
 }
