@@ -1,6 +1,6 @@
 # E2-05 — жизненный цикл личного аккаунта
 
-01.10.2026, Europe/Moscow (UTC+3). Единственный статус задачи — SYSTEM_PLAN.md. Реализовано локально в ветке beta; серверные действия в этом задании запрещены. PostgreSQL/runtime/dump-restore E2-05 ещё не проверены.
+01.10.2026, Europe/Moscow (UTC+3). Единственный статус задачи — SYSTEM_PLAN.md. Реализовано в ветке beta. После публикации Олегом и отдельного разрешения A/B выполнены 63 PostgreSQL-теста без пропусков и синтетический dump/restore. Главная beta/web сохранены; lifecycle под ограниченной web-ролью ещё не проверен.
 
 ## Основание и предварительные правила
 
@@ -65,9 +65,9 @@ git -c core.whitespace=cr-at-eol diff --check
 
 Offline settings разрешает только test/check/makemigrations/sqlmigrate, использует SQLite `:memory:` без runtime config/secrets и не запускает сервер. 63 теста: 51 успешно, 12 пропущены (8 новых PostgreSQL concurrency/trigger, 3 E2-04 PostgreSQL, 1 runtime роли/БД). Включены допустимые/истёкшие/использованные/отозванные приглашения; замена токена; правильный/неправильный пароль; блокировка существующих сессий; recovery одноразовость/срок/блокировка; две организации/запрет расширения; CSRF anonymous/authenticated и чужой Origin; locmem/no SMTP; ограничения попыток; миграции accounts reverse/forward и zero/forward пустых собственных таблиц с сохранением ownership. Система/дрейф/зависимости и синтаксис проверены. Подробный машинный протокол: `SYSTEM_ACCOUNT_CHECKS.json`.
 
-**Не выполнены** PostgreSQL E2-05, реальная конкуренция/триггеры, PostgreSQL миграции/restore и проверка HTTP под ограниченной web-ролью. Сохранённое состояние сервера — web/главная БД E2-03 и отдельные E2-04 тестовые БД; это сведения SYSTEM_OWNERSHIP_CHECKS.json от 01.10, не новая SSH-проверка. Локальные файлы не означают обновления работающей beta.
+**На момент локальной подготовки не были выполнены** PostgreSQL E2-05, реальная конкуренция/триггеры, PostgreSQL миграции/restore и проверка HTTP под ограниченной web-ролью. Последующий результат A/B записан ниже; HTTP под ограниченной web-ролью остаётся непроверенным. Сохранённое состояние сервера — web/главная БД E2-03 и отдельные E2-04 тестовые БД; это сведения SYSTEM_OWNERSHIP_CHECKS.json от 01.10, не новая SSH-проверка. Локальные файлы не означают обновления работающей beta.
 
-## План beta-проверок — только после отдельного разрешения
+## План beta-проверок — A/B выполнены по отдельному разрешению 01.10.2026
 
 ### A. Получение исходников и изолированные PostgreSQL-тесты
 
@@ -122,3 +122,20 @@ dc run --rm --no-deps -T -v /home/adm_user/marketplace-workspace/beta/app/reposi
 `accounts 0002 → 0001 → 0002` сохраняет строки, но временно снимает immutability guards; только в закрытой одноразовой тестовой БД. `accounts → zero` удаляет аккаунтные таблицы и допустимо исключительно на пустой тестовой схеме. Не откатывать заполненную схему через zero и не откатывать ownership ради аккаунтов. Для заполненной beta сохранять схему и возвращать совместимый код или восстанавливать проверенный dump в отдельную новую БД после разрешения. При возврате старого web новые маршруты отключатся; добавленные schema objects не удалять автоматически. Сервер сейчас не менялся, поэтому текущий локальный результат не требует серверного rollback.
 
 Штатные основания Django: [auth/session/password forms](https://docs.djangoproject.com/en/5.2/topics/auth/default/), [ModelBackend и отсутствие встроенного rate limiting](https://docs.djangoproject.com/en/5.2/topics/auth/customizing/). Поведение дополнительно проверено по установленному Django 5.2.17 и локальными тестами; это не утверждение о PostgreSQL E2-05.
+
+
+## Фактическая PostgreSQL-проверка A/B — 2026-10-01T11:43:44+03:00 (Europe/Moscow)
+
+После текущего разрешения Олега «да разрешаю» read-only проверена публикация 342192b4296c84152f3da0934715816562c9fe9f; чистая серверная beta обновлена с e077a7a только Git pull --ff-only. Образ E2-03 и requirements.lock совпали с ожидаемыми ID/SHA-256; сборки, загрузок образов и установок не было. Фактический mount /workspace read-only из beta/app/repository/backend, у одноразового контейнера только marketplace-beta-test-private.
+
+63 теста PostgreSQL 17.11 прошли за 75.687 секунды, 0 ошибок/пропусков. В том числе concurrency acceptance/recovery/reinvite/block/counter, raw SQL immutability, account migrations reverse/forward/empty zero-forward и весь E2-04 regression. Django check и migration drift check прошли. Django test DB test_mw_beta_test удалена штатно, все одноразовые контейнеры удалены; постоянные postgres/postgres-test/web сохранили ID/image/StartedAt.
+
+Созданы только новые БД mw_beta_test_e2_05_recovery и mw_beta_test_e2_05_restore (owner mw_beta_test_runner; seed отзывает PUBLIC CONNECT). Пустота restore проверена. Новый dump: `/home/adm_user/marketplace-workspace/beta/backups/test/e2-05-20261001T083919Z.dump`, права 0600, SHA-256 `4d5aa823d68bf109f1b8801bad893ee50f07e0966e7c1ebac69b1cbac93063d8`. pg_restore --exit-on-error прошёл; probe подтвердил равенство ownership/accounts/sessions/миграций, повторный Django login/reset/block/reinvite и отказы SQL-перепривязки/смены контакта/возврата terminal state. Проверки выполнены в rollback-транзакциях, обе сохранённые БД после них совпадают. В restore: 2 организации, 5 синтетических User, 6 Membership, 4 контакта, 4 приглашения, 0 сессий, 2 новых защитных триггера.
+
+Новые БД/dump сохранены на сервере, не экспортировались. **Seed из раздела B повторно не запускать: имена уже заняты.** Старые dumps E2-03/E2-04 имеют прежние SHA-256. Прямое чтение hash защищённого E2-04 dump от SSH-пользователя дало Permission denied; checksum прочитан внутри собственного postgres-test контейнера, права файла не менялись. Один запуск shell остановился до контейнера из-за завершающего Windows CRLF после /dev/null; исправлена только передача операционной команды, серверный исходник не менялся. Эти отказы не были провалами тестов/restore.
+
+Главная mw_beta до/после содержит только contenttypes:2. Web ID `78a7513c20dc2d851d80c60b055cb337f02f03aa024b96ebca573e2f696f2141`, StartedAt `2026-09-30T13:13:33.547827254Z`, image E2-03 неизменны, ready успешен до/после. Read-only SQL подтвердил отсутствие superuser/CREATEDB/CREATEROLE/BYPASSRLS у web, SELECT=true/UPDATE=false для django_migrations. Grants не менялись; это не проверка нового lifecycle под web-ролью.
+
+A/B завершены. Непроверенная граница E2-05 — ограниченная web-role HTTP проверка и необходимые DML/column privileges. Тесты test_runner не заменяют её. Пункт C не разрешён и не выполнялся; главная БД/работающий web не мигрировались/не перезапускались. Локальные результаты фиксируются новым коммитом Oleg без push. E2-06, production/Caddy/FBS/WB/Finkos, реальные данные и внешние отправки не затрагивались.
+
+Копии пяти документов/протокола до записи результата: `.change-backups/2026-10-01/E2-05-beta/` с исходными относительными путями; manifest.json содержит hashes. При локальном откате сохранять позднюю работу, применять только обратный diff, CHANGELOG дополнять. Главная beta не требует отката. Серверный Git не откатывать/новые БД и dump не удалять автоматически: сначала проверить принадлежность, позднюю работу и получить отдельное решение. Старые артефакты и data/config/secrets сохранять; no reset/clean/prune/restore поверх живой БД.

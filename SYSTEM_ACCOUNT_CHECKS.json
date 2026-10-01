@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-10-01T11:24:21+03:00",
+  "timestamp": "2026-10-01T11:43:44+03:00",
   "timezone": "Europe/Moscow",
   "task": "E2-05",
-  "scope": "Local beta branch, synthetic personal account lifecycle only",
+  "scope": "Authorized A/B: isolated beta PostgreSQL tests and synthetic dump/restore; main database and working web unchanged",
   "initial_local_head": "2cfec7e",
-  "remote_beta_observed": "e077a7a5aed263b50d1212176806220a7ca4f971",
+  "remote_beta_observed": "342192b4296c84152f3da0934715816562c9fe9f",
   "publication_checked_with": "git ls-remote origin refs/heads/beta (read-only)",
-  "initial_local_head_published": false,
+  "initial_local_head_published": true,
   "push_performed": false,
-  "server_contacted": false,
-  "postgresql_checked": false,
-  "beta_runtime_checked": false,
+  "server_contacted": true,
+  "postgresql_checked": true,
+  "beta_runtime_checked": true,
   "main_beta_migrated": false,
   "web_restarted": false,
   "dependencies_installed": false,
@@ -53,10 +53,8 @@
     "AST parse of 24 added/changed Python sources; whitespace check with existing CRLF honored"
   ],
   "prepared_not_executed": [
-    "strict PostgreSQL suite: python -m tools.check_accounts_postgresql",
-    "PostgreSQL account migrations and row-lock/trigger verification",
-    "seed/dump/restore/verify using new mw_beta_test_e2_05_recovery and mw_beta_test_e2_05_restore",
-    "restricted web-role DML grants and HTTP runtime verification; needs separate concrete grant/deployment plan"
+    "restricted web-role DML grants and HTTP lifecycle verification; requires separate concrete grant/test plan",
+    "main mw_beta backup/migrations and working web update; separate authorization"
   ],
   "provisional_user_confirmed": {
     "invitation_seconds": 86400,
@@ -85,5 +83,107 @@
     "production/Caddy/FBS/WB/Finkos"
   ],
   "rollback_backups": ".change-backups/2026-10-01/E2-05-local",
-  "instructions": "docs/E2-05_ACCOUNTS.md"
+  "instructions": "docs/E2-05_ACCOUNTS.md",
+  "local_preparation_timestamp": "2026-10-01T11:24:21+03:00",
+  "initial_publication_observation": {
+    "remote_beta": "e077a7a5aed263b50d1212176806220a7ca4f971",
+    "local_head": "2cfec7e",
+    "published_at_initial_check": false
+  },
+  "beta_runtime_scope": "PostgreSQL test_runner + Django test client; existing E2-03 web health/metadata read-only",
+  "restricted_web_role_lifecycle_checked": false,
+  "source_revision": "342192b4296c84152f3da0934715816562c9fe9f",
+  "source_branch": "beta",
+  "server_git_checkout": "/home/adm_user/marketplace-workspace/beta/app/repository",
+  "server_git_clean": true,
+  "source_delivery": "git pull --ff-only origin beta from e077a7a; no source archives or manual server source edits",
+  "runtime_image": "marketplace-workspace/backend:e2-03-0210f27a7ab1",
+  "runtime_image_id": "sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b",
+  "requirements_lock_sha256": "c037270b5ef4e3d83696959bbf7d62eee9021e122877a28efdb2b975020efd21",
+  "lock_matches_existing_image_source": true,
+  "new_image_built": false,
+  "backend_source_mount": "/home/adm_user/marketplace-workspace/beta/app/repository/backend:/workspace:ro",
+  "test_container_networks": [
+    "marketplace-beta-test-private"
+  ],
+  "postgresql_tests": {
+    "version": "17.11",
+    "discovered": 63,
+    "passed": 63,
+    "skipped": 0,
+    "failed": 0,
+    "seconds": 75.687,
+    "database": "test_mw_beta_test",
+    "database_removed": true,
+    "one_shot_containers_removed": true,
+    "system_check": "passed",
+    "migration_drift_check": "passed"
+  },
+  "postgresql_passed": [
+    "all account HTTP/CSRF/password/invitation/recovery/blocking/isolation/delivery tests",
+    "single-use acceptance/recovery under concurrency",
+    "reinvitation race creates only one replacement",
+    "blocking racing acceptance ends blocked",
+    "first-use rate-counter race atomic",
+    "raw invitation/contact identity and terminal state immutability",
+    "accounts migration reverse/forward preserves enrollment",
+    "accounts empty schema zero/forward preserves ownership",
+    "E2-04 composite FK/history/concurrency/migration regression tests"
+  ],
+  "backup_restore": {
+    "passed": true,
+    "source_database": "mw_beta_test_e2_05_recovery",
+    "restored_database": "mw_beta_test_e2_05_restore",
+    "host": "postgres-test",
+    "owner": "mw_beta_test_runner",
+    "public_connect_revoked_by_seed": true,
+    "restore_target_empty_checked": true,
+    "dump_path": "/home/adm_user/marketplace-workspace/beta/backups/test/e2-05-20261001T083919Z.dump",
+    "dump_sha256": "4d5aa823d68bf109f1b8801bad893ee50f07e0966e7c1ebac69b1cbac93063d8",
+    "dump_mode": "0600",
+    "ownership_accounts_sessions_and_migration_records_equal": true,
+    "behavioral_checks_rolled_back": true,
+    "login_reset_block_reinvite_and_raw_guards_rechecked": true,
+    "databases_and_dump_preserved": true,
+    "dump_exported": false
+  },
+  "restored_counts": {
+    "organizations": 2,
+    "users": 5,
+    "memberships": 6,
+    "contacts": 4,
+    "invitations": 4,
+    "sessions": 0,
+    "accounts_triggers": 2
+  },
+  "restored_migrations": {
+    "accounts": 2,
+    "auth": 12,
+    "contenttypes": 2,
+    "ownership": 2,
+    "sessions": 1
+  },
+  "previous_backups_unchanged": {
+    "migrations-before.dump": "6d0e539f5814a764130c08a889aa853ba368a9b7e6b7ab41d02649a6f8f176b8",
+    "e2-04-20261001T074853Z.dump": "9be0c324e2b8a0ed291ad71e9b07965ddac2f5a7f4fe836251726eac22fc22be"
+  },
+  "working_web_unchanged": {
+    "id": "78a7513c20dc2d851d80c60b055cb337f02f03aa024b96ebca573e2f696f2141",
+    "image_id": "sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b",
+    "started_at": "2026-09-30T13:13:33.547827254Z",
+    "ready_before_after": true
+  },
+  "main_beta_migrations_before_after": {
+    "contenttypes": 2
+  },
+  "web_role_readonly_checks": {
+    "superuser": false,
+    "createdb": false,
+    "createrole": false,
+    "bypassrls": false,
+    "django_migrations_select": true,
+    "django_migrations_update": false,
+    "grants_changed": false
+  },
+  "beta_verification_backups": ".change-backups/2026-10-01/E2-05-beta"
 }
