@@ -34,3 +34,17 @@ class AccountRoleGuardTests(SimpleTestCase):
         with mock.patch("sys.argv", ["manage_account_web_grants"]), mock.patch("django.setup") as setup, mock.patch("builtins.print"):
             main()
         setup.assert_not_called()
+
+
+class AccountSequenceCatalogTests(TestCase):
+    def test_sequence_audit_handles_catalog_with_non_sequences(self):
+        from django.db import connection
+        from tools.account_web_grants import sequence_access_count
+        if connection.vendor != "postgresql":
+            self.skipTest("Sequence privilege evaluation requires PostgreSQL")
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT current_user")
+            role = cursor.fetchone()[0]
+            cursor.execute("SELECT count(*) FROM pg_class WHERE relkind <> 'S'")
+            self.assertGreater(cursor.fetchone()[0], 0)
+            self.assertGreater(sequence_access_count(cursor, role), 0)

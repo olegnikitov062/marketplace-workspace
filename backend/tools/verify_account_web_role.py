@@ -13,7 +13,7 @@ from psycopg import sql
 
 from tools.account_web_grants import READ_TABLES, TEST_ROLE, apply, revoke, verify_privileges, verify_guards
 
-DATABASE = "mw_beta_test_e2_05_web"
+DATABASE = "mw_beta_test_e2_05_web_v2"
 
 
 def require_test_environment(effective):
@@ -146,8 +146,12 @@ def main():
     from django.db import connection
     try:
         run(settings, connection)
-    except Exception:
-        raise SystemExit("C1 FAIL: preserve probe resources and investigate; no credential/SQL output") from None
+    except Exception as error:
+        # Only technical categories, never exception text/SQL/traceback locals.
+        state = getattr(error, "sqlstate", None)
+        if not isinstance(state, str) or len(state) != 5 or not state.isalnum():
+            state = "none"
+        raise SystemExit(f"C1 FAIL: {type(error).__name__}; SQLSTATE={state}; preserve resources; no credential/SQL output") from None
 
 
 if __name__ == "__main__":

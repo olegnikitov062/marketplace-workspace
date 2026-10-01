@@ -1,10 +1,10 @@
 # E2-05 — точные права web и план C
 
-01.10.2026, Europe/Moscow. Это локальная подготовка после просьбы «делай» подготовить DML-права/проверку. **Серверные действия C1/C2 не выполнены и требуют отдельного разрешения.** A/B на 342192b уже прошли: 63 PostgreSQL-теста и dump/restore; это не доказательство новых прав ниже. Статус E2-05 остаётся в SYSTEM_PLAN.md.
+01.10.2026, Europe/Moscow. Это локальная подготовка после просьбы «делай» подготовить DML-права/проверку. **Первый C1 выполнен с отказом 01.10.2026; результат и исправление ниже. C2 не выполнялся. Повтор C1 требует публикации исправления и разрешения новой БД/роли.** A/B на 342192b уже прошли: 63 PostgreSQL-теста и dump/restore; это не доказательство новых прав ниже. Статус E2-05 остаётся в SYSTEM_PLAN.md.
 
 ## 1. Что именно получает web
 
-Единый исполняемый перечень — `backend/tools/account_web_grants.py`. Производственная beta-роль только `mw_beta_web`; её проверочный аналог только `mw_beta_test_e2_05_web`. Произвольное имя, production и дополнительные привилегии отвергаются. Новых зависимостей, RLS/Grant/RBAC или бизнес-ролей не добавлено.
+Единый исполняемый перечень — `backend/tools/account_web_grants.py`. Производственная beta-роль только `mw_beta_web`; её проверочный аналог только `mw_beta_test_e2_05_web_v2`. Произвольное имя, production и дополнительные привилегии отвергаются. Новых зависимостей, RLS/Grant/RBAC или бизнес-ролей не добавлено.
 
 | Таблица | INSERT — точные колонки | UPDATE — точные колонки | DELETE |
 | --- | --- | --- | --- |
@@ -39,8 +39,8 @@ Web не получает UPDATE User.is_active/archived_at/username или Memb
 
 Новые имена строго фиксированы:
 
-- БД `mw_beta_test_e2_05_web`, owner `mw_beta_test_runner`.
-- LOGIN роль `mw_beta_test_e2_05_web`, NOINHERIT/NOSUPERUSER/NOCREATEDB/NOCREATEROLE/NOREPLICATION/NOBYPASSRLS, без членств, CONNECT только к этой БД. PUBLIC лишается прав только на **новую** БД; CREATE public закрывается только в ней.
+- БД `mw_beta_test_e2_05_web_v2`, owner `mw_beta_test_runner`.
+- LOGIN роль `mw_beta_test_e2_05_web_v2`, NOINHERIT/NOSUPERUSER/NOCREATEDB/NOCREATEROLE/NOREPLICATION/NOBYPASSRLS, без членств, CONNECT только к этой БД. PUBLIC лишается прав только на **новую** БД; CREATE public закрывается только в ней.
 - Обоим объектам ставится комментарий `marketplace-workspace E2-05 C1 synthetic probe`. Любое совпадение имени означает отказ без повторного использования/удаления. A/B БД и dump не трогаются.
 
 Пароль случайный, только в памяти; в CREATE ROLE передаётся SCRAM verifier, statement/error statement logging административного соединения отключается для этой операции. Значения не печатаются/не пишутся в файл или протокол. В finally новая роль получает NOLOGIN/PASSWORD NULL; новые БД/роль сохраняются для проверки. При обрыве процесса/сети finally не гарантирован — проверить rologin/rolpassword-is-null и отдельно отключить **только созданную этим запуском** роль; не удалять существующие объекты автоматически.
@@ -139,3 +139,18 @@ C2 не запускает source adapters, worker, public routes, реальн�
 Локально: полный набор 67 SQLite-тестов — 55 успешно, 12 прежних PostgreSQL/runtime skips. Четыре новых теста проверяют полный HTTP-сценарий, отказ ошибочной среды до privileged setup, недопустимое имя роли и отсутствие Django setup/подключений у plan. Django check и migration drift check успешны; новых model migrations нет. Python AST, JSON overlay и границы сервисов проверены. Точный SQL grant/revoke подготовлен без подключения. PostgreSQL C1, SQL guards/ACL/identity поведение и Docker Compose schema нового overlay **ещё не выполнены**; SQLite за них не выдаётся.
 
 Обоснование row-lock права и разделения table/column privileges: [PostgreSQL 17 — Privileges](https://www.postgresql.org/docs/17/ddl-priv.html). Генерация identity и SessionStore дополнительно сверены с установленным Django 5.2.17. Ограничения и следующие разрешения сохранены в SYSTEM_ACCOUNT_CHECKS.json.
+
+
+## 6. Первый запуск C1 — 2026-10-01T12:52:24+03:00
+
+Разрешённый запуск из beta 3f4a5b052acce7233d2484c6c039f788900fc1d8 (содержит 06d4728), Git pull --ff-only с 342192b. Compose config --quiet прошёл, использован существующий E2-03 image с совпавшим lock. Контейнер завершился C1 FAIL и удалён. Mount/network заданы проверенным overlay, но отдельный runtime inspect контейнера не получен до его завершения — не считать его дополнительным доказательством.
+
+**Сохранённые объекты первой попытки:** БД и роль `mw_beta_test_e2_05_web` (без _v2); owner БД mw_beta_test_runner, метка marketplace-workspace E2-05 C1 synthetic probe. Миграции accounts:2/auth:12/contenttypes:2/ownership:2/sessions:1. Синтетические количества: Organization=2, User=1, Membership=2, Invitation=0, AccountContact=0, AuthDenial=0. Readback: NOLOGIN, password IS NULL=true, опасные атрибуты=false; SELECT User=false, UPDATE password=false, новые guard triggers=0. БД и отключённая роль сохранены; не удалять/не переиспользовать.
+
+Отказ в подготовительной транзакции ACL: PostgreSQL переставил WHERE-условия и вызвал has_sequence_privilege на TOAST-таблице. Транзакция SELECT/GRANT/guard откатилась; HTTP сценарий и revoke/reapply не достигнуты. Сырое исключение исходный probe намеренно не печатает. Причина воспроизведена отдельным read-only SQL запросом к каталогу.
+
+Исправление: CASE WHEN relkind='S' THEN has_sequence_privilege(...) ELSE false END. Точный запрос проверен read-only на PostgreSQL 17.11: 0 доступных public sequences у тестовой роли и 6 у bootstrap, при 84 объектах pg_toast. Добавлен PostgreSQL regression test; локальные 68 тестов — 55 успешных, 13 skips, включая этот тест. Сам новый Python probe/полный SQL contract ещё не выполнен на PostgreSQL. Диагностика будущего probe выводит только имя класса ошибки и SQLSTATE, без exception text/SQL/секретов.
+
+**План повтора:** команды C1 выше после push нового коммита и разрешения создают только `mw_beta_test_e2_05_web_v2` (БД/роль). Имена изменены в обоих фиксированных allowlists; произвольного имени/повторного использования нет. Предварительно read-only проверить отсутствие v2; после запуска проверить NOLOGIN/PASSWORD NULL, counts, teardown, неизменность main/web. При успехе сохранить v2; при отказе также сохранить и диагностировать. Первый набор/A/B не трогать. C2 по-прежнему отдельно разрешается после успешного C1 исправленной ревизии.
+
+После первой попытки подтверждены неизменные ID/image/StartedAt web и двух PostgreSQL контейнеров, readiness 200, главные миграции contenttypes:2 и SELECT-only web на django_migrations. Два временных SSH banner timeout не считаются результатами проверок; последующее подключение дало полный readback. Ошибки шаблонов docker inspect не затрагивали контейнеры. Runtime image/схема главной beta/права web/рестарты не менялись.

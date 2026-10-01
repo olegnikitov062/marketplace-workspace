@@ -4,7 +4,7 @@ Only two fixed beta roles. Existing SELECT grants are preserved. Grant/revoke
 callers must supply a transaction and an already guarded PostgreSQL connection.
 """
 MAIN_ROLE = "mw_beta_web"
-TEST_ROLE = "mw_beta_test_e2_05_web"
+TEST_ROLE = "mw_beta_test_e2_05_web_v2"
 READ_TABLES = (
     "ownership_user", "ownership_organization", "ownership_membership",
     "accounts_accountcontact", "accounts_invitation", "accounts_attemptbucket",
@@ -125,10 +125,16 @@ def verify_privileges(cursor, role, applied):
         'DELETE WITH GRANT OPTION,TRUNCATE WITH GRANT OPTION,TRIGGER WITH GRANT OPTION,MAINTAIN WITH GRANT OPTION')""", [role])
     if cursor.fetchone()[0]:
         raise ContractError("web_can_delegate_table_privileges")
-    cursor.execute("""SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
-        WHERE n.nspname='public' AND c.relkind='S' AND has_sequence_privilege(%s,c.oid,'USAGE,SELECT,UPDATE')""", [role])
-    if cursor.fetchone()[0]:
+    if sequence_access_count(cursor, role):
         raise ContractError("unexpected_sequence_privileges")
+
+
+def sequence_access_count(cursor, role):
+    # WHERE conjuncts can be reordered; CASE prevents evaluation on TOAST/tables.
+    cursor.execute("""SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+        WHERE n.nspname='public' AND CASE WHEN c.relkind='S'
+        THEN has_sequence_privilege(%s,c.oid,'USAGE,SELECT,UPDATE') ELSE false END""", [role])
+    return cursor.fetchone()[0]
 
 
 def verify_guards(cursor, role, applied):

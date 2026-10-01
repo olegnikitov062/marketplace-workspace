@@ -53,8 +53,8 @@
     "AST parse of 24 added/changed Python sources; whitespace check with existing CRLF honored"
   ],
   "prepared_not_executed": [
-    "C1: exact restricted web-role DML/guard apply-revoke and real LOGIN HTTP lifecycle/SQL denials; docs/E2-05_WEB_ROLE.md; separate authorization after user push",
-    "C2: main mw_beta backup/isolated restore, migrations, guarded grants, fixed Git worktree and web-only update; separate authorization after successful C1 of same revision"
+    "C1 retry: published fix and separate permission for new synthetic mw_beta_test_e2_05_web_v2 database/LOGIN role; preserve original failed-run objects",
+    "C2: main backup/restore, migrations, web grants and restart require successful C1 and separate authorization"
   ],
   "provisional_user_confirmed": {
     "invitation_seconds": 86400,
@@ -231,6 +231,72 @@
       "beta/deploy/e2_05_main_before_checks.sql",
       "docs/E2-05_WEB_ROLE.md"
     ],
-    "status": "На проверке"
+    "status": "РќР° РїСЂРѕРІРµСЂРєРµ"
+  },
+  "c1_attempt": {
+    "timestamp": "2026-10-01T12:52:24+03:00",
+    "authorized": true,
+    "source_revision": "3f4a5b052acce7233d2484c6c039f788900fc1d8",
+    "source_delivery": "git pull --ff-only origin beta",
+    "server_git_clean": true,
+    "postgresql_version": "17.11",
+    "result": "FAIL before HTTP lifecycle; ACL setup transaction rolled back",
+    "database": "mw_beta_test_e2_05_web",
+    "database_owner": "mw_beta_test_runner",
+    "database_marker_verified": true,
+    "role": "mw_beta_test_e2_05_web",
+    "role_login": false,
+    "role_password_is_null": true,
+    "role_unsafe_flags": false,
+    "user_select": false,
+    "user_password_update": false,
+    "guard_triggers": 0,
+    "counts": {
+      "organizations": 2,
+      "users": 1,
+      "memberships": 2,
+      "invitations": 0,
+      "contacts": 0,
+      "denials": 0
+    },
+    "migrations": {
+      "accounts": 2,
+      "auth": 12,
+      "contenttypes": 2,
+      "ownership": 2,
+      "sessions": 1
+    },
+    "resources_preserved": true,
+    "one_shot_container_removed": true,
+    "compose_config_passed": true,
+    "runtime_mount_network_inspection_obtained": false,
+    "http_lifecycle_reached": false,
+    "grant_revoke_reapply_completed": false,
+    "failure": "WHERE reorder evaluated has_sequence_privilege on non-sequence TOAST relation",
+    "fix": "CASE guards function evaluation by relkind",
+    "fixed_sql_readonly_postgresql_check": {
+      "passed": true,
+      "test_role_sequence_access_count": 0,
+      "bootstrap_sequence_access_count": 6,
+      "toast_objects": 84
+    },
+    "new_python_probe_postgresql_checked": false,
+    "local_tests": {
+      "discovered": 68,
+      "passed": 55,
+      "skipped": 13,
+      "failed": 0,
+      "seconds": 13.004
+    },
+    "main_beta_migrations": {
+      "contenttypes": 2
+    },
+    "main_web_postgres_ids_images_started_at_unchanged": true,
+    "existing_web_ready_status": 200,
+    "main_web_grants_unchanged": true,
+    "C2_executed": false,
+    "next_database_and_role": "mw_beta_test_e2_05_web_v2",
+    "next_name_authorized": false,
+    "backup_directory": ".change-backups/2026-10-01/E2-05-C1-fix"
   }
 }
