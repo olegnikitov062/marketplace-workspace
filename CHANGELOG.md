@@ -428,3 +428,51 @@ Git: ветка codex/e2-03, исходный комплект untracked; чуж
 Новые серверные артефакты: Git clone beta/app/repository/ (с .git и точной ревизией), две БД mw_beta_test_e2_04_recovery/mw_beta_test_e2_04_restore в только postgres-test, beta/backups/test/e2-04-20261001T074853Z.dump, SHA-256 9be0c324e2b8a0ed291ad71e9b07965ddac2f5a7f4fe836251726eac22fc22be. Они сохранены, не удалялись. Незавершённая offline build могла создать промежуточные Docker cache layers; prune не выполнялся. Старые restore DB/dump, runtime secrets/data и текущий web сохранены. Production/Caddy/FBS/WB API/Finkos, реальные источники/персональные данные, внешние сообщения и следующие задачи не затрагивались. Служебные DB credentials потреблялись внутри собственных контейнеров, значения не выводились/не экспортировались.
 
 Откат: сначала сравнить текущие hashes с manifest.json, сохранить позднюю работу; применить только обратные правки плана/документов/протокола из пяти исходных копий. CHANGELOG не сокращать, добавить отмену. На главной beta нет миграций/перезапусков для отката. Новую Git-копию и синтетические БД/dump удалять только по отдельному решению после проверки canonical path/ревизии/имён/отсутствия поздней работы; существующие данные/копии E2-03 не трогать. Не применять reset --hard/clean, root deletion, Docker prune или восстановление dump поверх живой БД.
+
+
+## 2026-10-01T11:24:21+03:00 (Europe/Moscow, UTC+3) — подготовлен локальный жизненный цикл аккаунта E2-05
+
+Основание: текущий запрос Олега только на E2-05, локальные коммиты beta разрешены; push выполняет Олег. До работы beta/HEAD 2cfec7e, дерево чистое. Read-only git ls-remote подтвердил remote beta e077a7a5aed263b50d1212176806220a7ca4f971: 2cfec7e на момент проверки не опубликован. Первоначальный сетевой отказ обходился разрешённым read-only запросом с расширенным сетевым доступом; сервер проекта не опрашивался. Состояние web/главной beta E2-03 взято из исходного протокола, не из новой live-проверки.
+
+Добавлены accounts: отдельный синтетический контакт, приглашение с SHA-256/сроком/снимком области, атомарное принятие/повтор/отзыв, штатные Django password forms/session login/logout/reset, операторская глобальная блокировка с инвалидацией старого пароля/session/reset, locmem-only доставка, CSRF и счётчики попыток/категории отказов. Схема владения и миграции E2-04 не менялись. Граница E2-06 заранее обозначена: только сессия входа и блокировка; TOTP/полное управление сессиями/экспорты не реализованы. Олег подтвердил предварительные 24 часа invitation/30 минут recovery, pending-only повтор той же области и операторскую блокировку без обхода приглашением; прочие лимиты/срок сессии и ограничения выдачи owner/присоединения существующей личности остаются консервативной тестовой конфигурацией, не принятой D3/D7.
+
+Точный состав связанного изменения (пути относительно C:/Users/krolo/Documents/marketplace-workspace):
+- `CHANGELOG.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `SYSTEM_PLAN.md`.
+- `backend/accounts/__init__.py`.
+- `backend/accounts/apps.py`.
+- `backend/accounts/backends.py`.
+- `backend/accounts/delivery.py`.
+- `backend/accounts/limits.py`.
+- `backend/accounts/management/__init__.py`.
+- `backend/accounts/management/commands/__init__.py`.
+- `backend/accounts/management/commands/block_personal_account.py`.
+- `backend/accounts/migrations/0001_initial.py`.
+- `backend/accounts/migrations/0002_immutable_invitation.py`.
+- `backend/accounts/migrations/__init__.py`.
+- `backend/accounts/models.py`.
+- `backend/accounts/policy.py`.
+- `backend/accounts/services.py`.
+- `backend/accounts/urls.py`.
+- `backend/accounts/views.py`.
+- `backend/config/accounts_local_checks.py`.
+- `backend/config/settings.py`.
+- `backend/config/urls.py`.
+- `backend/tests/test_account_transactions.py`.
+- `backend/tests/test_accounts.py`.
+- `backend/tests/test_runtime.py`.
+- `backend/tools/check_accounts_postgresql.py`.
+- `backend/tools/verify_account_recovery.py`.
+- `docs/E2-05_ACCOUNTS.md`.
+- `docs/RUNBOOK.md`.
+
+Исходные копии шести существующих файлов сохранены до изменения в `.change-backups/2026-10-01/E2-05-local/` с теми же относительными путями: backend/config/settings.py, backend/config/urls.py, backend/tests/test_runtime.py, SYSTEM_PLAN.md, docs/RUNBOOK.md, CHANGELOG.md. Существующие CRLF settings.py сохранены. Служебный manifest.json в этой папке хранит точные новые/изменённые пути и hashes; копии исключены Git. Новые файлы — все пути в составе, кроме этих шести. Генерируемые Python caches исключены Git; SQLite test schema была только в памяти и удалена тестовым runner.
+
+Проверки: существующий Python 3.14.7/Django 5.2.17, pip check без ошибок. 63 теста SQLite in-memory: 51 успешно, 12 явных skips (8 E2-05 PostgreSQL, 3 E2-04 PostgreSQL, 1 PostgreSQL runtime). Проверены действующий/истёкший/использованный/отозванный токены, замена, правильный/неправильный пароль, блокировка/старые сессии/reset, recovery одноразовость/истечение, две организации/запрет повышения и чужих связей, CSRF включая anonymous и Origin, отсутствие SMTP, лимиты, offline миграции/возврат. Django check, migration drift check, AST 24 Python-файлов и whitespace check с учётом CRLF прошли. Первые HTTP-тесты выявили отсутствие Origin у HTTPS test client и обработку пустого POST без Content-Type; исправлены тестовый запрос same-origin и допустимость пустого тела операций без полей, CSRF не отключался. Последний полный прогон успешен.
+
+E2-05 оставлена «На проверке»: PostgreSQL/конкуренция/триггеры/реальные миграции/restore и ограниченная web-role HTTP проверка не выполнялись. SYSTEM_PLAN обновлён по этому результату, протокол SYSTEM_ACCOUNT_CHECKS.json и docs/E2-05_ACCOUNTS.md содержат факты, ограничения и точный A/B план серверных проверок. Новые guarded scripts заранее отказываются от занятых тестовых БД; любые skips PostgreSQL-приёмки считаются ошибкой. Текущая web-роль SELECT-only недостаточна для lifecycle, её DML grants/backup/обновление web требуют отдельной подготовки и разрешения. Никаких установок, SSH, серверных миграций/перезапусков, push, production/main/Caddy/FBS/WB/Finkos, реальных источников, адресатов или данных.
+
+Изменение оформляется одним локальным коммитом beta автора Oleg: «Добавлен жизненный цикл личного аккаунта E2-05». Перед commit проверить точный index, hashes, отсутствие runtime/secret/backup-путей; после — автор, состав, чистоту дерева и неизменность main. Значения паролей/токенов/писем/секретов в журнал или протокол не включены.
+
+Откат: сначала сравнить текущие hashes с manifest.json и сохранить позднюю работу. Применять только обратный diff этого изменения, цельные шесть исходных копий — исключительно без поздних правок; CHANGELOG не сокращать, добавить отмену. Новые файлы удалять только по манифесту при совпадении hashes и отсутствии поздней работы/потребителей, сначала убрать регистрацию accounts/URL. Локальный commit отменять отдельным согласованным обратным изменением, не reset --hard/clean. accounts 0002 reverse/forward сохраняет строки, но временно снимает защиту; accounts zero удаляет свои таблицы и допустим только на пустой одноразовой схеме. Заполненную БД восстанавливать только в отдельную новую БД из проверенного dump; главная beta этим изменением не затронута. Будущие A/B БД/dump не удалять автоматически, старые E2-03/E2-04 артефакты сохранять.

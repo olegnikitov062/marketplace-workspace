@@ -12,9 +12,9 @@ ENVIRONMENT = EFFECTIVE["environment"]
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "web", "testserver"] if EFFECTIVE["mode"] == "test" else ["127.0.0.1", "localhost", "web"]
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
-INSTALLED_APPS = ["django.contrib.auth", "django.contrib.contenttypes", "rest_framework", "ownership"]
+INSTALLED_APPS = ["django.contrib.auth", "django.contrib.contenttypes", "django.contrib.sessions", "rest_framework", "ownership", "accounts"]
 AUTH_USER_MODEL = "ownership.User"
-MIDDLEWARE = ["django.middleware.security.SecurityMiddleware", "django.middleware.common.CommonMiddleware", "django.middleware.csrf.CsrfViewMiddleware"]
+MIDDLEWARE = ["django.middleware.security.SecurityMiddleware", "django.contrib.sessions.middleware.SessionMiddleware", "django.middleware.common.CommonMiddleware", "django.middleware.csrf.CsrfViewMiddleware", "django.contrib.auth.middleware.AuthenticationMiddleware"]
 DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql", "HOST": EFFECTIVE["DB_HOST"], "PORT": EFFECTIVE["DB_PORT"], "NAME": EFFECTIVE["DB_NAME"], "USER": EFFECTIVE["DB_USER"], "PASSWORD": DB_PASSWORD, "OPTIONS": {"connect_timeout": 5, "options": "-c statement_timeout=5000 -c lock_timeout=2000"}, "TEST": {"NAME": "test_" + EFFECTIVE["DB_NAME"]}}}
 REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": [], "DEFAULT_PERMISSION_CLASSES": [], "UNAUTHENTICATED_USER": None, "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"]}
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
@@ -29,4 +29,5 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 TIME_ZONE = "UTC"
 USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-# Ownership models only; no login/invitations, source adapters, worker, schedules or public registration.
+from accounts.policy import *  # noqa: F403 -- explicit shared synthetic E2-05 policy
+# Personal account lifecycle only; no MFA, RBAC, source adapters or public registration.

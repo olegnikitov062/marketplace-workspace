@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-10-01T11:24:21+03:00",
+  "timezone": "Europe/Moscow",
+  "task": "E2-05",
+  "scope": "Local beta branch, synthetic personal account lifecycle only",
+  "initial_local_head": "2cfec7e",
+  "remote_beta_observed": "e077a7a5aed263b50d1212176806220a7ca4f971",
+  "publication_checked_with": "git ls-remote origin refs/heads/beta (read-only)",
+  "initial_local_head_published": false,
+  "push_performed": false,
+  "server_contacted": false,
+  "postgresql_checked": false,
+  "beta_runtime_checked": false,
+  "main_beta_migrated": false,
+  "web_restarted": false,
+  "dependencies_installed": false,
+  "local_tools": {
+    "python": "3.14.7",
+    "django": "5.2.17",
+    "existing_venv": true,
+    "docker_in_path": false,
+    "psql_in_path": false,
+    "pip_check": "passed"
+  },
+  "local_tests": {
+    "backend": "SQLite in-memory, config.accounts_local_checks",
+    "discovered": 63,
+    "passed": 51,
+    "skipped": 12,
+    "failed": 0,
+    "skipped_groups": {
+      "E2-05 PostgreSQL concurrency/immutability": 8,
+      "E2-04 PostgreSQL guards/concurrency": 3,
+      "guarded PostgreSQL runtime role/database": 1
+    }
+  },
+  "passed": [
+    "valid invitation acceptance, password validation, fixed membership scope",
+    "expired/used/revoked invitations rejected",
+    "reinvitation invalidates old token and preserves exact scope",
+    "blocked pending account cannot accept or be reinvited",
+    "correct/wrong password, Django DB session, secure cookie, logout",
+    "blocking invalidates existing sessions/password/reset and preserves memberships",
+    "recovery single use and expiration; unknown/pending/blocked indistinguishable response",
+    "two organizations; no foreign owner authority or existing identity attachment",
+    "membership/user/role drift and added second membership reject acceptance",
+    "anonymous/authenticated CSRF on every mutation; foreign origin rejected",
+    "locmem only; SMTP override denied before connection; synthetic addresses only",
+    "shared attempt counters and window expiry; category-only denial records",
+    "SQLite account migration reverse/forward preserves rows; empty accounts zero/forward retains ownership",
+    "readiness requires account/session/ownership migrations",
+    "Django check; makemigrations --check --dry-run; pip check",
+    "AST parse of 24 added/changed Python sources; whitespace check with existing CRLF honored"
+  ],
+  "prepared_not_executed": [
+    "strict PostgreSQL suite: python -m tools.check_accounts_postgresql",
+    "PostgreSQL account migrations and row-lock/trigger verification",
+    "seed/dump/restore/verify using new mw_beta_test_e2_05_recovery and mw_beta_test_e2_05_restore",
+    "restricted web-role DML grants and HTTP runtime verification; needs separate concrete grant/deployment plan"
+  ],
+  "provisional_user_confirmed": {
+    "invitation_seconds": 86400,
+    "recovery_seconds": 1800,
+    "reinvite": "pending only, same membership scope",
+    "blocking": "trusted operator only; no invitation-based unblock"
+  },
+  "provisional_implementation_settings": {
+    "session_seconds": 28800,
+    "attempt_window_seconds": 900,
+    "principal_limit": 5,
+    "peer_limit": 30
+  },
+  "ownership_model_changed": false,
+  "E2_06_completed": false,
+  "minimal_session_dependency": "Django login/logout session and password-hash invalidation on block only",
+  "out_of_scope": [
+    "TOTP",
+    "MFA recovery",
+    "session inventory",
+    "export links",
+    "RBAC/Grant/RLS",
+    "UI",
+    "worker",
+    "real data or delivery",
+    "production/Caddy/FBS/WB/Finkos"
+  ],
+  "rollback_backups": ".change-backups/2026-10-01/E2-05-local",
+  "instructions": "docs/E2-05_ACCOUNTS.md"
+}
