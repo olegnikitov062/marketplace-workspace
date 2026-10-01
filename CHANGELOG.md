@@ -602,3 +602,26 @@ C1 probe создаёт только новую синтетическую БД/
 Все семь исходных файлов сохранены до изменения в .change-backups/2026-10-01/E2-05-C1-fix/ с теми же путями; manifest.json хранит исходные/итоговые SHA-256. Новых tracked файлов нет. Исходные окончания строк сохранены; журнал дополнен, чужой коммит дизайна сохранён. E2-05 остаётся «На проверке», C2 не разрешён. Коммит автора Oleg: «Исправлена проверка прав последовательностей после C1». Push делает Олег; агент push не выполняет. Пароли/токены/письма/персональные данные не записаны в отчёт.
 
 Откат: сверить manifest и поздние правки, сохранить текущую работу; применить только обратный diff к шести файлам кроме журнала, CHANGELOG дополнить отменой. Цельные копии использовать только при отсутствии поздней работы; не reset/clean. Серверную Git-копию автоматически не откатывать. Сохранить БД/NOLOGIN роль первой попытки и старые A/B/dumps; очистка только по отдельному решению после сверки точных имён/owner/меток/поздней работы. Главная beta не требует отката. Повтор v2 только из опубликованного Git после разрешения новой БД/роли; никаких ручных исправлений исходников или live restore.
+
+
+## 2026-10-01T13:37:23+03:00 (Europe/Moscow, UTC+3) — подтверждён C1 E2-05 под ограниченной LOGIN-ролью
+
+Основание: явное «разрешаю» Олега на повтор C1 с mw_beta_test_e2_05_web_v2 после проверки push 82b200465e15b447a43ed3d36d4522f11742bee1. Две попытки SSH banner timeout не выполняли команд; связь восстановлена. Чистый серверный beta checkout /home/adm_user/marketplace-workspace/beta/app/repository обновлён только Git pull --ff-only с 3f4a5b0 до 82b2004. requirements.lock совпал с исходным E2-03, существующий image sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b, без build/install. Compose config --quiet успешен. Runtime inspect краткоживущего контейнера подтвердил read-only Git backend /workspace и единственную marketplace-beta-test-private сеть.
+
+C1 PASS/exit 0 на PostgreSQL 17.11: создана только новая синтетическая БД/LOGIN-роль mw_beta_test_e2_05_web_v2, owner mw_beta_test_runner, фиксированные метки проверены. Миграции accounts:2/auth:12/contenttypes:2/ownership:2/sessions:1. Успешны точный ACL/guards audit, grant/revoke/reapply, настоящий limited LOGIN session_user=current_user, весь подготовленный HTTP lifecycle/CSRF scenario, 13 SQLSTATE 42501 отрицательных операций, чужих CONNECT=0 и отсутствие RESET ROLE эскалации. Callback доверенной блокировки отдельно runner; запросы после него limited LOGIN. Locmem/example.invalid, без реальной доставки/данных/источников, без вывода credential/token/link/email contents.
+
+Последующий readback: новая роль NOLOGIN/PASSWORD NULL, опасные атрибуты=false; Org=2/User=2/Membership=3/Invitation=2/Contact=1/AuthDenial=7, web guards=2. UPDATE User.password=true, is_active/Membership.role/migration UPDATE=false. Контейнер удалён, БД/роль сохранены. Первая БД/роль без _v2 сохранены с прежними 2/1/2/0 org/user/member/invite, guards=0, NOLOGIN/PASSWORD NULL. Старые A/B/dumps не использовались/не изменялись операциями этого запуска; их hashes повторно не читались.
+
+Main beta до/после contenttypes:2, main web SELECT-only на django_migrations и опасные атрибуты=false; ID/image/StartedAt web и двух PostgreSQL контейнеров совпали, readiness 200. Главные grants/migrations/restart/C2 не выполнялись. Полный 68 unittest-набор не повторялся: отдельный C1 дополняет прежние A/B 63/63 и dump/restore на 342192b. UI/browser/TLS/полный RBAC/E2-06 не проверялись и не реализовывались. E2-05 остаётся «На проверке» до main beta C2.
+
+Изменены только шесть локальных документов/протокол:
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `docs/E2-05_WEB_ROLE.md`.
+- `docs/E2-05_ACCOUNTS.md`.
+- `docs/RUNBOOK.md`.
+
+Причина: сохранить действительные результаты C1 и убрать его из недостающих проверок. Для C2 явно закреплена проверенная кодовая ревизия 82b2004 вместо позднего отчётного коммита. Исходные шесть файлов сохранены до изменения в .change-backups/2026-10-01/E2-05-C1-v2/ с теми же относительными путями; manifest.json хранит исходные/итоговые hashes. Новых tracked файлов нет, код/зависимости/ownership migrations не менялись. Проверены JSON, whitespace, неизменность всех 101 строк задач и append-only журнала. Локальный commit автора Oleg: «Подтверждён C1 E2-05 под ограниченной ролью». Push делает Олег; агент push не выполняет. Production/main/Caddy/FBS/WB/Finkos и прочие проекты не затронуты.
+
+Откат: сверить hashes и позднюю работу, сохранить текущие файлы, применить только обратный diff документов; CHANGELOG не сокращать, дополнить отменой. Цельные копии возвращать только при отсутствии поздних правок, без reset/clean. Серверный checkout/две C1 БД/NOLOGIN роли/dumps автоматически не откатывать и не удалять. Их очистка только по отдельному решению после проверки точных имён/меток/owner/поздней работы. Главная beta отката не требует. C2 требует отдельного разрешения: новый main dump/restore, main migrations/grants, Git worktree 82b2004, web-only restart и smoke; безопасный откат описан в E2-05_WEB_ROLE.md §4.

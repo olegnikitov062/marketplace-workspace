@@ -53,8 +53,7 @@
     "AST parse of 24 added/changed Python sources; whitespace check with existing CRLF honored"
   ],
   "prepared_not_executed": [
-    "C1 retry: published fix and separate permission for new synthetic mw_beta_test_e2_05_web_v2 database/LOGIN role; preserve original failed-run objects",
-    "C2: main backup/restore, migrations, web grants and restart require successful C1 and separate authorization"
+    "C2 only: main mw_beta backup and separate test restore, migrations and guarded web DML, detached Git worktree at verified 82b2004, web-only recreation and runtime smoke; separate authorization required"
   ],
   "provisional_user_confirmed": {
     "invitation_seconds": 86400,
@@ -91,7 +90,7 @@
     "published_at_initial_check": false
   },
   "beta_runtime_scope": "PostgreSQL test_runner + Django test client; existing E2-03 web health/metadata read-only",
-  "restricted_web_role_lifecycle_checked": false,
+  "restricted_web_role_lifecycle_checked": true,
   "source_revision": "342192b4296c84152f3da0934715816562c9fe9f",
   "source_branch": "beta",
   "server_git_checkout": "/home/adm_user/marketplace-workspace/beta/app/repository",
@@ -298,5 +297,69 @@
     "next_database_and_role": "mw_beta_test_e2_05_web_v2",
     "next_name_authorized": false,
     "backup_directory": ".change-backups/2026-10-01/E2-05-C1-fix"
+  },
+  "c1_v2": {
+    "timestamp": "2026-10-01T13:37:23+03:00",
+    "authorized": true,
+    "source_revision": "82b200465e15b447a43ed3d36d4522f11742bee1",
+    "publication_verified": true,
+    "source_delivery": "git pull --ff-only origin beta from 3f4a5b0",
+    "server_git_clean": true,
+    "result": "PASS",
+    "exit_code": 0,
+    "postgresql_version": "17.11",
+    "database": "mw_beta_test_e2_05_web_v2",
+    "owner": "mw_beta_test_runner",
+    "role": "mw_beta_test_e2_05_web_v2",
+    "role_login": false,
+    "role_password_is_null": true,
+    "unsafe_role_flags": false,
+    "other_databases_connect_count": 0,
+    "restricted_login_session_user_equals_current_user": true,
+    "privilege_contract_checked": true,
+    "grant_revoke_reapply_passed": true,
+    "http_lifecycle_csrf_passed": true,
+    "sql_denials_passed": true,
+    "sql_denial_count": 13,
+    "runtime_mount": "/home/adm_user/marketplace-workspace/beta/app/repository/backend:/workspace:ro",
+    "runtime_networks": [
+      "marketplace-beta-test-private"
+    ],
+    "runtime_inspect_obtained": true,
+    "runtime_image_id": "sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b",
+    "compose_config_passed": true,
+    "one_shot_container_removed": true,
+    "database_role_preserved": true,
+    "role_and_database_markers_verified": true,
+    "counts": {
+      "organizations": 2,
+      "users": 2,
+      "memberships": 3,
+      "invitations": 2,
+      "contacts": 1,
+      "auth_denials": 7,
+      "web_guard_triggers": 2
+    },
+    "migrations": {
+      "accounts": 2,
+      "auth": 12,
+      "contenttypes": 2,
+      "ownership": 2,
+      "sessions": 1
+    },
+    "first_attempt_counts_and_role_unchanged": true,
+    "main_database_migrations": {
+      "contenttypes": 2
+    },
+    "web_and_postgresql_ids_images_started_at_unchanged": true,
+    "existing_web_ready_status": 200,
+    "main_web_grants_unchanged": true,
+    "main_beta_migrated": false,
+    "web_restarted": false,
+    "C2_authorized": false,
+    "C2_executed": false,
+    "full_68_test_suite_rerun": false,
+    "browser_tls_checked": false,
+    "backup_directory": ".change-backups/2026-10-01/E2-05-C1-v2"
   }
 }

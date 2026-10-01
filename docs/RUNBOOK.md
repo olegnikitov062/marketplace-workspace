@@ -78,3 +78,10 @@ API ready проверяется внутри web, публичных порто
 Исполняемый список DML/column grants и защитных row-lock triggers: `backend/tools/account_web_grants.py`; guarded `tools.manage_account_web_grants` по умолчанию только печатает план без подключения. [E2-05_WEB_ROLE.md](E2-05_WEB_ROLE.md) задаёт C1/C2, точные команды, предусловия и откат. C1 после push и отдельного разрешения создаёт только `mw_beta_test_e2_05_web` (БД/роль), проверяет HTTP lifecycle под настоящей ограниченной LOGIN-ролью, revoke/reapply и SQL-отказы, сохраняет БД и отключённую роль. Главная beta/web не входят в C1.
 
 C2 — отдельное разрешение после C1 той же ревизии: новый основной dump и проверка restore, detached Git worktree, main migration/grant, пересоздание только web с read-only source mount существующего образа. Не использовать общий up/build/prune, не передавать исходники архивом и не менять server source вручную. Сейчас C1/C2 не выполнены; локальные 55 успешных тестов и 12 PostgreSQL-пропусков не подтверждают новый SQL-контракт. Состояние: SYSTEM_ACCOUNT_CHECKS.json; прежние результаты A/B сохраняются.
+
+
+## 2026-10-01T13:37:23+03:00 — C1 _v2 успешно выполнен
+
+Подробный протокол: [E2-05_WEB_ROLE.md, раздел 7](E2-05_WEB_ROLE.md). На опубликованной 82b2004, PostgreSQL 17.11, отдельный C1 завершился PASS: настоящий ограниченный LOGIN, exact DML/guards, grant/revoke/reapply, HTTP lifecycle/CSRF и 13 SQL-отказов. Runtime source mount read-only/test-private подтверждён. БД/роль mw_beta_test_e2_05_web_v2 сохранены, роль NOLOGIN/PASSWORD NULL, контейнер удалён; первая попытка сохранена. Оба имени заняты, probe повторно не запускать.
+
+Главная beta/contenttypes:2, web/два PostgreSQL контейнера неизменны, readiness 200. C2 ещё не разрешён/не выполнен: требуются новый main backup/restore, main migrations/grants, фиксированный Git worktree 82b2004 и обновление только web с runtime smoke. Точные команды/откат в E2-05_WEB_ROLE.md §3/4. E2-05 остаётся «На проверке» до основной beta-проверки; A/B 63 PostgreSQL-теста и C1 — разные проверки, полный набор 68 в этом запуске не повторялся.
