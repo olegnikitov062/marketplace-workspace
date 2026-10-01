@@ -1,6 +1,6 @@
-# E2-03 — проверенный запуск технической основы
+# Запуск beta — E2-06 и история технической основы
 
-Актуально 01.10.2026 после E2-05 C2: основной web/БД beta обновлены до E2-05 из Git worktree 82b2004; прежний E2-03 image используется только как среда зависимостей. Ниже сохранена история E2-03. Текущий запуск и откат — в конце документа; base-only запуск web возвращает старые исходники.
+Актуально после отдельно разрешённого E2-06 S2 (01.10.2026): основной web/БД beta обновлены до E2-06, read-only Git source 19a6d6a, отдельный MFA dependency image и ключ. Текущие команды и безопасный maintenance-откат — в последнем разделе. Исторические E2-03/E2-05 команды ниже не выполнять: base-only/accounts overlay возвращают вход без MFA.
 
 30.09.2026, Europe/Moscow (UTC+3). D1 сохранено. После отдельного разрешения Олега установлены зависимости нового проекта и запущена изолированная beta. E2-04 и следующие задачи не начинались.
 
@@ -44,11 +44,11 @@ Web: 384 MiB/0.25 CPU; PostgreSQL: 512 MiB/0.5 CPU; тестовый PostgreSQL:
 
 
 
-## Текущая beta после E2-05 C2 — 2026-10-01T13:55:12+03:00
+## Историческая beta после E2-05 C2 — 2026-10-01T13:55:12+03:00
 
 Серверный основной Git checkout: `/home/adm_user/marketplace-workspace/beta/app/repository`, beta b1a9450 на момент применения. Работающий backend зафиксирован отдельно: `/home/adm_user/marketplace-workspace/beta/app/releases/82b200465e15b447a43ed3d36d4522f11742bee1/backend` (read-only), detached HEAD 82b200465e15b447a43ed3d36d4522f11742bee1; последующие pull основного checkout не меняют этот mount. Image: `marketplace-workspace/backend:e2-03-0210f27a7ab1`, ID sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b; requirements.lock совпал, новой сборки не было. Основные миграции accounts:2/auth:12/contenttypes:2/ownership:2/sessions:1 и точный DML/guard contract применены. Web ID b2d0be7a01c46d46d584b247394fca7e56021ef797d26840cbf75d355614faf8, StartedAt 2026-10-01T10:47:55.161037866Z, только private, опубликованных портов нет.
 
-Команды ниже воспроизводят **текущую конфигурацию web**, не являются разрешением будущего рестарта. Использовать после проверки поздних изменений и отдельного задания; не запускать общий prepare/start/bootstrap/up всего проекта:
+Архивные команды ниже воспроизводили E2-05; **после E2-06 их запуск запрещён**. Для текущего запуска и отката использовать только последний раздел E2-06:
 
 ```sh
 cd /home/adm_user/marketplace-workspace/beta
@@ -63,4 +63,37 @@ dc exec -T web python -m tools.verify_account_web_runtime </dev/null
 
 C2 подтвердил actual SQL role/ACL/guards, live/ready 200, session 401/login GET 405. Полный lifecycle под ограниченной ролью отдельно подтверждён C1. В основной БД пока нет организаций/аккаунтов/членств/контактов/приглашений/сессий. TEMPORARY=true у main web сохранено из исходной политики; public routes/TLS/реальных писем/источников нет. Оба PostgreSQL не пересоздавались, C1-роли отключены. Startup/ownership JSON старых этапов сохраняются как исторические snapshots; текущее доказательство — SYSTEM_ACCOUNT_CHECKS.json, секция c2.
 
-Перед C2 сохранены новый `/home/adm_user/marketplace-workspace/beta/backups/database/e2-05-main-before-20261001T104501Z.dump` и соседний `.acl.json` (оба 0600), restore в mw_beta_test_e2_05_main_before сверён. Hashes/точный состав/ограничения — docs/E2-05_WEB_ROLE.md §8. Откат web: base-only `dc up -d --no-deps --force-recreate web`, затем guarded revoke из этого worktree по §4; только после проверки поздней работы/разрешения. Добавочную схему/данные/worktree/dumps сохранять, zero/live restore не применять. Удалять release, который смонтирован web, нельзя.
+Перед C2 сохранены новый `/home/adm_user/marketplace-workspace/beta/backups/database/e2-05-main-before-20261001T104501Z.dump` и соседний `.acl.json` (оба 0600), restore в mw_beta_test_e2_05_main_before сверён. Hashes/точный состав/ограничения — docs/E2-05_WEB_ROLE.md §8. Исторический E2-05 base-only откат после включения MFA запрещён; использовать только maintenance из актуального раздела E2-06 ниже. Добавочную схему/данные/worktree/dumps сохранять, zero/live restore не применять. Удалять release, который смонтирован web, нельзя.
+
+
+## Текущая beta после E2-06 S2 — 2026-10-01T17:58:26+03:00
+
+Рабочий код: `/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e/backend` (read-only), SHA `19a6d6a9bbdd06c683f68f438215dd99cba6204e`. Dependency image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72`; опубликованный Git checkout f4f6059. Web `42ea5c212f1fc3062df51214ca97428e4613741adb8fac7897e494faaeb8e106`, StartedAt `2026-10-01T14:48:24.953976075Z`. PostgreSQL контейнеры прежние, только private сеть, host ports отсутствуют. Django migrations: account_security:2/accounts:2/auth:12/contenttypes:2/otp_static:3/otp_totp:3/ownership:2/sessions:1/two_factor:9 (squash учитывает заменённые записи).
+
+Обычный запуск требует **compose.security-web.json + SECURITY_SOURCE + SECURITY_IMAGE**. Accounts overlay/ACCOUNTS_SOURCE и base-only запуск больше не являются допустимым запуском/откатом: они возвращают обход MFA. Следующие команды воспроизводят проверенную конфигурацию, но не разрешают будущий рестарт без задания. Не запускать общий up/prepare/start/bootstrap:
+
+```sh
+base=/home/adm_user/marketplace-workspace/beta
+release="$base/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e"
+export BACKEND_IMAGE=marketplace-workspace/backend:e2-03-0210f27a7ab1
+export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72
+export SECURITY_SOURCE="$release/backend"
+dc() { docker compose --project-name marketplace-beta --env-file /dev/null --project-directory "$base/deploy" -f "$base/deploy/compose.json" "$@"; }
+dc -f "$release/beta/deploy/compose.security-web.json" config --quiet
+dc -f "$release/beta/deploy/compose.security-web.json" up -d --no-deps web
+dc -f "$release/beta/deploy/compose.security-web.json" exec -T web python -m tools.verify_security_web_runtime </dev/null
+```
+
+BACKEND_IMAGE нужен базовой интерполяции и maintenance; SECURITY_IMAGE определяет обычный MFA web. Ключ `/home/adm_user/marketplace-workspace/beta/config/secrets/mfa_encryption_key` монтируется read-only только web/migrate. Существующий server deploy/compose.json не редактировался; overlay берётся из опубликованного Git release. Production/Caddy/TLS/frontend/worker не менялись.
+
+Безопасный откат при отказе: оставить схему/ключи/данные и закрыть вход проверенным maintenance либо остановить только web. При тех же base/release/env/dc:
+
+```sh
+dc -f "$release/beta/deploy/compose.security-maintenance.json" up -d --no-deps web
+```
+
+Maintenance на старом закреплённом dependency image с E2-06 source даёт 503 auth/business/ready, 200 live. Старый E2-05 web запускать нельзя; новый ACL revoke допустим только при отключённом потребителе, обычный старый revoke не применять. Zero, restore поверх живой БД, удаление mounted release/ключей/БД/dumps запрещены.
+
+До применения сохранены dump `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump`, `.acl.json` и `.snapshot.json` (0600), все 18 таблиц сверены с `mw_beta_test_e2_06_main_before`; имя занято. Копия ключа `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-main-key-envelope/envelope.json`, пароль отдельно `/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-recovery/backup-passphrase`, проверенный восстановленный файл `/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-restored/key`; все 0600/UID10001, каталоги 0700. Это серверные закрытые файлы, не подтверждённая независимая копия у Олега. Не включать значения/ключевые fingerprints в отчёты. Telegram/реальные owner proof/передача не выполнялись.
+
+Runtime/анонимный Chromium smoke успешны, аккаунты/организации/членства/факторы/permits/codes отсутствуют; 2 анонимные зашифрованные wizard sessions от проверок. Все oneoff/browser/tunnel закрыты. Полные критерии E2-06 остаются «На проверке»; точный протокол и границы — SYSTEM_SECURITY_CHECKS.json/s2 и docs/E2-06_SESSIONS_MFA.md.

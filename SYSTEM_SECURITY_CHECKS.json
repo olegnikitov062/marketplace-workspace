@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-01T17:31:37+03:00",
+  "checked_at": "2026-10-01T17:58:26+03:00",
   "task": "E2-06",
   "status": "На проверке",
-  "environment": "Local Windows checks plus authorized PostgreSQL 17.11 beta test cluster; corrected full suite PASS, browser/operator CLI and S2 remain open",
+  "environment": "Local checks, PostgreSQL 17.11 S1 and explicitly authorized main-beta S2; deployment PASS, task remains under review",
   "source": {
     "branch": "beta",
     "preparation_commit": "5eb4b42",
-    "published_beta_verified": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
+    "published_beta_verified": "f4f6059a14ebeed5c8341174d510812d838f5f49",
     "implementation_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
     "push_performed": false,
     "server_contacted": true
@@ -100,10 +100,10 @@
     "SQLite forward/reverse migration behavior; restore quarantine without membership change"
   ],
   "not_verified": [
-    "Real browser interaction with MFA pages",
-    "Complete owner operator CLI with actual operator identity and privately provisioned emergency secret; no real account or secret issued",
-    "Main beta E2-06 backup/restore/key/migrations/grants/runtime (S2 requires separate approval)",
-    "Actual owner key custody/Telegram copy and general disaster recovery E2-15; synthetic key rehearsal does not prove them"
+    "Full browser enrollment/TOTP/recovery/device/session lifecycle",
+    "Successful operator CLI with actual separate operator identity and private proof; real owner provisioning requires explicit separate request",
+    "Owner custody of independently retained encrypted key backup and separate passphrase; Telegram not used",
+    "Full export/RBAC/RLS remain adjacent-task dependencies"
   ],
   "adjacent_task_dependencies": {
     "full_permissions": "E2-07",
@@ -113,11 +113,12 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes this documentation commit himself",
-    "S2 only after remaining S1 acceptance and separate approval: main backup/restore/key/migrator grants/web-only switch",
-    "Owner emergency-secret provisioning/recovery only upon separate explicit request"
+    "Oleg reviews and pushes this status/documentation commit himself",
+    "Real owner emergency-secret provisioning/recovery only on a separate explicit request",
+    "Transfer of encrypted key envelope and separate passphrase requires a private handoff arrangement; no secret values in chat",
+    "Any additional isolated operator/browser rehearsal infrastructure must first be described with exact new resources; old occupied probes must not be reused"
   ],
-  "secret_outputs": "No real accounts/messages/main-beta keys/Telegram transfers. Synthetic S1 keys and backups created privately outside Git and database; no values included in reports.",
+  "secret_outputs": "No real accounts or external messages. Main beta TOTP key and encrypted envelope created privately outside Git/DB, independent file restore checked. No key values/fingerprints, passwords, recovery codes, tokens, cookies or personal data in reports/commits; Telegram transfer and owner custody not performed.",
   "s0_s1": {
     "authorized": "explicit S0/S1 approval in current chat; S2 not authorized",
     "status": "Historical initial S1 suite had one failure; corrected PostgreSQL retest PASS below; browser and complete operator CLI remain open",
@@ -276,5 +277,249 @@
     "oneoff_containers_remaining": false,
     "s2_executed": false,
     "limits": "Prior limited LOGIN/17 SQL denials and restore evidence stays pinned to 3db1c0c; no claim of rerunning those probes or completing browser/operator CLI/S2/business export."
+  },
+  "s2": {
+    "checked_at": "2026-10-01T17:58:26+03:00",
+    "authorized": "Explicit current-chat S2 approval after published f4f6059 protocol; real owner emergency-secret provisioning excluded",
+    "result": "S2 deployment/runtime PASS; E2-06 remains under review",
+    "repository_head": "f4f6059a14ebeed5c8341174d510812d838f5f49",
+    "runtime_code_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
+    "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+    "new_image_built": false,
+    "source_delivery": "published beta Git only; immutable detached worktree read-only",
+    "backup_restore": {
+      "result": "PASS",
+      "dump": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump",
+      "bytes": 75491,
+      "mode": "0o600",
+      "tables": 18,
+      "counts": [
+        0,
+        0,
+        0
+      ],
+      "migrations": {
+        "accounts": 2,
+        "ownership": 2,
+        "auth": 12,
+        "sessions": 1,
+        "contenttypes": 2
+      },
+      "restore": "mw_beta_test_e2_06_main_before",
+      "rows_equal": true,
+      "main_acl_unchanged": true
+    },
+    "key_recovery": {
+      "result": "PASS",
+      "runtime": "/home/adm_user/marketplace-workspace/beta/config/secrets/mfa_encryption_key",
+      "envelope": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-main-key-envelope/envelope.json",
+      "passphrase": "/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-recovery/backup-passphrase",
+      "restored": "/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-restored/key",
+      "mode": "0600",
+      "uid": 10001,
+      "gid": 10001,
+      "independent_restore": true,
+      "telegram_transfer": false,
+      "owner_custody_verified": false
+    },
+    "preapply": {
+      "compose_isolation": true,
+      "requirements_lock_equal": true,
+      "django_check": true,
+      "migration_plan_reviewed": true,
+      "account_security_forward_sql_and_runpython_source_reviewed": true,
+      "column_grant_delta_reviewed": true
+    },
+    "apply": {
+      "maintenance_before_migration": "PASS: live 200, auth/business/ready 503, no-store",
+      "new_migration_operations": 9,
+      "new_migration_records": 17,
+      "total_migration_records": 36,
+      "two_factor_squash_explanation": "8 replaced records plus the squashed record; 9 records represent one applied no-op migration",
+      "grant_delta_committed_and_verified": true,
+      "runtime_smoke": "PASS: actual mw_beta_web identity, exact SQL ACL/guards, live/ready 200, anonymous session 401, legacy login GET 405, MFA login GET 200",
+      "web_recreated_only": true,
+      "postgres_containers_unchanged": true
+    },
+    "browser": {
+      "tool": "existing Playwright CLI 0.1.18 / installed Chromium",
+      "new_components_installed": false,
+      "scope": "anonymous main-beta pages over temporary localhost SSH tunnel; not full MFA lifecycle or public TLS",
+      "login_page_and_recovery_navigation": "PASS",
+      "required_recovery_fields": 3,
+      "empty_form_rejected": true,
+      "anonymous_session_status": 401,
+      "csrf_missing_status": 403,
+      "login_and_operator_form_status": 200,
+      "no_store": true,
+      "only_expected_console_errors": "401 and 403",
+      "browser_closed": true,
+      "tunnel_closed": true,
+      "full_mfa_lifecycle": false
+    },
+    "operator_commands": {
+      "web_role_denied_prepare_and_issue": true,
+      "successful_full_cli_recovery_tested": false,
+      "real_owner_proof_or_permit_issued": false
+    },
+    "final_readback": {
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "migrations": {
+        "two_factor": 9,
+        "accounts": 2,
+        "otp_static": 3,
+        "ownership": 2,
+        "auth": 12,
+        "otp_totp": 3,
+        "sessions": 1,
+        "contenttypes": 2,
+        "account_security": 2
+      },
+      "sessions_encrypted": true,
+      "anonymous_sessions": 2,
+      "locmem_only": true,
+      "external_flags_disabled": true,
+      "plaintext_otp_tables_empty": true,
+      "public_export_probe_disabled": true,
+      "backup_files": [
+        {
+          "path": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump",
+          "mode": "0o600",
+          "bytes": 75491,
+          "sha256": "043b4590f21707493f8de1c5e87955fe47dbc2aa261b41f762199408e8906138"
+        },
+        {
+          "path": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump.acl.json",
+          "mode": "0o600",
+          "bytes": 22202,
+          "sha256": "2e616398c144516963a16f5a4d6d0a3848e10113cfe939787faa5403363a6987"
+        },
+        {
+          "path": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump.snapshot.json",
+          "mode": "0o600",
+          "bytes": 1498,
+          "sha256": "384b9bc14649b3a37de34ecc2b3993a17999cb3d26b8a718841a517bfb92c4f5"
+        }
+      ],
+      "web": {
+        "id": "42ea5c212f1fc3062df51214ca97428e4613741adb8fac7897e494faaeb8e106",
+        "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+        "started": "2026-10-01T14:48:24.953976075Z",
+        "source": "/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e/backend",
+        "source_readonly": true,
+        "key_readonly": true
+      },
+      "oneoffs_absent": true,
+      "git_clean": true,
+      "local_tunnel_closed": true
+    },
+    "container_metadata": [
+      {
+        "service": "web",
+        "id": "42ea5c212f1fc3062df51214ca97428e4613741adb8fac7897e494faaeb8e106",
+        "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+        "started": "2026-10-01T14:48:24.953976075Z",
+        "networks": [
+          "marketplace-beta-private"
+        ],
+        "ports": {
+          "8000/tcp": null
+        },
+        "mounts": [
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/db_web_password",
+            "target": "/run/secrets/db_web_password",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/django_secret_key",
+            "target": "/run/secrets/django_secret_key",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/mfa_encryption_key",
+            "target": "/run/secrets/mfa_encryption_key",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e/backend",
+            "target": "/workspace",
+            "rw": false
+          }
+        ]
+      },
+      {
+        "service": "postgres",
+        "id": "91be5743052654c70d705931cef4836010ab8ccfb6ec762ee6c64b65fe7ba1aa",
+        "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+        "started": "2026-09-30T12:54:18.474323573Z",
+        "networks": [
+          "marketplace-beta-private"
+        ],
+        "ports": {
+          "5432/tcp": null
+        },
+        "mounts": [
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/backups/database",
+            "target": "/backups",
+            "rw": true
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/db_bootstrap_password",
+            "target": "/run/secrets/db_bootstrap_password",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/data/postgres",
+            "target": "/var/lib/postgresql/data",
+            "rw": true
+          }
+        ]
+      },
+      {
+        "service": "postgres-test",
+        "id": "3ff21600f2cf72f786937471ced078d98d2467ac37160d81946386f129aed444",
+        "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+        "started": "2026-09-30T12:54:18.485908353Z",
+        "networks": [
+          "marketplace-beta-test-private"
+        ],
+        "ports": {
+          "5432/tcp": null
+        },
+        "mounts": [
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/backups/test",
+            "target": "/backups",
+            "rw": true
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/db_test_bootstrap_password",
+            "target": "/run/secrets/db_test_bootstrap_password",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/data/postgres-test",
+            "target": "/var/lib/postgresql/data",
+            "rw": true
+          }
+        ]
+      }
+    ],
+    "rollback": "Only reviewed deny-auth maintenance on old dependency image with E2-06 source, or stop beta web; no E2-05/base-only fallback or live DB restore",
+    "remaining": [
+      "Full browser enrollment/TOTP/recovery/device/session lifecycle",
+      "Successful operator CLI with actual separate operator identity and private proof; real owner provisioning requires explicit separate request",
+      "Owner custody of independently retained encrypted key backup and separate passphrase; Telegram not used",
+      "Full export/RBAC/RLS remain adjacent-task dependencies"
+    ]
   }
 }

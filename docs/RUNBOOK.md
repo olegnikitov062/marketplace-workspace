@@ -1,6 +1,6 @@
 # E2-03 — инструкция воспроизведения
 
-Текущее состояние после E2-05 C2 (01.10.2026): основной web и БД обновлены, backend закреплён Git worktree 82b2004. Для обычного запуска нужен compose.accounts-web.json и ACCOUNTS_SOURCE — команды в SYSTEM_STARTUP.md. Исторический base-only запуск ниже означает возврат к E2-03 image-коду, а не текущую beta.
+Текущее состояние после отдельно разрешённого E2-06 S2 (01.10.2026): основной web/БД обновлены, backend закреплён read-only Git worktree 19a6d6a, используется MFA dependency image и отдельный ключ. Обычный запуск требует compose.security-web.json, SECURITY_SOURCE и SECURITY_IMAGE; команды в актуальном разделе SYSTEM_STARTUP.md. Исторические base-only/accounts overlay и E2-05 откат ниже запрещены после MFA.
 
 Проверенная сборка e2-03-0210f27a7ab1. Production и внешние интеграции запрещены. Только новый проект; команды не изменяют другие Compose projects или Caddy.
 
@@ -99,3 +99,18 @@ C2 — отдельное разрешение после C1 той же рев�
 ## E2-06 — только локальная реализация (2026-10-01T15:31:57+03:00)
 
 Серверное состояние E2-05 выше не изменено. Новый код требует отдельного ключа и нового dependency image; нельзя запускать его старым accounts overlay. Принятые правила и проверяемые этапы S0/S1/S2: [E2-06_SESSIONS_MFA.md](E2-06_SESSIONS_MFA.md); результаты: [SYSTEM_SECURITY_CHECKS.json](../SYSTEM_SECURITY_CHECKS.json). Нужны отдельные разрешения до любых SSH/сборок/БД/ролей/ключей/миграций/перезапусков. После включения MFA возврат к обычному E2-05/base-only web запрещён; безопасный fallback — проверенный deny-auth maintenance либо остановленный beta web. Полный restore требует сверки полномочий и карантина сессий/факторов, не прямого включения старого dump.
+
+
+## E2-06: применён S2 — 2026-10-01T17:58:26+03:00
+
+По явному текущему разрешению Олега основная beta обновлена до E2-06. Опубликованный протокол f4f6059 получен Git fast-forward; рабочий код закреплён на проверенном 19a6d6a, read-only. Использован существующий dependency image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72` с совпавшим lock; новых установок/сборок нет. Новый dump `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump` (0600, 75491 bytes), соседние `.acl.json`/`.snapshot.json` и restore в `mw_beta_test_e2_06_main_before` сохранены. Все 18 исходных таблиц совпали; основной ACL до применения не менялся.
+
+Отдельный beta TOTP key вне БД/Git и его парольная encrypted envelope созданы в закрытых файлах 0600/UID10001. Копия восстановлена в другой файл без mount оригинала, равенство проверено без вывода значений. Это техническое восстановление на сервере, не независимое хранение у Олега: Telegram не использован, пароль и envelope ещё не переданы владельцу. Аварийный секрет владельца не создавался.
+
+Проверены Compose/lock/check/план и SQL; RunPython guards прочитаны в опубликованном коде (sqlmigrate их не разворачивает). Maintenance реально закрыл auth/business/ready с 503 и оставил live 200; затем применены 9 операций миграций и точный column-grant delta. В django_migrations теперь 36 записей: two_factor squash записал 8 заменённых плюс собственную, всего 17 новых записей при 9 операциях. Обновлён только web; оба PostgreSQL сохранили ID/image/StartedAt/mounts/networks/ports.
+
+S2 runtime PASS: реальная mw_beta_web, точные ACL/guards, live/ready 200, session 401, старый login GET 405, MFA login GET 200. Chromium проверил анонимные страницы входа/восстановления, обязательные поля, CSRF 403 и no-store через временный localhost SSH-туннель; browser/tunnel закрыты. Это не полный браузерный MFA lifecycle и не публичный TLS. Оба operator CLI отклонены из web-роли; положительная процедура с отдельным секретом не выполнялась.
+
+Финально users/organizations/memberships/authenticators/recovery permits/codes = 0; две анонимные wizard sessions зашифрованы, не являются полноценными аккаунтными сессиями. Штатные plaintext OTP таблицы пусты, locmem и выключенные внешние flags подтверждены; public synthetic export probe выключен. Все oneoff контейнеры удалены. Полный suite 63/63 без skips относится к предыдущему S1 на том же коде и в S2 повторно не запускался. E2-06 остаётся «На проверке»: полный браузерный сценарий, положительный operator CLI, фактическое хранение ключа владельцем и полный экспорт ещё не закрыты; E2-07/E2-08/E5-07 не реализованы.
+
+Текущий запуск/maintenance-откат: [SYSTEM_STARTUP.md](../SYSTEM_STARTUP.md), последний раздел E2-06. Все старые E2-05/E2-06 probes и новая mw_beta_test_e2_06_main_before заняты; не выполнять повторное создание/seed/restore поверх них. Новых разрешений на production/Caddy/реальные учётные записи/передачу секретов эта запись не даёт.
