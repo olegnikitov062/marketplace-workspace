@@ -44,9 +44,9 @@ backend/.venv/Scripts/python.exe -m pip check
 
 Итог: 14 тестов обнаружено, 11 выполнено успешно, 3 PostgreSQL-теста явно пропущены (FK, история/DELETE, конкуренция). Включены две организации/два кабинета, один пользователь с разными правами, штатные и чужие связи, ограничения состояния/роли, архивирование и сохранение версий; 0002 назад/вперёд сохраняет синтетическую архивную строку, 0001 → zero → forward проверяется только на пустой одноразовой тестовой схеме. System check и migration drift check успешны, pip check успешен. SQLite не проверяет PostgreSQL SQL, составные FK/триггеры или блокировки; её успешный откат не доказывает PostgreSQL rollback/restore.
 
-## Точные необходимые действия на beta — только после отдельного разрешения
+## Исторический план beta-проверки от 30.09.2026
 
-Текущий сервер не опрашивался и не менялся. Следующая проверка требует отдельно разрешить перечисленные операции внутри `/home/adm_user/marketplace-workspace/beta/`, project `marketplace-beta`:
+На момент подготовки 30.09.2026 сервер не опрашивался и не менялся. Ниже сохранён первоначальный план; фактическое выполнение 01.10.2026 и новый порядок только через Git описаны далее. План требовал отдельно разрешить перечисленные операции внутри `/home/adm_user/marketplace-workspace/beta/`, project `marketplace-beta`:
 
 1. Прочитать только labels/IDs/mounts своего проекта, версии PostgreSQL и список имён своих БД/миграций; подтвердить отсутствие прежней auth_user и ранее применённой пользовательской модели (при наличии остановиться, ничего не переносить); сверить canonical path, внутренние сети, отсутствие чужих mounts, свободные ресурсы и отсутствие занятых тестовых имён. Старый `mw_beta_test_restore` и `backups/test/migrations-before.dump` E2-03 сохранить. При существующей `test_mw_beta_test` остановиться, выяснить владельца; Django `--noinput` нельзя разрешать удалить чужую тестовую работу.
 2. Сохранить нынешние исходники beta в новый датированный source backup; передать только проверенные backend-исходники/миграции/тесты по точному манифесту и построить отдельный immutable backend image с существующим lock/digest. Не выполнять старый prepare/bootstrap, start/reproduce/verify_migrations автоматически; не заменять текущий web image или его контейнер. Старый package_beta.py маркирует архивы e2-03 — для E2-04 нужен отдельно проверенный манифест, старый архив не годится.
@@ -85,3 +85,24 @@ dc run --rm test python -m tools.verify_ownership_recovery verify
 Исходные локальные копии четырёх существующих файлов: `.change-backups/2026-09-30/E2-04/{settings.py,SYSTEM_PLAN.md,CHANGELOG.md,RUNBOOK.md}`. Промежуточные версии новых файлов — `iteration-1/`. Точный перечень файлов и SHA-256 результата — `manifest.json` там же. Перед откатом сравнить текущие hashes и сохранить позднюю работу; вернуть только изменения E2-04 в settings/плане/RUNBOOK. CHANGELOG не сокращать, добавить отмену. Новые исходники/документ/протокол удалять только по манифесту, при совпадении и отсутствии поздних правок; сначала убрать ссылки/регистрацию приложения. Резервные копии сохранять до завершения отката. Не использовать git reset/clean, общий prune или рекурсивное удаление корня.
 
 Исторические пути E2-03 сверены с `.change-backups/2026-09-30/workspace-migration/manifest.json`; соответствующие копии находятся в marketplace-workspace, Finkos не изменялся. Старые вспомогательные скрипты не запускались.
+
+
+## Фактическая PostgreSQL-проверка 01.10.2026
+
+После текущего разрешения Олега проверена публикация beta e077a7a5aed263b50d1212176806220a7ca4f971 и SSH-доступ. Исходники получены только `git clone --single-branch --branch beta` в `/home/adm_user/marketplace-workspace/beta/app/repository`. Git-копия чиста. Никакой передачи source-архивов или ручных изменений серверного кода; первоначальный пункт 2 выше заменён этим Git-порядком.
+
+17 тестов на PostgreSQL 17.11 прошли без пропусков, включая FK/триггеры/конкуренцию и обратные миграции. Seed создал две новые собственные синтетические БД, новый dump восстановлен в отдельную пустую restore БД. Probe подтвердил полное равенство ownership-строк/миграций и повторный отказ чужой FK/перезаписи/DELETE истории. В восстановленной БД подтверждены 3 составных FK, 15 триггеров, 2 организации/2 членства/2 исторические строки. Django test DB удалена, одноразовые контейнеры удалены.
+
+Offline image build остановилась на отсутствующем кэше pip, новые компоненты не установлены. Вместо новой сборки тесты использовали уже проверенный образ E2-03 с совпадающим requirements.lock, Git backend монтировался `/workspace:ro`. Это проверка новой модели в реальной PostgreSQL, а не выпуск нового web-образа. Основная mw_beta и работающий web остались E2-03; ID/image/StartedAt web неизменны. Публичные маршруты, RLS, вход и следующие задачи отсутствуют.
+
+Повторяемые команды после проверки чистой ревизии и отсутствия занятых имён (готовый recovery seed повторно не запускать):
+
+```sh
+cd /home/adm_user/marketplace-workspace/beta
+export BACKEND_IMAGE=marketplace-workspace/backend:e2-03-0210f27a7ab1
+dc() { docker compose --project-name marketplace-beta --env-file /dev/null --project-directory /home/adm_user/marketplace-workspace/beta/deploy -f /home/adm_user/marketplace-workspace/beta/deploy/compose.json "$@"; }
+dc run --rm --no-deps -v /home/adm_user/marketplace-workspace/beta/app/repository/backend:/workspace:ro test python manage.py test tests --noinput --verbosity 2
+dc run --rm --no-deps -v /home/adm_user/marketplace-workspace/beta/app/repository/backend:/workspace:ro test python -m tools.verify_ownership_recovery verify
+```
+
+Сохранены: БД `mw_beta_test_e2_04_recovery` и `mw_beta_test_e2_04_restore`, новый `beta/backups/test/e2-04-20261001T074853Z.dump` (SHA-256 `9be0c324e2b8a0ed291ad71e9b07965ddac2f5a7f4fe836251726eac22fc22be`); старый dump E2-03 неизменен. Для выполненной проверки нет миграционного отката главной БД: она не менялась. Удаление новых БД/backup/clone не выполнялось и требует проверки принадлежности/поздней работы и отдельного решения. Следующее обновление серверного кода — только после локального коммита и push Олега через Git pull/проверку ревизии. Итоговый статус находится в SYSTEM_PLAN.md.

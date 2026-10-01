@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-09-30T17:46:14+03:00",
+  "timestamp": "2026-10-01T10:53:21+03:00",
   "timezone": "Europe/Moscow",
   "task": "E2-04",
-  "scope": "local synthetic ownership only",
-  "runtime_database_checked": false,
-  "postgresql_checked": false,
-  "beta_contacted": false,
+  "scope": "PostgreSQL ownership verification in isolated beta test cluster, synthetic only",
+  "runtime_database_checked": true,
+  "postgresql_checked": true,
+  "beta_contacted": true,
   "local_tools": {
     "python": "3.14",
     "django": "5.2.17",
@@ -15,15 +15,14 @@
     "components_installed": false
   },
   "tests": {
-    "backend": "SQLite in-memory (offline settings)",
-    "discovered": 14,
-    "passed": 11,
-    "skipped": 3,
-    "skipped_checks": [
-      "PostgreSQL composite FK/bypassed ORM writes",
-      "PostgreSQL immutable ownership/history/delete triggers",
-      "PostgreSQL concurrent attribution row locks"
-    ]
+    "backend": "PostgreSQL 17.11 (isolated beta postgres-test)",
+    "discovered": 17,
+    "passed": 17,
+    "skipped": 0,
+    "failed": 0,
+    "django_test_database": "test_mw_beta_test",
+    "test_database_removed": true,
+    "one_shot_containers_removed": true
   },
   "local_passed": [
     "two synthetic organizations and cabinets",
@@ -43,24 +42,85 @@
     "AST parsing 13 Python source files"
   ],
   "prepared_not_executed": [
-    "PostgreSQL migration/constraint/concurrency tests",
-    "guarded beta/test recovery probe seed/verify",
-    "new synthetic PostgreSQL pg_dump/pg_restore with exact fixed database names"
+    "deployment/migrations of main mw_beta and replacement of working web; separate operation"
   ],
-  "remaining": [
-    "all PostgreSQL-only tests without skips",
-    "fresh PostgreSQL migration forward/reverse/forward",
-    "PostgreSQL dump/restore and retained archived ownership links",
-    "beta schema and role validation before completion"
-  ],
+  "remaining": [],
   "not_performed": [
-    "server actions",
+    "main beta migration/web restart",
     "new dependency/plugin installation",
     "real source or personal data access",
-    "login/invitations/RBAC/RLS/UI/worker",
-    "commit/push/deploy/restart/external sends",
-    "other project changes"
+    "login/invitations/RBAC/RLS/UI/worker or next tasks",
+    "push/production/Caddy/FBS/WB API/Finkos/external messages",
+    "manual server source edits or source archive transfer"
   ],
   "instructions": "docs/E2-04_OWNERSHIP.md",
-  "backups": ".change-backups/2026-09-30/E2-04/"
+  "backups": ".change-backups/2026-10-01/E2-04-beta-104604",
+  "local_verification": {
+    "backend": "SQLite in-memory (offline settings)",
+    "discovered": 14,
+    "passed": 11,
+    "skipped": 3,
+    "skipped_checks": [
+      "PostgreSQL composite FK/bypassed ORM writes",
+      "PostgreSQL immutable ownership/history/delete triggers",
+      "PostgreSQL concurrent attribution row locks"
+    ]
+  },
+  "source_revision": "e077a7a5aed263b50d1212176806220a7ca4f971",
+  "source_branch": "beta",
+  "source_repository": "https://github.com/olegnikitov062/marketplace-workspace.git",
+  "server_git_checkout": "/home/adm_user/marketplace-workspace/beta/app/repository",
+  "server_git_checkout_clean": true,
+  "runtime_image": "marketplace-workspace/backend:e2-03-0210f27a7ab1",
+  "runtime_image_id": "sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b",
+  "backend_source_mount": "/home/adm_user/marketplace-workspace/beta/app/repository/backend:/workspace:ro",
+  "dependency_lock_matches_previous_beta": true,
+  "new_dependencies_installed": false,
+  "build_attempt": {
+    "image": "marketplace-workspace/backend:e2-04-e077a7a",
+    "network": "none",
+    "succeeded": false,
+    "reason": "dependency install layer was not cached; offline pip could not download; no image/dependencies installed",
+    "alternative": "existing exact-dependency image and read-only Git source mount"
+  },
+  "postgresql_passed": [
+    "three composite organization FK enforced with ORM-bypass writes",
+    "immutable ownership/history and raw DELETE guards",
+    "one user independent roles in two organizations",
+    "archive preserves attribution rows and links",
+    "concurrent cabinet attribution serialized",
+    "guard migration 0002 reverse/forward preserves archived history",
+    "initial migration zero/forward on empty disposable schema",
+    "runtime health/no-auth-or-business-routes/in-memory mail",
+    "web role DDL/system DB denial and no migration inheritance"
+  ],
+  "restored_schema": {
+    "validated_composite_fk": 3,
+    "ownership_triggers": 15,
+    "organizations": 2,
+    "memberships": 2,
+    "legal_entity_history_rows": 2
+  },
+  "backup_restore": {
+    "passed": true,
+    "source_database": "mw_beta_test_e2_04_recovery",
+    "restored_database": "mw_beta_test_e2_04_restore",
+    "database_host": "postgres-test",
+    "dump_path": "/home/adm_user/marketplace-workspace/beta/backups/test/e2-04-20261001T074853Z.dump",
+    "sha256": "9be0c324e2b8a0ed291ad71e9b07965ddac2f5a7f4fe836251726eac22fc22be",
+    "all_ownership_rows_and_migration_records_equal": true,
+    "membership_archive_fk_and_history_guards_rechecked": true,
+    "recovery_databases_preserved": true
+  },
+  "previous_backup_preserved": {
+    "path": "/home/adm_user/marketplace-workspace/beta/backups/test/migrations-before.dump",
+    "sha256": "6d0e539f5814a764130c08a889aa853ba368a9b7e6b7ab41d02649a6f8f176b8"
+  },
+  "working_web_unchanged": {
+    "id": "78a7513c20dc2d851d80c60b055cb337f02f03aa024b96ebca573e2f696f2141",
+    "started_at": "2026-09-30T13:13:33.547827254Z",
+    "image_id": "sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b"
+  },
+  "main_beta_database_migrated": false,
+  "main_beta_web_deployed": false
 }
