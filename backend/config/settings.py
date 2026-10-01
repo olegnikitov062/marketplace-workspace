@@ -30,4 +30,6 @@ TIME_ZONE = "UTC"
 USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 from accounts.policy import *  # noqa: F403 -- explicit shared synthetic E2-05 policy
-# Personal account lifecycle only; no MFA, RBAC, source adapters or public registration.
+from account_security.configuration import configure
+configure(globals())
+# MFA is mandatory for owners; no public registration, RBAC or source adapters.

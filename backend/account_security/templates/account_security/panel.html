@@ -1,0 +1,9 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Защита аккаунта</title><main><h1>Защита аккаунта</h1>
+<p>TOTP: {% if mfa_enabled %}подключён{% else %}не подключён{% endif %}.{% if mfa_required %} Обязателен для владельца.{% endif %}</p>
+<p><a href="/auth/security/confirm/">Подтвердить пароль и TOTP</a> · <a href="/auth/mfa/setup/">Подключить или заменить TOTP</a> · <a href="/auth/security/password/">Сменить пароль</a></p>
+<h2>Сессии</h2><ul>{% for session in sessions %}<li>{% if session.id == current_session_id %}<strong>Эта сессия.</strong> {% endif %}{{ session.created_at }} — до {{ session.expires_at }}<form method="post" action="{% url 'account_security:revoke-session' session.id %}">{% csrf_token %}<button type="submit">Отозвать сессию</button></form></li>{% endfor %}</ul>
+<h2>Доверенные устройства</h2><ul>{% for device in devices %}<li>{{ device.created_at }} — до {{ device.expires_at }}<form method="post" action="{% url 'account_security:revoke-device' device.id %}">{% csrf_token %}<button type="submit">Отозвать доверие</button></form></li>{% endfor %}</ul>
+{% if mfa_enabled and not mfa_required %}<form method="post" action="/auth/security/disable/">{% csrf_token %}<button type="submit">Отключить добровольный TOTP после подтверждения</button></form>{% endif %}
+<form method="post" action="/auth/security/logout-all/">{% csrf_token %}<button type="submit">Выйти везде и забыть устройства</button></form>
+<form method="post" action="/auth/logout">{% csrf_token %}<button type="submit">Выйти здесь</button></form></main></html>

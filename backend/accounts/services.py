@@ -32,6 +32,9 @@ def active(user):
 
 
 def require_owner(actor, organization):
+    if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
+        from account_security.services import assert_actor_session
+        assert_actor_session(actor)
     Membership.objects.select_for_update().filter(user_id=actor.pk, organization=organization).first()
     if not can_manage_memberships(actor, organization):
         raise PermissionDenied("Operation denied")
@@ -174,6 +177,9 @@ def confirm_recovery(user_id, token, password1, password2):
             or not default_token_generator.check_token(user, token)):
         raise AccountRejected()
     _set_password(user, password1, password2)
+    if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
+        from account_security.services import credentials_changed
+        credentials_changed(user, "password_recovered")
     # Django password change invalidates reset tokens and prior session hashes.
 
 
@@ -188,6 +194,9 @@ def block_account(user_id):
     user.is_active = False
     user.set_unusable_password()
     user.save(update_fields=["is_active", "password"])
+    if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
+        from account_security.services import credentials_changed
+        credentials_changed(user, "account_blocked")
     Invitation.objects.filter(
         membership__user=user, used_at__isnull=True, revoked_at__isnull=True,
     ).update(revoked_at=timezone.now())

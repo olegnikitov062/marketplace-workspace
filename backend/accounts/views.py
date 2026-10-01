@@ -1,4 +1,5 @@
 from functools import wraps
+from django.conf import settings
 
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
@@ -59,6 +60,10 @@ def csrf(request):
 @mutation("login", ["username", "password"], principal="username")
 @sensitive_variables()
 def login(request):
+    if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
+        # Runtime E2-06 has a single library wizard; the old password-only URL
+        # cannot create a session, including for users without an enrolled factor.
+        return JsonResponse({"status": "use_mfa_login", "login": "/auth/mfa/login/"}, status=409)
     # Serialize successful authentication/password checks with block/reset.
     with transaction.atomic():
         User.objects.select_for_update().filter(username=User.normalize_username(request.POST["username"])).first()
@@ -71,7 +76,11 @@ def login(request):
 
 @mutation("logout", [])
 def logout(request):
-    django_logout(request)
+    if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
+        from account_security.services import logout as security_logout
+        security_logout(request)
+    else:
+        django_logout(request)
     return JsonResponse({"status": "ok"})
 
 

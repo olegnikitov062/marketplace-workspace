@@ -1,0 +1,127 @@
+{
+  "checked_at": "2026-10-01T15:36:06+03:00",
+  "task": "E2-06",
+  "status": "На проверке",
+  "environment": "local Windows CPython 3.14.7 / SQLite (not PostgreSQL acceptance)",
+  "source": {
+    "branch": "beta",
+    "preparation_commit": "5eb4b42",
+    "published_beta_verified": "f6c64d31ceb9c4c3ff057d3990455b1aaad4c8b4",
+    "implementation_revision": "containing Git commit",
+    "push_performed": false,
+    "server_contacted": false
+  },
+  "accepted_policy": {
+    "mandatory_mfa": "active organization owners; optional enrollment for others",
+    "session_absolute_seconds": 86400,
+    "session_idle_seconds": 3600,
+    "challenge_seconds": 300,
+    "reauth_seconds": 300,
+    "trusted_device_seconds": 2592000,
+    "recovery_codes": 10,
+    "operator": "explicit Oleg request plus separate owner-bound emergency secret; enrollment-only permit",
+    "key_backup": "only Oleg restores; password-encrypted Telegram copy, password separate; no transfer performed"
+  },
+  "dependencies": {
+    "explicitly_approved": {
+      "django-two-factor-auth": "1.18.1",
+      "django-otp": "1.7.3",
+      "cryptography": "50.0.2",
+      "django-formtools": "2.7",
+      "django-phonenumber-field": "8.5.0",
+      "qrcode": "8.2",
+      "cffi": "2.1.1",
+      "pycparser": "3.0",
+      "colorama": "0.4.6"
+    },
+    "existing_pins_preserved": true,
+    "wheel_hashes_checked": true,
+    "licenses_reviewed": true,
+    "pip_check": "pass",
+    "linux_build": "not performed",
+    "requirements_lock_sha256": "35cba592050150a0e5b1f68adc36d3f1c0871ceec79efc6c7f8e4a925fb34e60"
+  },
+  "checks": [
+    {
+      "name": "E2-06 and selected ownership/guard regressions",
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test account_security.tests tests.test_ownership tests.test_ownership_migrations tests.test_guard --settings=config.security_local_checks --verbosity=1",
+      "discovered": 61,
+      "passed": 52,
+      "failed": 0,
+      "skipped": 9,
+      "seconds": 81.695,
+      "skip_reason": "6 E2-06 concurrency tests and 3 ownership PostgreSQL tests require PostgreSQL"
+    },
+    {
+      "name": "legacy E2-05 offline regressions, separate settings (not new MFA acceptance)",
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test tests --settings=config.accounts_local_checks --verbosity=1",
+      "discovered": 68,
+      "passed": 55,
+      "failed": 0,
+      "skipped": 13,
+      "seconds": 16.151
+    },
+    {
+      "name": "focused encrypted pending wizard/QR and operator checks",
+      "discovered": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "note": "included in final 61, do not add counts"
+    },
+    {
+      "name": "Django check / makemigrations --check --dry-run",
+      "result": "pass / no changes"
+    },
+    {
+      "name": "Python AST / overlay JSON / model-column ACL correspondence / unchanged 101 task rows",
+      "result": "pass",
+      "limitation": "static checks do not validate PostgreSQL SQL or Docker Compose merge"
+    },
+    {
+      "name": "crypto backup and maintenance WSGI",
+      "result": "local tests pass",
+      "limitation": "no private-file/key transport restoration or running Gunicorn/Compose fallback was tested"
+    }
+  ],
+  "covered_locally": [
+    "confirmed-only enrollment and pending-secret encryption",
+    "TOTP valid/invalid/expired/replay and library throttle",
+    "password-only endpoint cannot bypass MFA; owner promotion immediate",
+    "one-time recovery code and owner enrollment-only recovery",
+    "operator proof binding, missing/wrong proof and blocked process",
+    "current/selected/all session and trusted-device revocation",
+    "password change/reset/block revoke; password reset retains MFA",
+    "live membership demotion denies actual invitation in existing session",
+    "real synthetic CSV download then permanent denial after revocation",
+    "two synthetic organizations and foreign session/organization denial",
+    "CSRF, no-store, no-referrer, locmem only",
+    "encrypted database sessions, wrong/missing key fail closed",
+    "SQLite forward/reverse migration behavior; restore quarantine without membership change"
+  ],
+  "not_verified": [
+    "PostgreSQL migrations and guards",
+    "PostgreSQL concurrency for TOTP/recovery code/operator permit/login/block/attempts",
+    "real restricted LOGIN, exact SQL privileges, grant/revoke/reapply and 17 SQL denials",
+    "synthetic pg_dump/pg_restore and restored ACL",
+    "independent private-file key backup/restore and emergency operator CLI with real role separation",
+    "Linux image and Compose merge/runtime/resources",
+    "real browser pages and runtime maintenance fallback",
+    "main beta backup/restore/migrations/grants/web runtime"
+  ],
+  "adjacent_task_dependencies": {
+    "full_permissions": "E2-07",
+    "RLS_isolation": "E2-08",
+    "working_export": "E5-07; full E2-06 export criterion remains unaccepted",
+    "general_backup": "E2-15/D4; E2-12 reference corrected explicitly in preparation"
+  },
+  "server_plan": "docs/E2-06_SESSIONS_MFA.md",
+  "authorization_required": [
+    "Oleg reviews and pushes beta himself",
+    "S0: SSH preflight/Git release and separate dependency image build",
+    "S1: fresh isolated test key/DBs/role/containers, suite/limited LOGIN/dump-restore/key restoration/maintenance",
+    "S2 separately after S1: main backup/restore/key/migrator grants and web-only switch",
+    "owner emergency-secret provisioning/recovery only upon separate explicit request"
+  ],
+  "secret_outputs": "No real accounts, messages, runtime keys or transfers created; tests use synthetic values/example.invalid and locmem; no secret values included in this report"
+}

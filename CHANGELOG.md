@@ -669,3 +669,86 @@ Django check, migration plan и forward sqlmigrate ownership/accounts 0001/0002 
 Проверки подготовки: существующий pip check успешен; CPython 3.14.7/Django 5.2.17 и состав venv подтверждены, MFA/cryptography отсутствуют; Docker/PostgreSQL tools не найдены в PATH. Публичные release source/PyPI metadata проверены без установки: версии/ограничения Python/Django/wheels, imports/runtime новых пакетов не проверены. Проверяются narrow diff/whitespace, сохранность прежнего журнала, 101 строка задач с единственным изменением статуса E2-06, неизменность backend/deploy/locks, исключение backups и состав commit. PostgreSQL/beta/MFA/экспорт/SQL/restore тесты новой реализации не выполнялись; результаты E2-05 не используются как их доказательство.
 
 Безопасный откат: сравнить текущие hashes и сохранить позднюю работу; применить только обратный diff SYSTEM_PLAN/SYSTEM_ARCHITECTURE этой подготовки. CHANGELOG не сокращать, добавить запись отмены. Новый `C:/Users/krolo/Documents/marketplace-workspace/docs/E2-06_PREPARATION.md` удалять только при совпадении manifest hash, отсутствии поздних правок/потребителей и после удаления собственных ссылок. Никакого reset --hard/clean. Серверного отката нет, сервер не менялся. Локальный commit автора Oleg разрешён текущим заданием; push выполняет Олег. Finkos/main/production/Caddy/FBS/WB/другие проекты и зависимости не менялись.
+
+
+## 2026-10-01T15:36:06+03:00 (Europe/Moscow, UTC+3) — добавлена локальная реализация E2-06
+
+Основание: текущее задание только E2-06 и последующие явные ответы Олега: правила MFA/сессий/30-дневного доверия, отдельный аварийный секрет оператора, зашифрованная копия ключа у Олега и локальная установка ровно девяти согласованных пакетов. Серверные действия и push не разрешались и не выполнялись. Причина изменения — действующее управление сессиями/MFA и восстановление без расширения владения/прав.
+
+Добавлены библиотечный TOTP, зашифрованные Authenticator и Django/wizard sessions, ограниченная стадия MFA, серверный реестр/отзыв сессий и доверия, одноразовые PBKDF2-коды, owner-bound операторское разрешение только на повторное подключение, живые проверки Membership и действующее синтетическое HTTP-скачивание с отзывом. Старый password-only вход в runtime закрыт. Пароль/reset/block/замена или восстановление MFA отзывают доступ и доверие; парольное восстановление MFA не отключает. Добавлены миграции/точный SQL delta, новые изолированные проверки и deploy/deny-auth overlays, но PostgreSQL и Compose не запускались.
+
+Политика: owner обязательно, остальные добровольно; сессия 24 часа, простой 1 час, MFA/подтверждение 5 минут, доверие 30 дней. Предыдущий документ подготовки явно обозначен историческим снимком; актуальные правила/ограничения/серверные этапы — docs/E2-06_SESSIONS_MFA.md. SYSTEM_PLAN оставлен «На проверке», все 101 строки/критерии задач сохранены. Расхождение E2-12 явно исправлено ранее в 5eb4b42, повторно смысл не менялся.
+
+Изменённые существующие файлы (корень C:/Users/krolo/Documents/marketplace-workspace/):
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `backend/accounts/services.py`.
+- `backend/accounts/views.py`.
+- `backend/config/settings.py`.
+- `backend/config/urls.py`.
+- `backend/requirements.in`.
+- `backend/requirements.lock`.
+- `docs/E2-06_PREPARATION.md`.
+- `docs/RUNBOOK.md`.
+
+Новые файлы:
+- `SYSTEM_SECURITY_CHECKS.json`.
+- `backend/account_security/__init__.py`.
+- `backend/account_security/apps.py`.
+- `backend/account_security/configuration.py`.
+- `backend/account_security/crypto.py`.
+- `backend/account_security/forms.py`.
+- `backend/account_security/key_backup.py`.
+- `backend/account_security/maintenance.py`.
+- `backend/account_security/management/__init__.py`.
+- `backend/account_security/management/commands/__init__.py`.
+- `backend/account_security/management/commands/issue_owner_recovery.py`.
+- `backend/account_security/management/commands/prepare_owner_recovery.py`.
+- `backend/account_security/middleware.py`.
+- `backend/account_security/migration_guards.py`.
+- `backend/account_security/migrations/0001_initial.py`.
+- `backend/account_security/migrations/0002_revocation_guards.py`.
+- `backend/account_security/migrations/__init__.py`.
+- `backend/account_security/models.py`.
+- `backend/account_security/operator.py`.
+- `backend/account_security/policy.py`.
+- `backend/account_security/services.py`.
+- `backend/account_security/session_backend.py`.
+- `backend/account_security/signals.py`.
+- `backend/account_security/templates/account_security/codes.html`.
+- `backend/account_security/templates/account_security/form.html`.
+- `backend/account_security/templates/account_security/panel.html`.
+- `backend/account_security/templates/account_security/wizard.html`.
+- `backend/account_security/tests/__init__.py`.
+- `backend/account_security/tests/test_http.py`.
+- `backend/account_security/tests/test_migrations.py`.
+- `backend/account_security/tests/test_operator.py`.
+- `backend/account_security/tests/test_role_scenario.py`.
+- `backend/account_security/tests/test_transactions.py`.
+- `backend/account_security/urls.py`.
+- `backend/account_security/views.py`.
+- `backend/config/security_local_checks.py`.
+- `backend/tools/check_security_postgresql.py`.
+- `backend/tools/manage_security_web_grants.py`.
+- `backend/tools/mfa_key_backup.py`.
+- `backend/tools/security_role_scenario.py`.
+- `backend/tools/security_web_grants.py`.
+- `backend/tools/verify_security_recovery.py`.
+- `backend/tools/verify_security_web_role.py`.
+- `backend/tools/verify_security_web_runtime.py`.
+- `beta/deploy/compose.security-check.json`.
+- `beta/deploy/compose.security-maintenance.json`.
+- `beta/deploy/compose.security-web.json`.
+- `docs/E2-06_SESSIONS_MFA.md`.
+
+Исходные копии всех изменённых существующих файлов сохранены до правок в `.change-backups/2026-10-01/E2-06-implementation/` с исходными относительными путями. manifest.json содержит before/after SHA-256 и полный список новых файлов; дополнительно сохранены installed-before.json, installed-after.json (package RECORD paths), dependency-review.json и девять проверенных wheel в wheels/. Промежуточная подготовка: `.change-backups/2026-10-01/E2-06-policy-144041/`. Каталоги/venv исключены из Git. Исходные смешанные окончания строк неизменённых строк сохранены; новые строки LF.
+
+Локально установлены только django-two-factor-auth 1.18.1, django-otp 1.7.3, cryptography 50.0.2, django-formtools 2.7, django-phonenumber-field 8.5.0, qrcode 8.2, cffi 2.1.1, pycparser 3.0, colorama 0.4.6 (Windows). Release SHA-256 и LICENSE сверены, resolver dry-run и установка only-binary/require-hashes без дополнительных пакетов и смены прежних pins, pip check успешен. Никаких plugins/глобальных установок/нативной сборки.
+
+Проверки: final security+ownership/guard 61 тест, 52 выполнены успешно, 9 PostgreSQL-only пропущены, 81.695 с; из них шесть новых конкурентных проверок пока не выполнены. Отдельный legacy accounts_local_checks: 68 тестов, 55 pass, 13 skips, 16.151 с; это регрессия E2-05, не приёмка E2-06. Focused QR/operator: 7 pass, включены в final 61, не суммируются. Django check и makemigrations --check --dry-run успешны; pip check, AST, JSON, соответствие новых ACL колонкам моделей и неизменность 101 строк задач проверены. Новые локальные тесты используют SQLite и синтетические значения/example.invalid, locmem. Тесты проверяют секреты boolean-утверждениями, без вывода значений; QR проверен как HTTP SVG, не скриншотом. Ошибки промежуточных тестов (formtools 2.7 form-list cache) устранены до финального прогона.
+
+Ограничения: нет новых PostgreSQL/limited LOGIN/17 SQL-denial/grant/revoke/reapply/dump-restore, реального восстановления файловой копии ключа, operator CLI под настоящей ролью, Linux image/Compose/браузера/Gunicorn maintenance и основной beta smoke. Docker/PostgreSQL tools локально отсутствуют; не устанавливались. SQL-plan/static/SQLite и старые E2-05 результаты не выдаются за новую приёмку. Полные RBAC/Grant/RLS и рабочий экспорт не реализованы; синтетический download действует, но критерий будущего рабочего экспорта зависит от E2-07/E2-08/E5-07 и остаётся на проверке. S0/S1/S2 имеют отдельные разрешения; до S2 обязательно завершить ключевой restore и maintenance протокол.
+
+Git: live ls-remote перед коммитом подтвердил опубликованную beta f6c64d31ceb9c4c3ff057d3990455b1aaad4c8b4; локальная подготовка 5eb4b42 не опубликована. Планируется локальный commit Oleg «Добавлены сессии и двухфакторная защита E2-06». Push выполняет сам Олег. Main, Finkos, production, Caddy, FBS, WB и прочие проекты не менялись. Сервер не опрашивался; работающая E2-05 по прежнему протоколу не объявляется заново проверенной.
+
+Безопасный откат локально: сравнить manifest/current hashes и поздние правки, сохранить текущую работу, применить только обратный diff этого коммита; CHANGELOG не сокращать, дополнить отменой. Новые перечисленные файлы удалять только при совпадении recorded hash и отсутствии поздних изменений/потребителей. Девять новых пакетов удалять только после проверки новых потребителей и возврата прежнего lock; исходный состав в installed-before.json, автоматического удаления нет. Никаких git reset --hard/clean. Серверный откат сейчас не нужен. После будущего включения E2-06 обычный E2-05/base-only вход небезопасен: использовать отдельно проверенный maintenance overlay (503 auth/business) либо остановить только beta web. Схему/ключи/данные/dumps сохранить, zero/restore поверх живой БД не выполнять; revoke только нового delta после остановки потребителя. Restore в новую БД с карантином доступа и отдельной сверкой полномочий.
