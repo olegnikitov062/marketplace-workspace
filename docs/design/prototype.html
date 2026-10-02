@@ -9,7 +9,7 @@ try {
   document.documentElement.dataset.theme = saved?.schemaVersion === 2 && saved.preferences?.theme === 'dark' ? 'dark' : 'light';
 } catch { document.documentElement.dataset.theme = 'light'; }
 </script>
-<title>Закупки — рабочее пространство</title><link rel="stylesheet" href="grid-style.css"><link rel="stylesheet" href="workbench-style.css">
+<title>Закупки — рабочее пространство</title><link rel="stylesheet" href="grid-style.css"><link rel="stylesheet" href="workbench-style.css"><link rel="stylesheet" href="appearance-presets.css">
 </head>
 <body>
 <a class="skip-link" href="#main">К рабочей таблице</a>
@@ -43,6 +43,6 @@ try {
 <dialog id="panel" class="drawer" aria-labelledby="panel-title"></dialog>
 <dialog id="modal" class="modal" aria-labelledby="modal-title"></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-<script src="grid-engine.js"></script><script src="workbench-engine.js"></script><script src="workbench-app.js"></script><script src="grid-app.js"></script>
+<script src="grid-engine.js"></script><script src="workbench-engine.js"></script><script src="workbench-app.js"></script><script src="appearance-presets.js"></script><script src="grid-app.js"></script>
 </body></html>
 

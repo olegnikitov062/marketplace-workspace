@@ -1,0 +1,82 @@
+/* Shared appearance library; colors follow the active application theme. */
+#appearance-dialog {
+  width: 720px;
+  max-width: calc(100vw - 28px);
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid var(--line);
+  color: var(--text);
+  background: var(--canvas);
+}
+
+#appearance-dialog .drawer-head { align-items: flex-start; }
+#appearance-dialog .drawer-head > div { min-width: 0; }
+#appearance-dialog h2, #appearance-dialog h3 { overflow-wrap: anywhere; }
+#appearance-dialog .drawer-body { overflow: auto; overscroll-behavior: contain; }
+#appearance-dialog .drawer-foot { flex-wrap: wrap; }
+#appearance-dialog .drawer-foot > .appearance-hint { flex: 1; margin: 0; }
+
+.appearance-intro {
+  margin-bottom: 22px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.appearance-section { margin-bottom: 24px; }
+.appearance-section > h3, .appearance-save > h3, .appearance-confirm > h3 {
+  margin: 0 0 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.appearance-section > h3 > span { margin-left: 5px; color: var(--muted); font-weight: 400; }
+.appearance-list { display: grid; gap: 10px; }
+.appearance-card { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 6px; }
+.appearance-card-heading { display: flex; align-items: start; justify-content: space-between; gap: 10px; }
+.appearance-card-heading h3 { min-width: 0; margin: 0; font-size: 13px; font-weight: 600; line-height: 1.5; }
+.appearance-scope { flex-shrink: 0; padding: 2px 6px; border-radius: 4px; color: var(--muted); background: var(--surface); font-size: 11px; }
+.appearance-meta, .appearance-hint { margin: 5px 0 10px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+.appearance-preview { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 11px 0; color: var(--muted); font-size: 11px; }
+.appearance-swatches { display: inline-flex; gap: 4px; }
+.appearance-swatches i { display: block; width: 19px; height: 19px; border: 1px solid var(--line); border-radius: 3px; background: var(--preset-color); }
+.appearance-swatches i.is-neutral { background: var(--surface); }
+html[data-theme="dark"] .appearance-swatches i:not(.is-neutral) { background: color-mix(in srgb, var(--preset-color) 35%, var(--canvas)); }
+.appearance-card-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+#appearance-dialog .appearance-card-actions .btn { min-height: 32px; font-size: 11px; }
+.appearance-empty { margin: 0; padding: 13px; border: 1px dashed var(--line); border-radius: 5px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+
+.appearance-save { display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; padding-top: 18px; border-top: 1px solid var(--line); }
+.appearance-save label { color: var(--muted); font-size: 12px; }
+.appearance-save input, .appearance-save select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  margin-bottom: 6px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--text);
+  background: var(--canvas);
+  font: inherit;
+  font-size: 12px;
+}
+.appearance-save input:focus, .appearance-save select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.appearance-save > .btn { justify-self: start; }
+.appearance-save .appearance-hint { margin: 0; }
+.appearance-confirm p { color: var(--muted); font-size: 12px; line-height: 1.7; }
+.appearance-feedback { padding: 11px 13px; margin: 0 0 16px; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 4px; color: var(--text); background: var(--surface); font-size: 12px; line-height: 1.6; }
+.appearance-feedback[hidden] { display: none; }
+.appearance-feedback.is-error { border-left-color: var(--theme-danger, #b74646); }
+#appearance-dialog .appearance-danger { color: var(--theme-danger, #b74646); border-color: currentColor; }
+
+@media (max-width: 540px) {
+  #appearance-dialog { max-width: calc(100vw - 20px); max-height: calc(100dvh - 20px); }
+  #appearance-dialog .drawer-head, #appearance-dialog .drawer-body, #appearance-dialog .drawer-foot { padding: 16px; }
+  #appearance-dialog .drawer-head h2 { font-size: 17px; }
+  .appearance-card { padding: 12px; }
+  .appearance-card-heading { flex-wrap: wrap; gap: 6px; }
+  #appearance-dialog .appearance-card-actions .btn { min-height: 36px; }
+}
