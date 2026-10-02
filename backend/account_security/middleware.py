@@ -29,7 +29,7 @@ class SessionGate:
                 if record.level != "full" and request.path not in self.PARTIAL:
                     response = JsonResponse({"status": "mfa_required"}, status=403)
                     patch_cache_control(response, no_store=True, no_cache=True, private=True)
-                    response["Referrer-Policy"] = "no-referrer"
+                    response["Referrer-Policy"] = "same-origin"
                     return response
                 # Conditional update cannot clear a concurrent revocation.
                 now = timezone.now()
@@ -40,7 +40,10 @@ class SessionGate:
             response = self.get_response(request)
             if request.path.startswith("/auth/"):
                 patch_cache_control(response, no_store=True, no_cache=True, private=True)
-                response["Referrer-Policy"] = "no-referrer"
+                # Chromium sends Origin:null on native form POSTs with
+                # no-referrer. Keep same-origin CSRF checks and suppress
+                # referrers on cross-origin navigation.
+                response["Referrer-Policy"] = "same-origin"
             return response
         finally:
             current_session.reset(marker)

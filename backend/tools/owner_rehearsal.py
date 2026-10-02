@@ -20,7 +20,7 @@ ROOT = Path("/run/rehearsal-state")
 OUTPUT = Path("/run/recovery-output")
 STATE = ROOT / "fixture.json"
 PRIVATE = {"credentials", "token", "operator_issue"}
-ACTIONS = {"configure", "init", "credentials", "token", "status", "operator_prepare", "operator_issue", "block", "blocked_operator", "finish"}
+ACTIONS = {"configure", "init", "pre_browser", "credentials", "token", "status", "operator_prepare", "operator_issue", "block", "blocked_operator", "finish"}
 
 
 def expect(value):
@@ -103,6 +103,31 @@ def configure():
     with transaction.atomic(), connection.cursor() as cursor:
         apply_fresh(cursor, MAIN_ROLE)
     return {"new_schema_and_exact_web_privileges": True}
+
+
+def pre_browser(data):
+    """Read-only gate for resuming the saved fixture before its first login.
+
+    Never reset buckets, passwords, MFA, sessions or proof. Refuse partially
+    completed browser runs instead of declaring a fresh fixture.
+    """
+    from ownership.models import User, Organization, Membership
+    from accounts.models import AttemptBucket, Invitation
+    from account_security.models import (Authenticator, AccountSession, LoginChallenge,
+                                         RecoveryCode, RecoveryPermit, TrustedDevice)
+    expect(User.objects.count() == 4 and Organization.objects.count() == 2 and Membership.objects.count() == 5)
+    expect(ownership() == data["ownership"])
+    expect(all(model.objects.count() == 0 for model in (
+        AttemptBucket, Invitation, Authenticator, AccountSession, LoginChallenge,
+        RecoveryCode, RecoveryPermit, TrustedDevice)))
+    for values in data["users"].values():
+        user = User.objects.get(pk=values["id"])
+        expect(user.is_active and user.archived_at is None and user.check_password(values["password"]))
+    private_file(OUTPUT / "owner-proof")
+    verifier = json.loads(private_file(OUTPUT / "owner_recovery_verifier"))
+    expect(verifier["user_id"] == data["users"]["owner"]["id"])
+    expect(not (OUTPUT / "owner-permit").exists())
+    return {"saved_fixture_before_first_login": True, "ownership_unchanged": True, "no_state_reset": True}
 
 
 def cli(command, arguments, proof=None, success=True):
@@ -256,7 +281,9 @@ def main():
             else:
                 data = state()
                 expect(ownership() == data["ownership"])
-                if args.action == "credentials":
+                if args.action == "pre_browser":
+                    result = pre_browser(data)
+                elif args.action == "credentials":
                     result = {"owner": data["users"]["owner"], "sessions": data["users"]["sessions"], "member": data["users"]["member"], "next_password": data["next_password"]}
                 elif args.action == "token":
                     result = token(data, args.pending, args.kind, args.user)

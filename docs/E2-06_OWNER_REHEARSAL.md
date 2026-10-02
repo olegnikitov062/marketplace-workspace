@@ -1,6 +1,6 @@
 # E2-06: полный браузерный сценарий и операторское восстановление
 
-02.10.2026, Europe/Moscow. **Подготовлено локально, серверный запуск ещё не разрешён и не выполнен.** Это дополнительный синтетический стенд после S2; работающий E2-06 web остаётся на 19a6d6a. Публикация e3e5383 проверена. Наличие скриптов не закрывает оставшиеся критерии.
+02.10.2026, Europe/Moscow. **Отдельный запуск разрешён и выполнен частично на опубликованном 6ec715f: браузер обнаружил CSRF-отказ до входа. Стенд остановлен и сохранён; исправление пока локальное.** Работающий основной web остаётся на 19a6d6a. Полный браузерный MFA lifecycle и выдача operator permit ещё не подтверждены. Исходный план и его проверки ниже сохранены; актуальное продолжение — в конце документа.
 
 Цель: пройти настоящие страницы в Chromium и настоящие `prepare_owner_recovery`/`issue_owner_recovery` с PostgreSQL LOGIN `mw_beta_migrator`. Проверка `require_operator_process` не меняется. Положительный сценарий нельзя проводить в старой test-БД с другим именем/ролью или считать выполненным через mock. Реального владельца, его proof и ключ основной beta этот стенд не использует.
 
@@ -106,3 +106,29 @@ node scripts/e2_06_owner_browser.cjs $REV
 Подтверждены только синтаксис Python/Node, чтение плана без мутаций, JSON-инварианты изоляции/secret mounts, отказ --apply на Windows и отказ служебных команд без rehearsal marker. Linux PTY/getpass, effective Compose, реальный новый PostgreSQL и полный browser-run **ещё не выполнены**. Это не дополнительные прошедшие MFA-тесты и не основание менять E2-06 на «Готово».
 
 Нужны публикация локального коммита самим Олегом и отдельное разрешение ровно перечисленных новых ресурсов/синтетических секретов/fixture/CLI/browser/остановки. Передачу основного ключа, пароль к его envelope, реальный emergency secret и Telegram эта просьба не включает.
+
+
+## Результат разрешённого запуска — 02.10.2026
+
+После отдельного «разрешаю» Олега проверена публикация `6ec715f5a1343ef7cccc5f89beea606433f31d03`. Серверный repository обновлён Git fast-forward, создан новый detached release. Подготовка/lock/effective Compose, PostgreSQL 17.11, миграции (36 записей), точные SQL-права настоящей web-роли, изоляция/лимиты/закрытые файлы и locmem прошли. Созданы только предусмотренные ресурсы, четыре синтетических аккаунта и две организации. Настоящий `prepare_owner_recovery` под migrator LOGIN создал закрытые proof/verifier владельца и отказал обычному участнику; это не проверка `issue_owner_recovery`.
+
+Полный Chromium runner остановился на `mandatory-enrollment`. Узкая диагностика: GET login 200, native POST login 403; пароль fixture совпадает, cookie и CSRF-поле отправляются, но Chromium посылает `Origin: null` при ответе `Referrer-Policy: no-referrer`. Дополнительный диагностический POST перехвачен и отменён до сервера; записаны только булевы признаки. Это дефект заголовка страниц E2-06, а не неверный пароль/MFA и не разрешение ослабить CSRF.
+
+Перед остановкой подтверждены users=4, organizations=2, memberships=5; authenticators/account sessions/codes/permits/challenges/attempt buckets=0. Владение неизменно. Proof/verifier существуют, owner-permit отсутствует. Анонимные wizard sessions не являются выполненным входом. Повторные init/configure/prepare не запускались. Все четыре новых контейнера остановлены; volume/network/закрытые файлы сохранены и имена теперь заняты. Browser/tunnel закрыты. Metadata трёх основных контейнеров совпали с baseline, основной restricted SQL/runtime smoke прошёл. Основной web не обновлялся и сохраняет обнаруженный дефект формы.
+
+Локальное исправление: `same-origin` для обоих путей ответа SessionGate, сохранены no-store и штатный CSRF. Chromium + настоящий локальный Django LiveServer воспроизвёл отказ со старым заголовком и прошёл после исправления: обычный password POST, ограниченная стадия до MFA, отказ без CSRF, выход с CSRF, отсутствие Referer при внешнем переходе (сам переход перехвачен, сеть example.invalid не используется). Проверка использует SQLite и **не является** новым PostgreSQL или полным MFA lifecycle. Новый HTTP-тест отдельно проверяет отказ `Origin: null` и внешнего Origin даже с верным CSRF-токеном. Никакого trusted-origin wildcard, csrf_exempt, подмены Origin в браузере или изменения secure cookies нет.
+
+Обоснование: [Fetch — append a request Origin header](https://fetch.spec.whatwg.org/#append-a-request-origin-header), [Django — Referrer Policy](https://docs.djangoproject.com/en/5.2/ref/middleware/#referrer-policy). Внешним origin политика `same-origin` не отправляет Referer.
+
+### Продолжение после публикации исправления Олегом
+
+Это продолжение уже разрешённого отдельного стенда с теми же ресурсами. Основная beta, её ключ и реальный owner proof не входят в продолжение. Push выполняет Олег. До push серверное исправление/ручное редактирование исходников запрещены.
+
+1. Проверить чистую серверную beta и опубликованный полный SHA исправления, получить его только Git fast-forward и создать новый detached release. Прежний 6ec715f release и все закрытые файлы сохраняются.
+2. Проверить, что сохранённые четыре контейнера остановлены, volume/network принадлежат `marketplace-e206-owner-check`, прежний source был 6ec715f; три основных контейнера совпадают с `baseline.json`. Сверить неизменный lock с прежним image.
+3. Задать `REHEARSAL_SOURCE` нового release, выполнить Compose config --quiet. Запустить существующий postgres; после health запустить controller/issuer/web с новым read-only source через тот же Compose project. **Не выполнять --apply, bootstrap, configure, init, operator_prepare; не сбрасывать счётчики и не создавать повторные секреты.** Миграции/ACL этим исправлением не меняются.
+4. Выполнить `dc exec -T controller python -m tools.owner_rehearsal pre_browser </dev/null`. Новый read-only guard требует исходные 4/2/5, нулевые factors/sessions/codes/permits/challenges/buckets/trust/invitations, прежние пароли/активность/владение и закрытые proof/verifier. При отказе остановиться и сохранить состояние; автоматического ремонта/повторного fixture нет. Сам guard пока проверен только на отказ вне нужной среды, положительный Linux-прогон впереди.
+5. Выполнить `prepare_owner_rehearsal.py --verify` и restricted runtime smoke. Проверить header `same-origin` до отправки пароля (проверка добавлена в browser runner). Затем открыть временный localhost:18767 tunnel и выполнить полный browser runner на новом SHA без traces/скриншотов/логов секретов. Это первый успешный вход в сохранённом fixture, а не повтор завершённого MFA.
+6. При успехе/отказе закрыть browser/tunnel, сверить baseline и основной read-only runtime, остановить только новые четыре контейнера; сохранить volume/файлы/результаты. Не запускать весь сценарий снова на частичном результате.
+
+Откат продолжения — остановка нового проекта и сохранение volume/секретов. Основная beta не меняется. Возвращать старый source для принятия теста, восстанавливать dump поверх БД, удалять volume или менять права запрещено. После полного успешного browser/operator результата обновление основной beta исправлением требует отдельного согласованного web-only этапа; текущее разрешение его не включает.

@@ -37,11 +37,14 @@ async function fetchStatus(page, path, method = 'GET', csrf = false) {
   }, { path, method, csrf });
 }
 async function submit(page, button) {
-  await page.getByRole('button', { name: button, exact: true }).click();
-  await page.waitForLoadState('domcontentloaded');
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+    page.getByRole('button', { name: button, exact: true }).click(),
+  ]);
 }
 async function passwordStep(page, user, password = user.password) {
-  await page.goto(BASE + '/auth/mfa/login/');
+  const response = await page.goto(BASE + '/auth/mfa/login/');
+  expect((await response.allHeaders())['referrer-policy'] === 'same-origin');
   await page.locator('[name="auth-username"]').fill(user.username);
   await page.locator('[name="auth-password"]').fill(password);
   await submit(page, 'Продолжить');

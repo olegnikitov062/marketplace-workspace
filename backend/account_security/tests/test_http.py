@@ -290,7 +290,29 @@ class SecurityHTTPTests(TestCase):
             self.assertEqual(self.post(path, {}, csrf=False).status_code, 403)
         response = self.client.get("/auth/security/", secure=True)
         self.assertIn("no-store", response["Cache-Control"])
-        self.assertEqual(response["Referrer-Policy"], "no-referrer")
+        self.assertEqual(response["Referrer-Policy"], "same-origin")
+
+    def test_native_form_origin_is_required_even_with_valid_csrf_token(self):
+        path = "/auth/mfa/login/"
+        self.client.get(path, secure=True)
+        token = self.client.get("/auth/csrf", secure=True).json()["csrfToken"]
+        form = urlencode({"personal_login-current_step": "auth",
+            "auth-username": self.owner.username, "auth-password": self.password,
+            "csrfmiddlewaretoken": token})
+        for origin in ("null", "https://example.invalid"):
+            response = self.client.post(path, form, content_type="application/x-www-form-urlencoded",
+                secure=True, HTTP_ORIGIN=origin)
+            self.assertEqual(response.status_code, 403)
+        self.assertEqual(LoginChallenge.objects.count(), 0)
+        self.assertEqual(AttemptBucket.objects.count(), 0)
+        response = self.client.post(path, form, content_type="application/x-www-form-urlencoded",
+            secure=True, HTTP_ORIGIN="https://testserver")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/auth/mfa/setup/")
+        partial = self.client.get("/auth/session", secure=True)
+        self.assertEqual(partial.status_code, 403)
+        self.assertEqual(partial["Referrer-Policy"], "same-origin")
+        self.assertEqual(AccountSession.objects.filter(level="full").count(), 0)
 
     def test_wrong_encryption_key_fails_closed(self):
         self.login(self.member)
