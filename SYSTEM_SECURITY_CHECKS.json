@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-02T15:23:05+03:00",
+  "checked_at": "2026-10-02T16:13:47+03:00",
   "task": "E2-06",
   "status": "На проверке",
   "environment": "Historical S1 PostgreSQL suite and S2 main migration; current main source 14d9f48 unchanged. New isolated PostgreSQL 17.11 R2 on published 2c2f8f7: full real Chromium 10 PASS / exit 0 / pageerrors 0, actual operator CLI and readonly terminal SQL PASS; all R2 stopped and preserved.",
   "source": {
     "branch": "beta",
     "preparation_commit": "5eb4b42",
-    "published_beta_verified": "2c2f8f737262267d29d06ab40d7bef3571693745",
+    "published_beta_verified": "b3c50f7034bd454ea8066c6f194010d91ca9068a",
     "implementation_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
     "push_performed": false,
     "server_contacted": true,
@@ -104,7 +104,8 @@
     "SQLite forward/reverse migration behavior; restore quarantine without membership change"
   ],
   "not_verified": [
-    "Owner custody and restore from the agreed Telegram files (envelope and passphrase together, risk explicitly accepted); real owner proof not provisioned, no Telegram transfer",
+    "K3 owner custody and restore from manually stored/retrieved Telegram files; K1/K2 local ciphertext transfer and in-memory decrypt are verified, no Telegram transfer performed by agent",
+    "Real owner emergency proof is not provisioned; synthetic operator recovery verified separately",
     "Full export/RBAC/RLS remain adjacent-task dependencies"
   ],
   "adjacent_task_dependencies": {
@@ -115,9 +116,9 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes the local R2 result commit; no deployment or server restart is needed for this documentation-only result",
-    "Actual main-key K1/K2 wrap and download require separate concrete approval of docs/E2-06_KEY_HANDOFF.md; real owner proof remains separate; no values in chat",
-    "Any additional server/browser rehearsal requires a concrete bounded plan and separate approval; preserved terminal fixture must not be reseeded or blindly replayed"
+    "Oleg reviews and pushes the local K1/K2 result commit; no deployment or server restart is required for this documentation result",
+    "K1/K2 completed under explicit approval including private-file passphrase input; K3 manual Telegram storage/retrieval remains owner action, not agent sending",
+    "New server operations, real owner emergency proof provisioning, cleanup or another rehearsal require a concrete separately approved scope; do not repeat used handoff/rehearsal resources"
   ],
   "secret_outputs": "No real accounts or external messages. Main beta TOTP key and encrypted envelope created privately outside Git/DB, independent file restore checked. No key values/fingerprints, passwords, recovery codes, tokens, cookies or personal data in reports/commits; Telegram transfer and owner custody not performed.",
   "s0_s1": {
@@ -1312,5 +1313,123 @@
     ],
     "safe_rollback": "All four R2 containers already stopped; retain volume, network, closed files and Git release; no replay, delete, reset or live restore",
     "evidence_directory": ".change-backups/2026-10-02/E2-06-browser-r2-run/"
+  },
+  "key_handoff_k1_k2": {
+    "checked_at": "2026-10-02T16:13:47+03:00",
+    "authorization": "Explicit approval after concrete K1/K2 plan; owner enters passphrase interactively",
+    "status": "K1/K2 PASS via explicitly authorized private-file passphrase input; K3 pending",
+    "published_beta": "b3c50f7034bd454ea8066c6f194010d91ca9068a",
+    "source_revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+    "plan": "docs/E2-06_KEY_HANDOFF.md",
+    "server_preparation": {
+      "result": "PASS",
+      "phase": "prepared",
+      "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "new_directory": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-owner-key-envelope-20261002",
+      "new_directory_mode": 448,
+      "new_directory_uid": 10001,
+      "envelope_created": false,
+      "protected_containers_unchanged": true,
+      "existing_secret_metadata_unchanged": true,
+      "runtime_key_read": false
+    },
+    "existing_secret_metadata_verified_without_content": true,
+    "local_private_acl_and_empty_destination": "PASS; passphrase not read",
+    "interactive_launcher": ".change-backups/2026-10-02/E2-06-key-handoff-k1-k2/owner-key-handoff.ps1",
+    "local_checks": [
+      "PowerShell syntax",
+      "Python local/remote AST",
+      "Windows argv roundtrip",
+      "Non-interactive console rejected before SSH",
+      "Transfer --check made no network/write/secret read"
+    ],
+    "wrap_completed": true,
+    "ciphertext_downloaded": true,
+    "owner_decryption_verified": false,
+    "runtime_key_read": true,
+    "telegram_used": false,
+    "new_dependencies": false,
+    "required_next": [
+      "K3 owner manual Telegram storage of both files and retrieval under fresh private filenames, then byte equality and in-memory decryption verification",
+      "Keep E2-06 On review while business export remains an adjacent dependency"
+    ],
+    "preparation_must_not_repeat": true,
+    "safe_rollback": "Preserve new server/local envelopes, now-used passphrase file and old S2 backups; runtime unchanged. No replay, overwrite or regeneration. Any deletion needs explicit owner decision after recoverability/path checks.",
+    "first_owner_attempt": {
+      "checked_at": "2026-10-02T15:50:17.0879930+03:00",
+      "stage": "K1",
+      "exit": 1,
+      "interactive_owner_terminal": true,
+      "password_captured": false
+    },
+    "failed_wrap_output_check": {
+      "exit": 0,
+      "directory_empty": true,
+      "envelope_exists": false
+    },
+    "first_early_metadata_verify": {
+      "exit": 1,
+      "records": [
+        {
+          "result": "FAIL",
+          "phase": "verify",
+          "preserve_partial_output": true
+        }
+      ]
+    },
+    "owner_password_read_by_agent": true,
+    "metadata_followup_requires_owner_success": true,
+    "blind_retry_blocked": true,
+    "input_change_authorization": "User said stopped interactive input and explicitly approved automatic reading of the existing private passphrase file after proposal",
+    "private_file_decryption_verified": true,
+    "manual_owner_terminal_verification": false,
+    "password_value_disclosed_to_model_or_output": false,
+    "first_retry_preflight": "PASS; empty output/no active writer/protected metadata equal",
+    "owner_retry_attempt": {
+      "checked_at": "2026-10-02T16:01:47.4088532+03:00",
+      "stage": "K1",
+      "exit": 130,
+      "interactive_owner_terminal": true,
+      "password_captured": false
+    },
+    "automatic_precheck": {
+      "active_output_writers": 0,
+      "safe_to_preflight": true
+    },
+    "first_automatic_attempt": {
+      "checked_at": "2026-10-02T16:05:23+03:00",
+      "result": "FAIL",
+      "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "scope": "authorized private-file K1/K2; no terminal secret input or capture",
+      "wrap_completed": false,
+      "download_completed": false,
+      "decrypt_verified": false,
+      "failure_phase": "local-preconditions",
+      "preserve_partial_output": true,
+      "do_not_repeat_wrap": true
+    },
+    "local_acl_issue": "Child Windows PowerShell 5 lacked Get-Acl in this environment; existing PowerShell 7.6.5 used successfully; no installation/policy change",
+    "automatic_result": {
+      "checked_at": "2026-10-02T16:08:59+03:00",
+      "result": "PASS",
+      "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "scope": "authorized private-file K1/K2; no terminal secret input or capture",
+      "wrap_completed": true,
+      "download_completed": true,
+      "decrypt_verified": true,
+      "preflight": "PASS",
+      "server_local_bytes_equal": true,
+      "private_acl_owner_system_only": true,
+      "server_output_mode_0600": true,
+      "protected_containers_unchanged": true,
+      "old_key_envelope_passphrase_metadata_unchanged": true,
+      "local_password_file_unchanged": true,
+      "plaintext_key_downloaded": false,
+      "plaintext_key_written": false,
+      "secret_output_or_fingerprint": false,
+      "telegram_used": false,
+      "owner_proof_created": false,
+      "destination": "C:\\Users\\krolo\\Documents\\marketplace-recovery\\beta\\e2-06-key-envelope-20261002.json"
+    }
   }
 }
