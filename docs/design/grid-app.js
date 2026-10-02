@@ -15,8 +15,8 @@
   $$('[data-icon]').forEach(n => n.innerHTML = icon(n.dataset.icon));
   const MAIN = $('#main'), PANEL = $('#panel'), MODAL = $('#modal');
   const NS = 'mw-grid-v2:';
-  const labels = {products:'Товары',overview:'Обзор',operations:'Операции',quality:'Качество данных',plan:'План-факт',team:'Команда и доступ'};
-  let profile = 'owner', store, view, page = 'products', activePanel = null, activeColumn = null, selected = new Set(), operationId = null, toastTimer;
+  const labels = {desk:'Моё рабочее место',purchases:'Закупки',products:'Товары',overview:'Обзор',operations:'Операции',quality:'Качество данных',plan:'План-факт',team:'Команда и доступ'};
+  let profile = 'owner', store, view, page = 'purchases', activePanel = null, activeColumn = null, selected = new Set(), operationId = null, toastTimer;
   const focusTargets = new WeakMap();
   function rememberFocus(dialog) {
     const node=document.activeElement;
@@ -43,7 +43,7 @@
       const result = {...v, columns:(v.columns || []).filter(c=>allowed.includes(c.id)), sorts:(v.sorts||[]).filter(x=>allowed.includes(x.field)), groups:(v.groups||[]).filter(x=>allowed.includes(x)), filters:(v.filters||[]).filter(x=>allowed.includes(x.field)), rules:(v.rules||[]).filter(x=>allowed.includes(x.field)&&(!x.targetField||allowed.includes(x.targetField)))};
       result.collapsed = []; return result;
     });
-    return {schemaVersion:2, views, active:views[0].id, drafts:{}, customFields:[], edits:{}, preferences:{start:'products',theme:'light'}};
+    return {schemaVersion:2, views, active:views[0].id, drafts:{}, customFields:[], edits:{}, preferences:{start:'purchases',theme:'light'}};
   }
   function loadStore() {
     try { const raw = JSON.parse(localStorage.getItem(NS + profile)); store = raw?.schemaVersion === 2 && Array.isArray(raw.views) && raw.views.length ? raw : initialStore(); }
@@ -95,6 +95,8 @@
   function renderMain() {
     $$('.nav-item[data-page]').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$('#breadcrumb').textContent=labels[page];document.title=labels[page]+' — рабочее пространство';
     MAIN.dataset.density=view.density;MAIN.dataset.zebra=String(view.zebra);MAIN.dataset.lines=String(view.rowLines);
+    if(page==='desk'||page==='purchases'){window.Workbench.render({main:MAIN,profile,section:page,toast,icon,openProduct:record,navigate:goPage});return;}
+    window.Workbench?.close();
     if(page!=='products'){renderSimple();return;}
     MAIN.innerHTML=`<div class="titlebar"><div class="title-copy"><h1>Товары <span class="title-count">${rows().length}</span></h1><p>Одни данные. Столько рабочих представлений, сколько нужно.</p></div><div class="title-actions">${scope()}<button class="btn" data-action="export">${icon('download')}Экспорт</button></div></div>
     <div class="view-strip"><div class="view-tabs" role="tablist" aria-label="Сохранённые представления">${store.views.map(v=>`<button class="view-tab ${v.id===view.id?'active':''}" role="tab" aria-selected="${v.id===view.id}" data-view="${esc(v.id)}">${icon(v.groups?.length?'group':'table')}${esc(v.name)}${store.drafts[v.id]?' <span class="draft-dot" title="Есть черновик">·</span>':''}</button>`).join('')}<button class="view-add" data-action="new-view" aria-label="Создать представление">${icon('plus')}</button></div><div class="view-state" id="view-state"></div></div>
@@ -226,7 +228,7 @@
   document.addEventListener('change',e=>{
     const n=e.target,d=n.dataset;
     if(n.id==='theme-choice'){setTheme(n.value);return;}
-    if(n.id==='profile'){if(dirty())store.drafts[view.id]=clone(view);else delete store.drafts[view.id];persist();profile=n.value;loadStore();selected.clear();operationId=null;closePanel();if(MODAL.open)MODAL.close();page=store.preferences.start||'products';$$('[data-page="team"]').forEach(x=>x.hidden=profile!=='owner');renderMain();return;}
+    if(n.id==='profile'){const previousPage=page;if(dirty())store.drafts[view.id]=clone(view);else delete store.drafts[view.id];persist();profile=n.value;loadStore();selected.clear();operationId=null;closePanel();if(MODAL.open)MODAL.close();page=previousPage==='desk'||previousPage==='purchases'?previousPage:store.preferences.start||'products';$$('[data-page="team"]').forEach(x=>x.hidden=profile!=='owner');renderMain();return;}
     if(d.config){const r=view[d.config][+d.index];r[d.key]=d.key==='value'||d.key==='value2'?(numeric(field(r.field))&&n.value!==''?Number(n.value):n.value):n.value;if(d.key==='field'){r.op=numeric(field(r.field))?'gt':'contains';r.value=numeric(field(r.field))?0:'';if(d.config==='rules')r.targetField=r.field;}changed();renderPanel();return;}
     if(d.groupIndex!==undefined){if(view.groups.includes(n.value)&&view.groups[+d.groupIndex]!==n.value){toast('Каждый уровень использует своё поле.');renderPanel();return;}view.groups[+d.groupIndex]=n.value;view.collapsed=[];changed();renderPanel();return;}
     if(n.hasAttribute('data-filter-mode')){view.filterMode=n.value;changed();return;}

@@ -9,7 +9,7 @@ try {
   document.documentElement.dataset.theme = saved?.schemaVersion === 2 && saved.preferences?.theme === 'dark' ? 'dark' : 'light';
 } catch { document.documentElement.dataset.theme = 'light'; }
 </script>
-<title>Товары — рабочее пространство</title><link rel="stylesheet" href="grid-style.css">
+<title>Закупки — рабочее пространство</title><link rel="stylesheet" href="grid-style.css"><link rel="stylesheet" href="workbench-style.css">
 </head>
 <body>
 <a class="skip-link" href="#main">К рабочей таблице</a>
@@ -20,20 +20,22 @@ try {
 <div class="workspace-pill"><span class="status-dot"></span>Демо-компания</div>
 <div class="nav-caption">Рабочее пространство</div>
 <nav id="navigation">
+<button class="nav-item" data-page="desk"><span data-icon="overview"></span>Моё рабочее место</button>
+<button class="nav-item active" data-page="purchases"><span data-icon="box"></span>Закупки</button>
 <button class="nav-item" data-page="overview"><span data-icon="overview"></span>Обзор</button>
-<button class="nav-item active" data-page="products"><span data-icon="table"></span>Товары<span class="nav-number">36</span></button>
+<button class="nav-item" data-page="products"><span data-icon="table"></span>Товары<span class="nav-number">36</span></button>
 <button class="nav-item" data-page="operations"><span data-icon="operations"></span>Операции</button>
 <button class="nav-item" data-page="quality"><span data-icon="check"></span>Качество данных</button>
 </nav>
 <div class="nav-caption">Развитие</div>
 <button class="nav-item" data-page="plan"><span data-icon="calendar"></span>План-факт<span class="nav-marker">позже</span></button>
 <button class="nav-item" data-page="team"><span data-icon="users"></span>Команда и доступ</button>
-<div class="nav-bottom"><a class="doc-link" href="guide.html"><span data-icon="book"></span>Описание системы</a><button class="nav-item" data-panel="preferences"><span data-icon="settings"></span>Рабочее место</button><span class="sidebar-version">Концепция · 30 сентября 2026</span></div>
+<div class="nav-bottom"><a class="doc-link" href="workspace-v3-guide.html"><span data-icon="book"></span>Описание системы</a><button class="nav-item" data-panel="preferences"><span data-icon="settings"></span>Рабочее место</button><span class="sidebar-version">Концепция v3 · 2 октября 2026</span></div>
 </aside>
 <div class="app-body">
 <header class="topbar">
 <button class="icon-button mobile-toggle" id="menu-toggle" aria-label="Открыть меню" aria-expanded="false"><span data-icon="menu"></span></button>
-<div class="breadcrumbs">Рабочее пространство <span>/</span> <strong id="breadcrumb">Товары</strong></div>
+<div class="breadcrumbs">Рабочее пространство <span>/</span> <strong id="breadcrumb">Закупки</strong></div>
 <div class="top-actions"><span class="demo-pill">Демонстрационные данные</span><button id="theme-toggle" class="btn theme-toggle" type="button" role="switch" aria-label="Тёмная тема" aria-checked="false" title="Включить тёмную тему"><span class="theme-label">Светлая</span></button><label class="profile-label" for="profile">Демо-профиль</label><select id="profile" aria-label="Демо-профиль"><option value="owner">Руководитель</option><option value="manager">Менеджер</option></select><span class="avatar" aria-hidden="true">Д</span></div>
 </header>
 <main id="main" class="workspace" tabindex="-1"></main>
@@ -41,6 +43,6 @@ try {
 <dialog id="panel" class="drawer" aria-labelledby="panel-title"></dialog>
 <dialog id="modal" class="modal" aria-labelledby="modal-title"></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-<script src="grid-engine.js"></script><script src="grid-app.js"></script>
+<script src="grid-engine.js"></script><script src="workbench-engine.js"></script><script src="workbench-app.js"></script><script src="grid-app.js"></script>
 </body></html>
 
