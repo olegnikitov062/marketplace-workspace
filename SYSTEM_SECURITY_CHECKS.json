@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-02T16:13:47+03:00",
+  "checked_at": "2026-10-02T16:22:32+03:00",
   "task": "E2-06",
   "status": "На проверке",
   "environment": "Historical S1 PostgreSQL suite and S2 main migration; current main source 14d9f48 unchanged. New isolated PostgreSQL 17.11 R2 on published 2c2f8f7: full real Chromium 10 PASS / exit 0 / pageerrors 0, actual operator CLI and readonly terminal SQL PASS; all R2 stopped and preserved.",
@@ -104,7 +104,7 @@
     "SQLite forward/reverse migration behavior; restore quarantine without membership change"
   ],
   "not_verified": [
-    "K3 owner custody and restore from manually stored/retrieved Telegram files; K1/K2 local ciphertext transfer and in-memory decrypt are verified, no Telegram transfer performed by agent",
+    "K3 returned-copy byte comparison and in-memory decryption not performed: owner reports download complete and explicitly declined additional verification; no technical K3 PASS claimed",
     "Real owner emergency proof is not provisioned; synthetic operator recovery verified separately",
     "Full export/RBAC/RLS remain adjacent-task dependencies"
   ],
@@ -116,8 +116,8 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes the local K1/K2 result commit; no deployment or server restart is required for this documentation result",
-    "K1/K2 completed under explicit approval including private-file passphrase input; K3 manual Telegram storage/retrieval remains owner action, not agent sending",
+    "Oleg reviews and pushes local result commits; no server deployment or restart is required for these documentation results",
+    "Owner declined further K3 copy checks; do not request paths or inspect key/password copies again without a new instruction. No Telegram sending by agent.",
     "New server operations, real owner emergency proof provisioning, cleanup or another rehearsal require a concrete separately approved scope; do not repeat used handoff/rehearsal resources"
   ],
   "secret_outputs": "No real accounts or external messages. Main beta TOTP key and encrypted envelope created privately outside Git/DB, independent file restore checked. No key values/fingerprints, passwords, recovery codes, tokens, cookies or personal data in reports/commits; Telegram transfer and owner custody not performed.",
@@ -1350,8 +1350,8 @@
     "telegram_used": false,
     "new_dependencies": false,
     "required_next": [
-      "K3 owner manual Telegram storage of both files and retrieval under fresh private filenames, then byte equality and in-memory decryption verification",
-      "Keep E2-06 On review while business export remains an adjacent dependency"
+      "No additional K3 copy checks: owner explicitly declined them after reporting downloads complete",
+      "Keep E2-06 On review for the working-export criterion dependent on E2-07/E2-08/E5-07"
     ],
     "preparation_must_not_repeat": true,
     "safe_rollback": "Preserve new server/local envelopes, now-used passphrase file and old S2 backups; runtime unchanged. No replay, overwrite or regeneration. Any deletion needs explicit owner decision after recoverability/path checks.",
@@ -1431,5 +1431,20 @@
       "owner_proof_created": false,
       "destination": "C:\\Users\\krolo\\Documents\\marketplace-recovery\\beta\\e2-06-key-envelope-20261002.json"
     }
+  },
+  "key_handoff_k3": {
+    "recorded_at": "2026-10-02T16:22:32+03:00",
+    "owner_download_report": "Все скачал, все нормально",
+    "owner_instruction": "Не надо проверять",
+    "status": "owner-reported download; additional K3 verification declined",
+    "returned_copy_paths_identified": false,
+    "downloaded_file_contents_read": false,
+    "byte_comparison_performed": false,
+    "decryption_performed": false,
+    "secret_fingerprint_recorded": false,
+    "server_contacted": false,
+    "telegram_accessed_by_agent": false,
+    "further_copy_verification_requested": false,
+    "previous_k1_k2_result": "PASS unchanged"
   }
 }
