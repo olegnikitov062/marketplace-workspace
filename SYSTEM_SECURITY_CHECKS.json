@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-01T17:58:26+03:00",
+  "checked_at": "2026-10-02T11:32:42+03:00",
   "task": "E2-06",
   "status": "На проверке",
   "environment": "Local checks, PostgreSQL 17.11 S1 and explicitly authorized main-beta S2; deployment PASS, task remains under review",
@@ -113,10 +113,9 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes this status/documentation commit himself",
-    "Real owner emergency-secret provisioning/recovery only on a separate explicit request",
-    "Transfer of encrypted key envelope and separate passphrase requires a private handoff arrangement; no secret values in chat",
-    "Any additional isolated operator/browser rehearsal infrastructure must first be described with exact new resources; old occupied probes must not be reused"
+    "Oleg reviews and pushes the local rehearsal preparation commit himself",
+    "Execute exactly docs/E2-06_OWNER_REHEARSAL.md only after separate approval: new isolated project/network/volume/four containers and one-shot bootstrap, synthetic keys/accounts/operator CLI, temporary localhost SSH tunnel/browser, stop only the new project",
+    "Real owner emergency-secret provisioning/recovery and main-key handoff remain separately authorized; no values in chat"
   ],
   "secret_outputs": "No real accounts or external messages. Main beta TOTP key and encrypted envelope created privately outside Git/DB, independent file restore checked. No key values/fingerprints, passwords, recovery codes, tokens, cookies or personal data in reports/commits; Telegram transfer and owner custody not performed.",
   "s0_s1": {
@@ -521,5 +520,93 @@
       "Owner custody of independently retained encrypted key backup and separate passphrase; Telegram not used",
       "Full export/RBAC/RLS remain adjacent-task dependencies"
     ]
+  },
+  "owner_rehearsal_preparation": {
+    "checked_at": "2026-10-02T11:32:42+03:00",
+    "status": "prepared locally; not executed or authorized on server",
+    "published_baseline_verified": "e3e538370b7dcebd590528bb62c3a9d035cab6c6",
+    "plan": "docs/E2-06_OWNER_REHEARSAL.md",
+    "project": "marketplace-e206-owner-check",
+    "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-20261002",
+    "new_containers": [
+      "postgres",
+      "web",
+      "controller",
+      "issuer"
+    ],
+    "database": "mw_beta in a NEW isolated cluster with cluster_name=marketplace-e206-owner-check",
+    "synthetic_accounts": 4,
+    "organizations": 2,
+    "real_operator_guard_unchanged": true,
+    "runtime_mfa_code_unchanged": true,
+    "local_checks": {
+      "checked_at": "2026-10-02T11:30:29+03:00",
+      "scope": "local preparation only; no SSH/containers/DB/browser lifecycle",
+      "python_ast": 3,
+      "compose_json_and_secret_boundaries": true,
+      "process_checks": [
+        {
+          "command": [
+            "beta/deploy/prepare_owner_rehearsal.py"
+          ],
+          "expected_exit": 0,
+          "actual_exit": 0
+        },
+        {
+          "command": [
+            "beta/deploy/prepare_owner_rehearsal.py",
+            "--apply",
+            "--revision",
+            "0000000000000000000000000000000000000000"
+          ],
+          "expected_exit": 1,
+          "actual_exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal",
+            "credentials",
+            "--private-pipe"
+          ],
+          "expected_exit": 1,
+          "actual_exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal_bootstrap"
+          ],
+          "expected_exit": 1,
+          "actual_exit": 1
+        },
+        {
+          "command": [
+            "--check",
+            "scripts/e2_06_owner_browser.cjs"
+          ],
+          "expected_exit": 0,
+          "actual_exit": 0
+        },
+        {
+          "command": [
+            "scripts/e2_06_owner_browser.cjs"
+          ],
+          "expected_exit": 1,
+          "actual_exit": 1
+        }
+      ],
+      "existing_playwright_and_chromium_available": true,
+      "new_dependencies_installed": false,
+      "runtime_auth_code_unchanged": true,
+      "server_rehearsal_executed": false
+    },
+    "server_ssh_this_step": false,
+    "new_dependencies": false,
+    "full_browser_verified": false,
+    "successful_operator_cli_verified": false,
+    "main_key_or_real_owner_proof_used": false,
+    "publication_by_oleg_required": true,
+    "new_resource_approval_required": true
   }
 }
