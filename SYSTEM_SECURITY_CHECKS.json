@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-02T13:58:37+03:00",
+  "checked_at": "2026-10-02T14:31:59+03:00",
   "task": "E2-06",
   "status": "На проверке",
   "environment": "Historical S1 PostgreSQL suite / S2 main migration / isolated owner rehearsal, plus authorized main-web Referrer-Policy rollout: SQL/runtime and anonymous Chromium Origin probe PASS; aggregate full rehearsal limitation remains; published corrected finish separately PASS on Linux/PostgreSQL with SQL readonly, preserved terminal fixture",
@@ -116,7 +116,7 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes the new local readonly-finish result documentation commit himself",
+    "Oleg reviews and pushes the local R2 preparation commit; execute only the concrete R2 plan after scope is confirmed",
     "Real owner emergency-secret provisioning/recovery and main-key handoff require separate concrete approval; no values in chat",
     "Any additional server/browser rehearsal requires a concrete bounded plan and separate approval; preserved terminal fixture must not be reseeded or blindly replayed"
   ],
@@ -935,5 +935,153 @@
     "public_tls_or_main_key_custody": false,
     "local_evidence": ".change-backups/2026-10-02/E2-06-finish-readonly/server-result.json",
     "limitation": "Separate final-state check; previous aggregate browser exit and global pageerror counter remain unverified"
+  },
+  "browser_r2_preparation": {
+    "checked_at": "2026-10-02T14:31:59+03:00",
+    "status": "prepared locally; not published or executed on server",
+    "scope_confirmation": "pending clarification of user approval; exact resources require review of docs/E2-06_BROWSER_R2.md",
+    "plan": "docs/E2-06_BROWSER_R2.md",
+    "project": "marketplace-e206-owner-check-r2",
+    "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002",
+    "new_compose": "beta/deploy/compose.owner-rehearsal-r2.json",
+    "protected_projects": [
+      "marketplace-beta",
+      "marketplace-e206-owner-check"
+    ],
+    "new_resources": [
+      "4 containers: postgres/web/controller/issuer",
+      "isolated PostgreSQL volume and internal network",
+      "closed synthetic secrets/fixture/operator output",
+      "one-off UID lookup/secret generation/bootstrap only"
+    ],
+    "real_operator_guard_unchanged": true,
+    "runtime_auth_code_unchanged": true,
+    "existing_images_and_local_browser_only": true,
+    "local_checks": {
+      "checked_at": "2026-10-02T14:27:06+03:00",
+      "python_ast": 3,
+      "node_syntax": "PASS",
+      "legacy_profile_default_preserved": true,
+      "r2_plan_paths_names": "PASS",
+      "unknown_project_and_windows_apply_denied": true,
+      "helpers_without_marker_denied": true,
+      "r2_compose_only_resource_identifiers_changed": true,
+      "isolated_mounts_secrets_and_limits": "PASS static",
+      "runtime_auth_ownership_config_lock_unchanged": true,
+      "commands": [
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\beta\\deploy\\prepare_owner_rehearsal.py"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\beta\\deploy\\prepare_owner_rehearsal.py",
+            "--project",
+            "marketplace-e206-owner-check-r2"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\beta\\deploy\\prepare_owner_rehearsal.py",
+            "--project",
+            "marketplace-beta"
+          ],
+          "exit": 2
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\beta\\deploy\\prepare_owner_rehearsal.py",
+            "--project",
+            "marketplace-e206-owner-check-r2",
+            "--apply",
+            "--revision",
+            "0000000000000000000000000000000000000000"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal",
+            "finish"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal_bootstrap"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\scripts\\e2_06_owner_browser.cjs"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal",
+            "finish"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal_bootstrap"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\scripts\\e2_06_owner_browser.cjs"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal",
+            "finish"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal_bootstrap"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\scripts\\e2_06_owner_browser.cjs"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "--check",
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\scripts\\e2_06_owner_browser.cjs"
+          ],
+          "exit": 0
+        }
+      ],
+      "server_ssh": false,
+      "browser_executed": false,
+      "effective_compose": "NOT CHECKED; Docker unavailable locally",
+      "new_dependencies": false
+    },
+    "full_browser_verified": false,
+    "server_ssh_this_step": false,
+    "new_dependencies": false,
+    "publication_by_oleg_required": true,
+    "owner_key_handoff_or_real_proof_included": false
   }
 }

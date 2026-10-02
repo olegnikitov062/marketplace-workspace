@@ -15,7 +15,8 @@ import sys
 import time
 from pathlib import Path
 
-PROJECT = "marketplace-e206-owner-check"
+PROJECTS = frozenset({"marketplace-e206-owner-check", "marketplace-e206-owner-check-r2"})
+PROJECT = os.environ.get("E206_REHEARSAL", "marketplace-e206-owner-check")
 ROOT = Path("/run/rehearsal-state")
 OUTPUT = Path("/run/recovery-output")
 STATE = ROOT / "fixture.json"
@@ -29,6 +30,7 @@ def expect(value):
 
 
 def guard():
+    expect(PROJECT in PROJECTS)
     expect(os.name == "posix" and os.environ.get("E206_REHEARSAL") == PROJECT)
     marker = ROOT / "manifest.json"
     expect(marker.is_file() and not marker.is_symlink())

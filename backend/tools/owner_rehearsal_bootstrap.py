@@ -6,11 +6,12 @@ from pathlib import Path
 
 import psycopg
 
-from tools.owner_rehearsal import PROJECT, ROOT, expect
+from tools.owner_rehearsal import PROJECT, PROJECTS, ROOT, expect
 
 
 def main():
     try:
+        expect(PROJECT in PROJECTS)
         expect(os.environ.get("E206_REHEARSAL") == PROJECT and os.environ.get("ENVIRONMENT") == "beta")
         expect(os.environ.get("TARGET_TEST", "false") == "false")
         expect(json.loads((ROOT / "manifest.json").read_text()) == {"project": PROJECT, "synthetic_only": True})

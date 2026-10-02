@@ -1,0 +1,408 @@
+{
+  "name": "marketplace-e206-owner-check-r2",
+  "services": {
+    "postgres": {
+      "container_name": "marketplace-e206-owner-check-r2-postgres",
+      "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+      "pull_policy": "never",
+      "restart": "no",
+      "mem_limit": "384m",
+      "cpus": "0.25",
+      "pids_limit": 96,
+      "logging": {
+        "driver": "none"
+      },
+      "networks": [
+        "private"
+      ],
+      "command": [
+        "postgres",
+        "-c",
+        "cluster_name=marketplace-e206-owner-check-r2",
+        "-c",
+        "log_statement=none",
+        "-c",
+        "log_min_error_statement=panic"
+      ],
+      "environment": {
+        "POSTGRES_DB": "mw_beta",
+        "POSTGRES_USER": "mw_beta_bootstrap",
+        "POSTGRES_PASSWORD_FILE": "/run/secrets/db_bootstrap_password",
+        "POSTGRES_INITDB_ARGS": "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      },
+      "secrets": [
+        {
+          "source": "pg_bootstrap_password",
+          "target": "db_bootstrap_password"
+        }
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "data",
+          "target": "/var/lib/postgresql/data"
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U mw_beta_bootstrap -d mw_beta"
+        ],
+        "interval": "3s",
+        "timeout": "3s",
+        "retries": 20
+      }
+    },
+    "bootstrap": {
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "pull_policy": "never",
+      "restart": "no",
+      "read_only": true,
+      "user": "10001:10001",
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "mem_limit": "256m",
+      "cpus": "0.25",
+      "pids_limit": 96,
+      "logging": {
+        "driver": "none"
+      },
+      "tmpfs": [
+        "/tmp:size=32m,mode=1777"
+      ],
+      "networks": [
+        "private"
+      ],
+      "environment": {
+        "ENVIRONMENT": "beta",
+        "PROCESS_MODE": "migrate",
+        "DB_HOST": "postgres",
+        "DB_PORT": "5432",
+        "DB_NAME": "mw_beta",
+        "DB_USER": "mw_beta_migrator",
+        "DB_PASSWORD_FILE": "/run/secrets/db_migrator_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false",
+        "E206_REHEARSAL": "marketplace-e206-owner-check-r2"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${REHEARSAL_SOURCE:?published detached Git backend required}",
+          "target": "/workspace",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/state",
+          "target": "/run/rehearsal-state",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "profiles": [
+        "operator"
+      ],
+      "command": [
+        "python",
+        "-m",
+        "tools.owner_rehearsal_bootstrap"
+      ],
+      "secrets": [
+        "db_bootstrap_password",
+        "db_migrator_password",
+        "db_web_password"
+      ]
+    },
+    "controller": {
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "pull_policy": "never",
+      "restart": "no",
+      "read_only": true,
+      "user": "10001:10001",
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "mem_limit": "256m",
+      "cpus": "0.25",
+      "pids_limit": 96,
+      "logging": {
+        "driver": "none"
+      },
+      "tmpfs": [
+        "/tmp:size=32m,mode=1777"
+      ],
+      "networks": [
+        "private"
+      ],
+      "environment": {
+        "ENVIRONMENT": "beta",
+        "PROCESS_MODE": "migrate",
+        "DB_HOST": "postgres",
+        "DB_PORT": "5432",
+        "DB_NAME": "mw_beta",
+        "DB_USER": "mw_beta_migrator",
+        "DB_PASSWORD_FILE": "/run/secrets/db_migrator_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false",
+        "E206_REHEARSAL": "marketplace-e206-owner-check-r2"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${REHEARSAL_SOURCE:?published detached Git backend required}",
+          "target": "/workspace",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/operator-output",
+          "target": "/run/recovery-output",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/state",
+          "target": "/run/rehearsal-state",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "container_name": "marketplace-e206-owner-check-r2-controller",
+      "profiles": [
+        "operator"
+      ],
+      "command": [
+        "python",
+        "-c",
+        "import time; time.sleep(86400)"
+      ],
+      "secrets": [
+        "db_migrator_password",
+        "django_secret_key",
+        "mfa_encryption_key"
+      ]
+    },
+    "web": {
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "pull_policy": "never",
+      "restart": "no",
+      "read_only": true,
+      "user": "10001:10001",
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "mem_limit": "384m",
+      "cpus": "0.25",
+      "pids_limit": 96,
+      "logging": {
+        "driver": "none"
+      },
+      "tmpfs": [
+        "/tmp:size=32m,mode=1777"
+      ],
+      "networks": [
+        "private"
+      ],
+      "environment": {
+        "ENVIRONMENT": "beta",
+        "PROCESS_MODE": "web",
+        "DB_HOST": "postgres",
+        "DB_PORT": "5432",
+        "DB_NAME": "mw_beta",
+        "DB_USER": "mw_beta_web",
+        "DB_PASSWORD_FILE": "/run/secrets/db_web_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${REHEARSAL_SOURCE:?published detached Git backend required}",
+          "target": "/workspace",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "container_name": "marketplace-e206-owner-check-r2-web",
+      "command": [
+        "gunicorn",
+        "config.wsgi:application",
+        "--bind",
+        "0.0.0.0:8000",
+        "--no-control-socket",
+        "--workers",
+        "1",
+        "--threads",
+        "2",
+        "--timeout",
+        "20",
+        "--access-logfile",
+        "/dev/null",
+        "--error-logfile",
+        "-"
+      ],
+      "secrets": [
+        "db_web_password",
+        "django_secret_key",
+        "mfa_encryption_key"
+      ]
+    },
+    "issuer": {
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "pull_policy": "never",
+      "restart": "no",
+      "read_only": true,
+      "user": "10001:10001",
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "mem_limit": "256m",
+      "cpus": "0.25",
+      "pids_limit": 96,
+      "logging": {
+        "driver": "none"
+      },
+      "tmpfs": [
+        "/tmp:size=32m,mode=1777"
+      ],
+      "networks": [
+        "private"
+      ],
+      "environment": {
+        "ENVIRONMENT": "beta",
+        "PROCESS_MODE": "migrate",
+        "DB_HOST": "postgres",
+        "DB_PORT": "5432",
+        "DB_NAME": "mw_beta",
+        "DB_USER": "mw_beta_migrator",
+        "DB_PASSWORD_FILE": "/run/secrets/db_migrator_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false",
+        "E206_REHEARSAL": "marketplace-e206-owner-check-r2"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${REHEARSAL_SOURCE:?published detached Git backend required}",
+          "target": "/workspace",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/operator-output",
+          "target": "/run/recovery-output",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/state",
+          "target": "/run/rehearsal-state",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "container_name": "marketplace-e206-owner-check-r2-issuer",
+      "profiles": [
+        "operator"
+      ],
+      "command": [
+        "python",
+        "-c",
+        "import time; time.sleep(86400)"
+      ],
+      "secrets": [
+        "db_migrator_password",
+        "django_secret_key",
+        "mfa_encryption_key",
+        "owner_recovery_verifier"
+      ]
+    }
+  },
+  "networks": {
+    "private": {
+      "name": "marketplace-e206-owner-check-r2-private",
+      "internal": true
+    }
+  },
+  "volumes": {
+    "data": {
+      "name": "marketplace-e206-owner-check-r2-data"
+    }
+  },
+  "secrets": {
+    "pg_bootstrap_password": {
+      "file": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/secrets/pg_bootstrap_password"
+    },
+    "db_web_password": {
+      "file": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/secrets/db_web_password"
+    },
+    "django_secret_key": {
+      "file": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/secrets/django_secret_key"
+    },
+    "mfa_encryption_key": {
+      "file": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/secrets/mfa_encryption_key"
+    },
+    "db_bootstrap_password": {
+      "file": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/secrets/db_bootstrap_password"
+    },
+    "db_migrator_password": {
+      "file": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/secrets/db_migrator_password"
+    },
+    "owner_recovery_verifier": {
+      "file": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002/operator-output/owner_recovery_verifier"
+    }
+  }
+}

@@ -9,8 +9,10 @@ const { promisify } = require('node:util');
 const { existsSync } = require('node:fs');
 const run = promisify(execFile);
 const BASE = 'http://127.0.0.1:18767';
-const CONTROLLER = 'marketplace-e206-owner-check-controller';
-const ISSUER = 'marketplace-e206-owner-check-issuer';
+const PROJECTS = new Set(['marketplace-e206-owner-check', 'marketplace-e206-owner-check-r2']);
+const PROJECT = process.env.E206_REHEARSAL ?? 'marketplace-e206-owner-check';
+const CONTROLLER = `${PROJECT}-controller`;
+const ISSUER = `${PROJECT}-issuer`;
 const modulePath = process.env.E206_PLAYWRIGHT_MODULE;
 const executablePath = process.env.E206_CHROMIUM;
 const revision = process.argv[2];
@@ -119,12 +121,15 @@ async function recovery(page, user, code, operator = false, success = true, pass
 }
 
 async function main() {
+  expect(PROJECTS.has(PROJECT));
   expect(/^[0-9a-f]{40}$/.test(revision || '') && modulePath && executablePath);
   expect(existsSync(modulePath) && existsSync(executablePath));
   expect(!process.env.DEBUG && !process.env.PWDEBUG); // Debug logging can contain form values.
   const { chromium } = require(modulePath); // No npm, npx, installer or browser download.
   const expectedSource = `/home/adm_user/marketplace-workspace/beta/app/releases/${revision}/backend`;
   for (const container of [CONTROLLER, ISSUER]) {
+    const labels = JSON.parse(await ssh(`docker inspect --format '{{json .Config.Labels}}' ${container}`));
+    expect(labels['com.docker.compose.project'] === PROJECT);
     const mounts = JSON.parse(await ssh(`docker inspect --format '{{json .Mounts}}' ${container}`));
     expect(mounts.some(m => m.Destination === '/workspace' && !m.RW && m.Source === expectedSource));
   }

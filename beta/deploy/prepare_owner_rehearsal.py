@@ -13,7 +13,9 @@ from pathlib import Path
 
 PROJECT = "marketplace-e206-owner-check"
 BETA = Path("/home/adm_user/marketplace-workspace/beta")
-ROOT = BETA / "rehearsals/e2-06-owner-20261002"
+PROFILES = {"marketplace-e206-owner-check": "e2-06-owner-20261002",
+            "marketplace-e206-owner-check-r2": "e2-06-owner-r2-20261002"}
+ROOT = BETA / "rehearsals" / PROFILES[PROJECT]
 IMAGE = "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72"
 POSTGRES = "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201"
 NAMES = [PROJECT + "-" + service for service in ("postgres", "web", "controller", "issuer")]
@@ -21,6 +23,20 @@ NAMES = [PROJECT + "-" + service for service in ("postgres", "web", "controller"
 
 def command(*args):
     return subprocess.check_output(args, stderr=subprocess.DEVNULL).decode().strip()
+
+
+def protected_rehearsal():
+    """R2 preserves the original completed fixture; no old secrets are read."""
+    if PROJECT != "marketplace-e206-owner-check-r2":
+        return None
+    original = "marketplace-e206-owner-check"
+    names = [original + "-" + service for service in ("postgres", "web", "controller", "issuer")]
+    rows = json.loads(command("docker", "inspect", *names))
+    if any(row["State"]["Running"] or row["Config"]["Labels"].get("com.docker.compose.project") != original for row in rows):
+        raise RuntimeError()
+    return [{"id": row["Id"], "image": row["Image"], "started": row["State"]["StartedAt"],
+             "mounts": sorted(row["Mounts"], key=lambda mount: mount["Destination"]),
+             "networks": sorted(row["NetworkSettings"]["Networks"]), "ports": row["NetworkSettings"]["Ports"]} for row in rows]
 
 
 def plan():
@@ -63,6 +79,7 @@ def apply(revision):
     baseline = [{"id": x["Id"], "image": x["Image"], "started": x["State"]["StartedAt"],
                  "mounts": sorted(x["Mounts"], key=lambda m: m["Destination"]),
                  "networks": sorted(x["NetworkSettings"]["Networks"]), "ports": x["NetworkSettings"]["Ports"]} for x in rows]
+    preserved = protected_rehearsal()
     if ROOT.parent.exists() and ROOT.parent.is_symlink():
         raise RuntimeError()
     ROOT.parent.mkdir(mode=0o700, exist_ok=True)
@@ -82,9 +99,9 @@ write(root/'secrets/pg_bootstrap_password',admin,PG_UID)
 for name in ['db_migrator_password','db_web_password','django_secret_key']:
  write(root/'secrets'/name,secrets.token_urlsafe(48).encode())
 write(root/'secrets/mfa_encryption_key',Fernet.generate_key())
-write(root/'state/manifest.json',json.dumps({'project':'marketplace-e206-owner-check','synthetic_only':True}).encode())
+write(root/'state/manifest.json',json.dumps({'project':PROJECT_NAME,'synthetic_only':True}).encode())
 for name in ['secrets','state','operator-output']:os.chown(root/name,10001,10001)
-""".replace("PG_UID", str(pg_uid))
+""".replace("PG_UID", str(pg_uid)).replace("PROJECT_NAME", repr(PROJECT))
     result = subprocess.run(["docker", "run", "--rm", "-i", "--pull", "never", "--network", "none", "--read-only", "--memory", "128m",
         "--pids-limit", "64", "--cap-drop", "ALL", "--cap-add", "CHOWN", "--cap-add", "DAC_OVERRIDE",
         "--security-opt", "no-new-privileges:true", "--user", "0:0", "--mount", f"type=bind,src={ROOT},dst=/rehearsal",
@@ -93,6 +110,9 @@ for name in ['secrets','state','operator-output']:os.chown(root/name,10001,10001
         raise RuntimeError()
     with os.fdopen(os.open(ROOT / "baseline.json", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w") as out:
         json.dump(baseline, out)
+    if preserved is not None:
+        with os.fdopen(os.open(ROOT / "preserved-rehearsal.json", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w") as out:
+            json.dump(preserved, out)
     print("Synthetic rehearsal files prepared; existing beta unchanged; do not repeat or remove partial files")
 
 
@@ -100,6 +120,9 @@ def verify(revision):
     if os.name != "posix" or not re.fullmatch(r"[0-9a-f]{40}", revision or ""):
         raise RuntimeError()
     source = BETA / "app/releases" / revision / "backend"
+    if PROJECT == "marketplace-e206-owner-check-r2":
+        if json.loads((ROOT / "preserved-rehearsal.json").read_text()) != protected_rehearsal():
+            raise RuntimeError()
     baseline = json.loads((ROOT / "baseline.json").read_text())
     ids = command("docker", "ps", "--no-trunc", "-q", "--filter", "label=com.docker.compose.project=marketplace-beta").split()
     if set(ids) != {row['id'] for row in baseline}:
@@ -152,7 +175,11 @@ if __name__ == "__main__":
     group.add_argument("--apply", action="store_true")
     group.add_argument("--verify", action="store_true")
     parser.add_argument("--revision")
+    parser.add_argument("--project", choices=sorted(PROFILES), default=PROJECT)
     args = parser.parse_args()
+    PROJECT = args.project
+    ROOT = BETA / "rehearsals" / PROFILES[PROJECT]
+    NAMES = [PROJECT + "-" + service for service in ("postgres", "web", "controller", "issuer")]
     if not args.apply and not args.verify:
         print(json.dumps(plan(), indent=2))
     else:
