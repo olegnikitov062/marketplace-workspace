@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-02T14:31:59+03:00",
+  "checked_at": "2026-10-02T14:49:58+03:00",
   "task": "E2-06",
   "status": "На проверке",
   "environment": "Historical S1 PostgreSQL suite / S2 main migration / isolated owner rehearsal, plus authorized main-web Referrer-Policy rollout: SQL/runtime and anonymous Chromium Origin probe PASS; aggregate full rehearsal limitation remains; published corrected finish separately PASS on Linux/PostgreSQL with SQL readonly, preserved terminal fixture",
@@ -23,7 +23,7 @@
     "trusted_device_seconds": 2592000,
     "recovery_codes": 10,
     "operator": "explicit Oleg request plus separate owner-bound emergency secret; enrollment-only permit",
-    "key_backup": "only Oleg restores; password-encrypted Telegram copy, password separate; no transfer performed"
+    "key_backup": "Only Oleg restores. Explicit 2026-10-02 update: encrypted envelope and a separate password file both in his Telegram; same-account compromise risk explained and accepted. New local password file created privately; no matching new envelope or Telegram transfer yet."
   },
   "dependencies": {
     "explicitly_approved": {
@@ -105,7 +105,7 @@
   "not_verified": [
     "Clean aggregate browser-runner exit after fixing its final blocked-password assertion; no blind replay on terminal fixture",
     "Global browser pageerror counter was not reached after the failing final RPC",
-    "Owner custody of independently retained encrypted key backup and separate passphrase; real owner proof not provisioned, Telegram not used",
+    "Owner custody and restore from the agreed Telegram files (envelope and passphrase together, risk explicitly accepted); real owner proof not provisioned, no Telegram transfer",
     "Full export/RBAC/RLS remain adjacent-task dependencies"
   ],
   "adjacent_task_dependencies": {
@@ -116,8 +116,8 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes the local R2 preparation commit; execute only the concrete R2 plan after scope is confirmed",
-    "Real owner emergency-secret provisioning/recovery and main-key handoff require separate concrete approval; no values in chat",
+    "Oleg reviews and pushes local R2 and key-handoff preparation commits; run the authorized R2 plan only from published Git source",
+    "Actual main-key K1/K2 wrap and download require separate concrete approval of docs/E2-06_KEY_HANDOFF.md; real owner proof remains separate; no values in chat",
     "Any additional server/browser rehearsal requires a concrete bounded plan and separate approval; preserved terminal fixture must not be reseeded or blindly replayed"
   ],
   "secret_outputs": "No real accounts or external messages. Main beta TOTP key and encrypted envelope created privately outside Git/DB, independent file restore checked. No key values/fingerprints, passwords, recovery codes, tokens, cookies or personal data in reports/commits; Telegram transfer and owner custody not performed.",
@@ -939,7 +939,7 @@
   "browser_r2_preparation": {
     "checked_at": "2026-10-02T14:31:59+03:00",
     "status": "prepared locally; not published or executed on server",
-    "scope_confirmation": "pending clarification of user approval; exact resources require review of docs/E2-06_BROWSER_R2.md",
+    "scope_confirmation": "Explicit user clarification: full browser rehearsal plus preparation of key handoff; R2 execution awaits publication by Oleg",
     "plan": "docs/E2-06_BROWSER_R2.md",
     "project": "marketplace-e206-owner-check-r2",
     "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002",
@@ -1082,6 +1082,43 @@
     "server_ssh_this_step": false,
     "new_dependencies": false,
     "publication_by_oleg_required": true,
-    "owner_key_handoff_or_real_proof_included": false
+    "owner_key_handoff_or_real_proof_included": false,
+    "server_scope_authorized": true
+  },
+  "key_handoff_preparation": {
+    "checked_at": "2026-10-02T14:49:58+03:00",
+    "scope": "preparation plus explicitly requested new local passphrase file; no main key read or server handoff",
+    "plan": "docs/E2-06_KEY_HANDOFF.md",
+    "local_passphrase_file": {
+      "created_at": "2026-10-02T14:46:01.7528102+03:00",
+      "file": "C:\\Users\\krolo\\Documents\\marketplace-recovery\\beta\\e2-06-backup-passphrase-20261002.txt",
+      "created_new": true,
+      "private_acl_owner_and_system_only": true,
+      "directory_inheritance_disabled": true,
+      "readback_equal": true,
+      "password_displayed": false,
+      "envelope_created": false,
+      "server_contacted": false,
+      "telegram_used": false
+    },
+    "encrypted_copy_created": false,
+    "main_key_read": false,
+    "server_ssh": false,
+    "telegram_used": false,
+    "owner_choice": "both files in Telegram, explicitly accepted after same-account compromise explanation",
+    "new_password_matches_existing_s2_envelope": false,
+    "proposed_new_envelope": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-owner-key-envelope-20261002/envelope.json",
+    "proposed_local_envelope": "C:/Users/krolo/Documents/marketplace-recovery/beta/e2-06-key-envelope-20261002.json",
+    "new_verifier": "backend/tools/check_mfa_key_envelope.py",
+    "verification_tests": {
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test account_security.tests.test_key_envelope_check --settings=config.security_local_checks --verbosity=1",
+      "passed": 3,
+      "skipped": 0,
+      "seconds": 1.084,
+      "database_or_real_secrets": false,
+      "limitations": "Synthetic in-memory encryption and mocked TTY refusals; real owner terminal and actual envelope handoff untested"
+    },
+    "new_dependencies": false,
+    "existing_windows_plaintext_restore_guard_preserved": true
   }
 }
