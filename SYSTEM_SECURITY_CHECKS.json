@@ -1,17 +1,18 @@
 {
-  "checked_at": "2026-10-02T13:41:10+03:00",
+  "checked_at": "2026-10-02T13:58:37+03:00",
   "task": "E2-06",
   "status": "На проверке",
-  "environment": "Historical S1 PostgreSQL suite / S2 main migration / isolated owner rehearsal, plus authorized main-web Referrer-Policy rollout: SQL/runtime and anonymous Chromium Origin probe PASS; aggregate full rehearsal limitation remains",
+  "environment": "Historical S1 PostgreSQL suite / S2 main migration / isolated owner rehearsal, plus authorized main-web Referrer-Policy rollout: SQL/runtime and anonymous Chromium Origin probe PASS; aggregate full rehearsal limitation remains; published corrected finish separately PASS on Linux/PostgreSQL with SQL readonly, preserved terminal fixture",
   "source": {
     "branch": "beta",
     "preparation_commit": "5eb4b42",
-    "published_beta_verified": "91b079a30569b6fc38997b47fe18d6af723b9321",
+    "published_beta_verified": "dd9803597941e9516676e8f03aa0cb6f48f1eb92",
     "implementation_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
     "push_performed": false,
     "server_contacted": true,
     "owner_rehearsal_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
-    "main_runtime_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9"
+    "main_runtime_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "server_repository_revision": "dd9803597941e9516676e8f03aa0cb6f48f1eb92"
   },
   "accepted_policy": {
     "mandatory_mfa": "active organization owners; optional enrollment for others",
@@ -104,7 +105,6 @@
   "not_verified": [
     "Clean aggregate browser-runner exit after fixing its final blocked-password assertion; no blind replay on terminal fixture",
     "Global browser pageerror counter was not reached after the failing final RPC",
-    "Corrected finish command from published aeb7842 (included in beta 91b079a) has not been run on Linux; equivalent correct invariants were independently verified read-only",
     "Owner custody of independently retained encrypted key backup and separate passphrase; real owner proof not provisioned, Telegram not used",
     "Full export/RBAC/RLS remain adjacent-task dependencies"
   ],
@@ -116,7 +116,7 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes the new local rollout-result documentation commit himself",
+    "Oleg reviews and pushes the new local readonly-finish result documentation commit himself",
     "Real owner emergency-secret provisioning/recovery and main-key handoff require separate concrete approval; no values in chat",
     "Any additional server/browser rehearsal requires a concrete bounded plan and separate approval; preserved terminal fixture must not be reseeded or blindly replayed"
   ],
@@ -880,5 +880,60 @@
     "safe_fallback": "Reviewed MFA deny-auth maintenance or stop only beta web; no base-only/accounts fallback or live DB restore",
     "real_owner_proof_or_key_handoff": false,
     "local_evidence": ".change-backups/2026-10-02/E2-06-main-web-fix/"
+  },
+  "owner_rehearsal_finish_readonly": {
+    "checked_at": "2026-10-02T13:58:37+03:00",
+    "authorization": "Explicit current user approval of isolated readonly finish step; no full browser replay",
+    "revision": "dd9803597941e9516676e8f03aa0cb6f48f1eb92",
+    "server_repository": "dd9803597941e9516676e8f03aa0cb6f48f1eb92",
+    "result": "PASS",
+    "postgres": "17.11 on preserved isolated rehearsal cluster",
+    "project": "marketplace-e206-owner-check",
+    "git_only_release": true,
+    "runtime_auth_code_unchanged": true,
+    "compose_lock_equal": true,
+    "existing_image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+    "controller_before": {
+      "id": "84f1a954e2090ea31299d0ecf0a81425bc8052930f23164c7232393534e7ff1d",
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "started": "2026-10-02T09:17:10.952928746Z"
+    },
+    "controller_after": {
+      "id": "6a6602e6b86644bae7614e8f7bb2194c578984883c8d8c8482143d79f3feaf1b",
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "started": "2026-10-02T10:54:52.361712667Z"
+    },
+    "controller_source_readonly": "/home/adm_user/marketplace-workspace/beta/app/releases/dd9803597941e9516676e8f03aa0cb6f48f1eb92/backend",
+    "preserved_postgres_id": "3bd4dae16b095ffa63fe40bc7b384e2c27efb1bae8cc2afc5bcc91d035a38ea7",
+    "sql_default_and_transaction_readonly": "on; explicitly checked before and after helper",
+    "real_database_identity": "mw_beta / mw_beta_migrator / mw_beta_migrator",
+    "finish": {
+      "finish": "PASS",
+      "sql_readonly_confirmed": true,
+      "actual_migrator_identity": true,
+      "private_files_unchanged": true,
+      "state": {
+        "ownership_unchanged": true,
+        "active": false,
+        "recovery_required": false,
+        "factors": 1,
+        "sessions": 0,
+        "trusted": 0,
+        "used_permits": 1,
+        "invitations": 0
+      }
+    },
+    "blocked_password_unusable_assertion": "PASS in published helper",
+    "all_rehearsal_containers_stopped": true,
+    "main_metadata_unchanged": true,
+    "saved_web_issuer_unchanged": true,
+    "volume_and_private_files_preserved": true,
+    "original_baseline_preserved": true,
+    "new_databases_roles_keys": false,
+    "migrations_acl_dump_restore": false,
+    "full_browser_repeated": false,
+    "public_tls_or_main_key_custody": false,
+    "local_evidence": ".change-backups/2026-10-02/E2-06-finish-readonly/server-result.json",
+    "limitation": "Separate final-state check; previous aggregate browser exit and global pageerror counter remain unverified"
   }
 }
