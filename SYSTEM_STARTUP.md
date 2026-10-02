@@ -66,7 +66,9 @@ C2 подтвердил actual SQL role/ACL/guards, live/ready 200, session 401/
 Перед C2 сохранены новый `/home/adm_user/marketplace-workspace/beta/backups/database/e2-05-main-before-20261001T104501Z.dump` и соседний `.acl.json` (оба 0600), restore в mw_beta_test_e2_05_main_before сверён. Hashes/точный состав/ограничения — docs/E2-05_WEB_ROLE.md §8. Исторический E2-05 base-only откат после включения MFA запрещён; использовать только maintenance из актуального раздела E2-06 ниже. Добавочную схему/данные/worktree/dumps сохранять, zero/live restore не применять. Удалять release, который смонтирован web, нельзя.
 
 
-## Текущая beta после E2-06 S2 — 2026-10-01T17:58:26+03:00
+## Историческая beta после E2-06 S2 — 2026-10-01T17:58:26+03:00
+
+Снимок и команды этого раздела описывают S2. Текущий рабочий source и команды приведены в следующем разделе от 02.10.2026; source19a6d6a не возвращать в обычный web из-за браузерного CSRF-отказа.
 
 Рабочий код: `/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e/backend` (read-only), SHA `19a6d6a9bbdd06c683f68f438215dd99cba6204e`. Dependency image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72`; опубликованный Git checkout f4f6059. Web `42ea5c212f1fc3062df51214ca97428e4613741adb8fac7897e494faaeb8e106`, StartedAt `2026-10-01T14:48:24.953976075Z`. PostgreSQL контейнеры прежние, только private сеть, host ports отсутствуют. Django migrations: account_security:2/accounts:2/auth:12/contenttypes:2/otp_static:3/otp_totp:3/ownership:2/sessions:1/two_factor:9 (squash учитывает заменённые записи).
 
@@ -97,3 +99,34 @@ Maintenance на старом закреплённом dependency image с E2-06
 До применения сохранены dump `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump`, `.acl.json` и `.snapshot.json` (0600), все 18 таблиц сверены с `mw_beta_test_e2_06_main_before`; имя занято. Копия ключа `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-main-key-envelope/envelope.json`, пароль отдельно `/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-recovery/backup-passphrase`, проверенный восстановленный файл `/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-restored/key`; все 0600/UID10001, каталоги 0700. Это серверные закрытые файлы, не подтверждённая независимая копия у Олега. Не включать значения/ключевые fingerprints в отчёты. Telegram/реальные owner proof/передача не выполнялись.
 
 Runtime/анонимный Chromium smoke успешны, аккаунты/организации/членства/факторы/permits/codes отсутствуют; 2 анонимные зашифрованные wizard sessions от проверок. Все oneoff/browser/tunnel закрыты. Полные критерии E2-06 остаются «На проверке»; точный протокол и границы — SYSTEM_SECURITY_CHECKS.json/s2 и docs/E2-06_SESSIONS_MFA.md.
+
+
+## Текущая beta E2-06 после исправления Referrer-Policy — 2026-10-02T13:41:10+03:00
+
+Рабочий source: `/home/adm_user/marketplace-workspace/beta/app/releases/14d9f48cee6eb2a9d7eca9f029770af51c45b6d9/backend`, read-only. Серверный repository: `91b079a30569b6fc38997b47fe18d6af723b9321` (опубликованная чистая beta), он не определяет runtime без SECURITY_SOURCE. Web ID `53dd81f2850521138b9596d1aa5f910f7889785d8836329efbbfb0f7b57654c5`, StartedAt `2026-10-02T10:28:21.386899228Z`. Dependency image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72` и lock прежние; UID10001:10001, read-only, 384MiB/0.25CPU, marketplace-beta-private, без host ports. Прежний отдельный TOTP key смонтирован read-only, 0600/UID10001.
+
+Оба PostgreSQL сохранили ID/image/StartedAt/mounts/networks/ports. Схема и SQL-права не менялись: account_security:2/accounts:2/auth:12/contenttypes:2/otp_static:3/otp_totp:3/ownership:2/sessions:1/two_factor:9. Ограниченный web LOGIN/guards, live/ready и анонимный Chromium Origin прошли; native POST отменён до отправки. Основных аккаунтов/организаций/членств нет; 6 анонимных зашифрованных Django sessions после GET-проверок. Точный протокол: SYSTEM_SECURITY_CHECKS.json/main_web_referrer_rollout; локальный SYSTEM_STARTUP_CHECKS.json обновлён, остаётся вне Git.
+
+Следующие команды воспроизводят текущую конфигурацию, но не разрешают будущий рестарт без задания. Нужны security overlay и все три переменные; BACKEND_IMAGE служит базовой интерполяции и maintenance. Base-only и accounts overlay запрещены:
+
+```sh
+base=/home/adm_user/marketplace-workspace/beta
+release="$base/app/releases/14d9f48cee6eb2a9d7eca9f029770af51c45b6d9"
+export BACKEND_IMAGE=marketplace-workspace/backend:e2-03-0210f27a7ab1
+export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72
+export SECURITY_SOURCE="$release/backend"
+dc() { docker compose --project-name marketplace-beta --env-file /dev/null --project-directory "$base/deploy" -f "$base/deploy/compose.json" "$@"; }
+dc -f "$release/beta/deploy/compose.security-web.json" config --quiet </dev/null
+dc -f "$release/beta/deploy/compose.security-web.json" up -d --no-deps web </dev/null
+dc -f "$release/beta/deploy/compose.security-web.json" exec -T web python -m tools.verify_security_web_runtime </dev/null
+```
+
+Безопасный fallback при отдельном задании — MFA maintenance либо остановка только web, с теми же base/release/env/dc:
+
+```sh
+dc -f "$release/beta/deploy/compose.security-maintenance.json" up -d --no-deps web </dev/null
+# либо остановить только web, если maintenance не подтверждён:
+dc -f "$release/beta/deploy/compose.security-web.json" stop web </dev/null
+```
+
+Checkpoint `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-referrer-before-20261002T102702Z.metadata.json` сохранён 0600 и сверен read-back. Прежние S2 backup/key файлы сохранены; нового dump/restore в этом code-only этапе нет. Схему/данные/ключи/releases/старые тестовые БД не удалять, live restore/reverse migrations не выполнять. Maintenance фактически проверялся в S1/S2, здесь не включался. E2-06 остаётся «На проверке»; независимой копии у Олега и реального owner proof пока нет. Сохранённый owner rehearsal остановлен; его baseline основного web относится к периоду до этого обновления.

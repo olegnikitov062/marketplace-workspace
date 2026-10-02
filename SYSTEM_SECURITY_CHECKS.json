@@ -1,16 +1,17 @@
 {
-  "checked_at": "2026-10-02T12:35:46+03:00",
+  "checked_at": "2026-10-02T13:41:10+03:00",
   "task": "E2-06",
   "status": "На проверке",
-  "environment": "S1 PostgreSQL/S2 main-beta history plus isolated PostgreSQL 17.11 owner rehearsal: 8 functional browser stages and actual operator CLI PASS; aggregate runner exited 1 due test-only final password expectation, correct final state verified independently",
+  "environment": "Historical S1 PostgreSQL suite / S2 main migration / isolated owner rehearsal, plus authorized main-web Referrer-Policy rollout: SQL/runtime and anonymous Chromium Origin probe PASS; aggregate full rehearsal limitation remains",
   "source": {
     "branch": "beta",
     "preparation_commit": "5eb4b42",
-    "published_beta_verified": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "published_beta_verified": "91b079a30569b6fc38997b47fe18d6af723b9321",
     "implementation_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
     "push_performed": false,
     "server_contacted": true,
-    "owner_rehearsal_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9"
+    "owner_rehearsal_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "main_runtime_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9"
   },
   "accepted_policy": {
     "mandatory_mfa": "active organization owners; optional enrollment for others",
@@ -96,15 +97,14 @@
     "live membership demotion denies actual invitation in existing session",
     "real synthetic CSV download then permanent denial after revocation",
     "two synthetic organizations and foreign session/organization denial",
-    "CSRF, no-store, no-referrer, locmem only",
+    "CSRF, no-store, same-origin Referrer-Policy, locmem only",
     "encrypted database sessions, wrong/missing key fail closed",
     "SQLite forward/reverse migration behavior; restore quarantine without membership change"
   ],
   "not_verified": [
     "Clean aggregate browser-runner exit after fixing its final blocked-password assertion; no blind replay on terminal fixture",
     "Global browser pageerror counter was not reached after the failing final RPC",
-    "Corrected finish command from the next published Git revision has not been run on Linux; equivalent correct invariants were independently verified read-only",
-    "Main beta still runs 19a6d6a: Referrer-Policy source switch requires separate web-only approval",
+    "Corrected finish command from published aeb7842 (included in beta 91b079a) has not been run on Linux; equivalent correct invariants were independently verified read-only",
     "Owner custody of independently retained encrypted key backup and separate passphrase; real owner proof not provisioned, Telegram not used",
     "Full export/RBAC/RLS remain adjacent-task dependencies"
   ],
@@ -116,9 +116,9 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes the local test-helper fix and rehearsal results himself",
-    "Execute only docs/E2-06_WEB_FIX_ROLLOUT.md after separate main-web approval; no migration/ACL/key/DB changes",
-    "Real owner emergency-secret provisioning/recovery and main-key handoff remain separately authorized; no values in chat"
+    "Oleg reviews and pushes the new local rollout-result documentation commit himself",
+    "Real owner emergency-secret provisioning/recovery and main-key handoff require separate concrete approval; no values in chat",
+    "Any additional server/browser rehearsal requires a concrete bounded plan and separate approval; preserved terminal fixture must not be reseeded or blindly replayed"
   ],
   "secret_outputs": "No real accounts or external messages. Main beta TOTP key and encrypted envelope created privately outside Git/DB, independent file restore checked. No key values/fingerprints, passwords, recovery codes, tokens, cookies or personal data in reports/commits; Telegram transfer and owner custody not performed.",
   "s0_s1": {
@@ -612,9 +612,7 @@
     "publication_by_oleg_required": true,
     "new_resource_approval_required": true
   },
-  "known_runtime_blockers": [
-    "Main beta 19a6d6a still sets no-referrer; native Chromium form POST sends Origin:null and is denied by CSRF. Published 14d9f48 same-origin fix passed actual MFA lifecycle on the isolated PostgreSQL stand."
-  ],
+  "known_runtime_blockers": [],
   "owner_rehearsal_run": {
     "checked_at": "2026-10-02T12:10:06+03:00",
     "authorization": "Explicit current approval of docs/E2-06_OWNER_REHEARSAL.md; synthetic isolated resources only",
@@ -764,5 +762,123 @@
       "all_django_sessions_encrypted": true,
       "scope": "read-only SQL; earlier anonymous login GET smoke may create wizard sessions, not account sessions"
     }
+  },
+  "main_web_referrer_rollout": {
+    "checked_at": "2026-10-02T13:41:10+03:00",
+    "authorization": "Explicit user approval of docs/E2-06_WEB_FIX_ROLLOUT.md; main beta web only",
+    "result": "PASS for bounded main-web rollout; E2-06 remains under review",
+    "published_beta_verified": "91b079a30569b6fc38997b47fe18d6af723b9321",
+    "server_repository": "91b079a30569b6fc38997b47fe18d6af723b9321",
+    "runtime_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "git_only_sources": true,
+    "application_diff": "Referrer-Policy no-referrer to same-origin only; other backend differences are tests/tools",
+    "requirements_lock_equal": true,
+    "effective_compose_only_source_changed": true,
+    "metadata_checkpoint": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-referrer-before-20261002T102702Z.metadata.json",
+    "metadata_mode": "0600",
+    "metadata_no_overwrite_and_readback_equal": true,
+    "previous_s2_backup_and_key_files_modes": "Existing regular files 0600 checked; contents not printed; no new dump/restore",
+    "web": {
+      "id": "53dd81f2850521138b9596d1aa5f910f7889785d8836329efbbfb0f7b57654c5",
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "started": "2026-10-02T10:28:21.386899228Z",
+      "source": "/home/adm_user/marketplace-workspace/beta/app/releases/14d9f48cee6eb2a9d7eca9f029770af51c45b6d9/backend",
+      "source_readonly": true,
+      "key_readonly": true,
+      "user": "10001:10001",
+      "memory_bytes": 402653184,
+      "cpu_limit": 0.25,
+      "networks": [
+        "marketplace-beta-private"
+      ],
+      "host_ports": false
+    },
+    "postgres_containers": [
+      {
+        "name": "marketplace-beta-postgres-1",
+        "unchanged": true,
+        "id": "91be5743052654c70d705931cef4836010ab8ccfb6ec762ee6c64b65fe7ba1aa",
+        "started": "2026-09-30T12:54:18.474323573Z"
+      },
+      {
+        "name": "marketplace-beta-postgres-test-1",
+        "unchanged": true,
+        "id": "3ff21600f2cf72f786937471ced078d98d2467ac37160d81946386f129aed444",
+        "started": "2026-09-30T12:54:18.485908353Z"
+      }
+    ],
+    "postgres_metadata_unchanged": true,
+    "migrations": {
+      "accounts": 2,
+      "account_security": 2,
+      "auth": 12,
+      "contenttypes": 2,
+      "otp_static": 3,
+      "otp_totp": 3,
+      "ownership": 2,
+      "sessions": 1,
+      "two_factor": 9
+    },
+    "migration_or_acl_changes": false,
+    "actual_restricted_web_sql_contract": "PASS; mw_beta / mw_beta_web / mw_beta_web; exact column privileges and guards",
+    "runtime_smoke": "PASS; live/ready 200, session 401, legacy login GET 405, MFA login GET 200",
+    "browser": {
+      "browser": "PASS",
+      "login_get": 200,
+      "referrer_policy": "same-origin",
+      "no_store": true,
+      "secure_session_and_csrf_cookies": true,
+      "origin_same": true,
+      "origin_not_null": true,
+      "cookie_present": true,
+      "csrf_field_present": true,
+      "post_aborted_before_server": true,
+      "credentials_sent_to_server": false,
+      "page_errors": 0,
+      "scope": "anonymous header/native Origin only; no main account login and no public TLS proof"
+    },
+    "final_state": [
+      {
+        "final_counts": {
+          "User": 0,
+          "Organization": 0,
+          "Membership": 0,
+          "Authenticator": 0,
+          "RecoveryCode": 0,
+          "RecoveryPermit": 0,
+          "AccountSession": 0,
+          "AttemptBucket": 0,
+          "AuthDenial": 0
+        },
+        "anonymous_encrypted_sessions": 6,
+        "migrations_unchanged": true,
+        "runtime_key_file_mode_uid_correct": true,
+        "no_password_attempt_reached_main": true
+      },
+      {
+        "postgres_metadata_unchanged": true,
+        "web_running_new_id": true,
+        "rehearsal_stopped": true,
+        "server_git_clean": true
+      }
+    ],
+    "anonymous_encrypted_django_sessions_before": 4,
+    "anonymous_encrypted_django_sessions_after": 6,
+    "anonymous_session_change_reason": "GET login smoke creates encrypted anonymous wizard sessions; account sessions remain zero",
+    "new_keys_or_roles_or_databases": false,
+    "locmem_only": true,
+    "external_flags_disabled": true,
+    "synthetic_download_probe_disabled": true,
+    "rehearsal_containers_remain_stopped": true,
+    "rehearsal_baseline_note": "Saved rehearsal baseline predates this authorized main-web replacement; retain it as historical evidence, do not rewrite or blindly rerun pre_browser on terminal fixture",
+    "browser_and_tunnel_closed": true,
+    "public_tls_verified": false,
+    "new_dependency_install_or_build": false,
+    "full_postgresql_suite_repeated": false,
+    "full_browser_lifecycle_repeated": false,
+    "fallback_used": false,
+    "safe_fallback": "Reviewed MFA deny-auth maintenance or stop only beta web; no base-only/accounts fallback or live DB restore",
+    "real_owner_proof_or_key_handoff": false,
+    "local_evidence": ".change-backups/2026-10-02/E2-06-main-web-fix/"
   }
 }
