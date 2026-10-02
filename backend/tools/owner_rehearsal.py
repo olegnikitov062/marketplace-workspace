@@ -300,7 +300,10 @@ def main():
                         from ownership.models import User
                         expect(not result["active"] and result["sessions"] == result["trusted"] == 0)
                         expect(result["used_permits"] == 1 and result["invitations"] == 0)
-                        expect(User.objects.get(pk=data["users"]["owner"]["id"]).check_password(data["next_password"]))
+                        # E2-05 block_account intentionally destroys the password.
+                        # Successful login with the new password is checked by
+                        # the browser before block, never after it.
+                        expect(not User.objects.get(pk=data["users"]["owner"]["id"]).has_usable_password())
         print(json.dumps(result))
     except Exception:
         print("Synthetic owner rehearsal refused; preserve state; no details disclosed", file=sys.stderr)

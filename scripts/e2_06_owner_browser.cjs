@@ -222,9 +222,12 @@ async function main() {
     expect(await member.locator('[name="token-otp_token"]').count() === 0);
     await postExistingForm(member, '/auth/logout');
     mark('unenrolled-member-password-login');
+    phase = 'final-state';
+    expect(pageErrors === 0);
+    mark('no-browser-script-errors');
     const final = await rpc('finish');
-    expect(final.ownership_unchanged && final.invitations === 0 && pageErrors === 0);
-    mark('unchanged-organizations-memberships-and-no-browser-errors');
+    expect(final.ownership_unchanged && final.invitations === 0);
+    mark('unchanged-organizations-memberships-and-blocked-password');
     process.stdout.write(JSON.stringify({ result: 'PASS', checks: passed.length, fullBrowser: true, actualOperatorCli: true,
       limits: 'synthetic isolated cluster; no real-owner proof or main-key custody; no public TLS or business export' }) + '\n');
   } finally {

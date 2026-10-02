@@ -1,15 +1,16 @@
 {
-  "checked_at": "2026-10-02T12:10:06+03:00",
+  "checked_at": "2026-10-02T12:35:46+03:00",
   "task": "E2-06",
   "status": "На проверке",
-  "environment": "S1 PostgreSQL/S2 beta evidence retained; new isolated owner rehearsal partial, native browser CSRF failure found; fix tested locally only",
+  "environment": "S1 PostgreSQL/S2 main-beta history plus isolated PostgreSQL 17.11 owner rehearsal: 8 functional browser stages and actual operator CLI PASS; aggregate runner exited 1 due test-only final password expectation, correct final state verified independently",
   "source": {
     "branch": "beta",
     "preparation_commit": "5eb4b42",
-    "published_beta_verified": "6ec715f5a1343ef7cccc5f89beea606433f31d03",
+    "published_beta_verified": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
     "implementation_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
     "push_performed": false,
-    "server_contacted": true
+    "server_contacted": true,
+    "owner_rehearsal_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9"
   },
   "accepted_policy": {
     "mandatory_mfa": "active organization owners; optional enrollment for others",
@@ -100,10 +101,11 @@
     "SQLite forward/reverse migration behavior; restore quarantine without membership change"
   ],
   "not_verified": [
-    "Full browser enrollment/TOTP/recovery/device/session lifecycle after the local Referrer-Policy fix",
-    "Successful issue_owner_recovery CLI with actual operator identity/private proof; prepare CLI alone passed on synthetic stand",
-    "PostgreSQL/beta validation and main-beta deployment of the local Referrer-Policy fix",
-    "Owner custody of independently retained encrypted key backup and separate passphrase; Telegram not used",
+    "Clean aggregate browser-runner exit after fixing its final blocked-password assertion; no blind replay on terminal fixture",
+    "Global browser pageerror counter was not reached after the failing final RPC",
+    "Corrected finish command from the next published Git revision has not been run on Linux; equivalent correct invariants were independently verified read-only",
+    "Main beta still runs 19a6d6a: Referrer-Policy source switch requires separate web-only approval",
+    "Owner custody of independently retained encrypted key backup and separate passphrase; real owner proof not provisioned, Telegram not used",
     "Full export/RBAC/RLS remain adjacent-task dependencies"
   ],
   "adjacent_task_dependencies": {
@@ -114,8 +116,8 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes the local Referrer-Policy fix; same isolated rehearsal continuation is already authorized",
-    "Main-beta source update after isolated acceptance requires a separate web-only plan/approval",
+    "Oleg reviews and pushes the local test-helper fix and rehearsal results himself",
+    "Execute only docs/E2-06_WEB_FIX_ROLLOUT.md after separate main-web approval; no migration/ACL/key/DB changes",
     "Real owner emergency-secret provisioning/recovery and main-key handoff remain separately authorized; no values in chat"
   ],
   "secret_outputs": "No real accounts or external messages. Main beta TOTP key and encrypted envelope created privately outside Git/DB, independent file restore checked. No key values/fingerprints, passwords, recovery codes, tokens, cookies or personal data in reports/commits; Telegram transfer and owner custody not performed.",
@@ -611,7 +613,7 @@
     "new_resource_approval_required": true
   },
   "known_runtime_blockers": [
-    "Published 19a6d6a/6ec715f auth responses set no-referrer; native Chromium POST sends Origin:null and Django CSRF denies before credentials. Main beta not changed in this run; local same-origin fix awaits user publication and isolated validation."
+    "Main beta 19a6d6a still sets no-referrer; native Chromium form POST sends Origin:null and is denied by CSRF. Published 14d9f48 same-origin fix passed actual MFA lifecycle on the isolated PostgreSQL stand."
   ],
   "owner_rehearsal_run": {
     "checked_at": "2026-10-02T12:10:06+03:00",
@@ -704,5 +706,63 @@
       "No main-key custody/Telegram transfer",
       "No business export/RBAC/RLS acceptance"
     ]
+  },
+  "owner_rehearsal_retry": {
+    "checked_at": "2026-10-02T12:35:46+03:00",
+    "revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "authorization": "Continuation of the explicitly authorized isolated owner rehearsal; no main-web update",
+    "project": "marketplace-e206-owner-check",
+    "postgres": "17.11",
+    "saved_fixture_pre_browser": "PASS; no reseed, no bucket/password reset",
+    "lock_compose_sql_runtime_isolation": "PASS",
+    "browser_functional_stages": [
+      "mandatory-enrollment-invalid-expired-valid-one-time-code-display",
+      "totp-login-replay-denial-owner-disable-denial-csrf",
+      "logout-current-selected-session-reauth-trust-and-logout-all",
+      "backup-code-single-use-limited-reenrollment-session-revocation",
+      "operator-proof-role-binding-single-use-permit-limited-recovery",
+      "password-change-revokes-trust-and-retains-mfa",
+      "block-revokes-session-denies-code-and-operator-recovery",
+      "unenrolled-member-password-login"
+    ],
+    "functional_pass_count": 8,
+    "aggregate_runner_exit": 1,
+    "aggregate_failure": "Final helper incorrectly expected next password after E2-05 block_account; block intentionally sets unusable password",
+    "actual_operator_cli": "PASS: getpass with echo disabled, wrong proof/wrong owner/nonowner/blocked refusals, one-use permit, no ownership/password changes by CLI",
+    "correct_final_state_readonly": {
+      "correct_final_state": "PASS",
+      "blocked_owner_password_unusable": true,
+      "old_and_new_passwords_rejected": true,
+      "all_sessions_and_trust_revoked": true,
+      "single_permit_consumed": true,
+      "ownership_unchanged": true,
+      "private_operator_outputs": true,
+      "denied_operator_outputs_absent": true,
+      "sessions_and_totp_encrypted": true,
+      "codes_hashed": true,
+      "plaintext_otp_tables_empty": true,
+      "locmem": true,
+      "users": 4,
+      "organizations": 2,
+      "memberships": 5
+    },
+    "global_browser_pageerror_count": "Not reached after failing final RPC; do not claim zero",
+    "test_script_fix": "Local only: finish expects unusable password after block; report pageerror check before final RPC and identify final-state phase",
+    "runtime_auth_code_changed_this_turn": false,
+    "new_fixture_or_repeated_browser_run": false,
+    "containers_stopped": 4,
+    "private_volume_and_files_preserved": true,
+    "main_beta_metadata_unchanged": true,
+    "main_beta_runtime_sql_smoke": "PASS; main remains 19a6d6a with no-referrer defect",
+    "main_rollout_plan": "docs/E2-06_WEB_FIX_ROLLOUT.md",
+    "main_rollout_authorized": false,
+    "owner_key_custody_or_real_proof": "Not performed",
+    "business_export_rbac_rls": "Adjacent tasks, not accepted here",
+    "main_final_counts": {
+      "main_business_and_security_counts_zero": true,
+      "anonymous_django_sessions": 4,
+      "all_django_sessions_encrypted": true,
+      "scope": "read-only SQL; earlier anonymous login GET smoke may create wizard sessions, not account sessions"
+    }
   }
 }
