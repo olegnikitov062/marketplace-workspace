@@ -1,18 +1,19 @@
 {
-  "checked_at": "2026-10-02T14:49:58+03:00",
+  "checked_at": "2026-10-02T15:23:05+03:00",
   "task": "E2-06",
   "status": "На проверке",
-  "environment": "Historical S1 PostgreSQL suite / S2 main migration / isolated owner rehearsal, plus authorized main-web Referrer-Policy rollout: SQL/runtime and anonymous Chromium Origin probe PASS; aggregate full rehearsal limitation remains; published corrected finish separately PASS on Linux/PostgreSQL with SQL readonly, preserved terminal fixture",
+  "environment": "Historical S1 PostgreSQL suite and S2 main migration; current main source 14d9f48 unchanged. New isolated PostgreSQL 17.11 R2 on published 2c2f8f7: full real Chromium 10 PASS / exit 0 / pageerrors 0, actual operator CLI and readonly terminal SQL PASS; all R2 stopped and preserved.",
   "source": {
     "branch": "beta",
     "preparation_commit": "5eb4b42",
-    "published_beta_verified": "dd9803597941e9516676e8f03aa0cb6f48f1eb92",
+    "published_beta_verified": "2c2f8f737262267d29d06ab40d7bef3571693745",
     "implementation_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
     "push_performed": false,
     "server_contacted": true,
     "owner_rehearsal_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
     "main_runtime_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
-    "server_repository_revision": "dd9803597941e9516676e8f03aa0cb6f48f1eb92"
+    "server_repository_revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+    "browser_r2_revision": "2c2f8f737262267d29d06ab40d7bef3571693745"
   },
   "accepted_policy": {
     "mandatory_mfa": "active organization owners; optional enrollment for others",
@@ -103,8 +104,6 @@
     "SQLite forward/reverse migration behavior; restore quarantine without membership change"
   ],
   "not_verified": [
-    "Clean aggregate browser-runner exit after fixing its final blocked-password assertion; no blind replay on terminal fixture",
-    "Global browser pageerror counter was not reached after the failing final RPC",
     "Owner custody and restore from the agreed Telegram files (envelope and passphrase together, risk explicitly accepted); real owner proof not provisioned, no Telegram transfer",
     "Full export/RBAC/RLS remain adjacent-task dependencies"
   ],
@@ -116,7 +115,7 @@
   },
   "server_plan": "docs/E2-06_SESSIONS_MFA.md",
   "authorization_required": [
-    "Oleg reviews and pushes local R2 and key-handoff preparation commits; run the authorized R2 plan only from published Git source",
+    "Oleg reviews and pushes the local R2 result commit; no deployment or server restart is needed for this documentation-only result",
     "Actual main-key K1/K2 wrap and download require separate concrete approval of docs/E2-06_KEY_HANDOFF.md; real owner proof remains separate; no values in chat",
     "Any additional server/browser rehearsal requires a concrete bounded plan and separate approval; preserved terminal fixture must not be reseeded or blindly replayed"
   ],
@@ -1083,7 +1082,8 @@
     "new_dependencies": false,
     "publication_by_oleg_required": true,
     "owner_key_handoff_or_real_proof_included": false,
-    "server_scope_authorized": true
+    "server_scope_authorized": true,
+    "execution_result": "Historical preparation record; completed execution is recorded separately in browser_r2_run"
   },
   "key_handoff_preparation": {
     "checked_at": "2026-10-02T14:49:58+03:00",
@@ -1120,5 +1120,197 @@
     },
     "new_dependencies": false,
     "existing_windows_plaintext_restore_guard_preserved": true
+  },
+  "browser_r2_run": {
+    "checked_at": "2026-10-02T15:23:05+03:00",
+    "status": "PASS",
+    "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+    "project": "marketplace-e206-owner-check-r2",
+    "plan": "docs/E2-06_BROWSER_R2.md",
+    "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002",
+    "authorization": "Explicit full isolated browser rehearsal plus preparation of key handoff; published revision verified after Oleg reported push",
+    "git_source_only": true,
+    "runtime_auth_code_unchanged_from_main": true,
+    "requirements_lock_equal_to_existing_image": true,
+    "effective_compose_actual_mounts_limits_isolation": "PASS",
+    "new_dependencies_or_image_build": false,
+    "setup": {
+      "exit": 0,
+      "records": [
+        {
+          "phase": "preflight",
+          "result": "PASS",
+          "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+          "main_unchanged": true,
+          "old_stand_stopped": true,
+          "runtime_auth_unchanged": true,
+          "lock_equal": true
+        },
+        {
+          "phase": "migrations-and-web-grants",
+          "result": "PASS"
+        },
+        {
+          "phase": "ready-for-browser",
+          "result": "PASS",
+          "ip": "172.24.0.4",
+          "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+          "main_unchanged": true,
+          "old_stand_unchanged": true,
+          "operator_prepared": true,
+          "restricted_web_runtime": true
+        }
+      ]
+    },
+    "browser": {
+      "exit": 0,
+      "result": "PASS",
+      "checks": 10,
+      "fullBrowser": true,
+      "actualOperatorCli": true,
+      "limits": "synthetic isolated cluster; no real-owner proof or main-key custody; no public TLS or business export",
+      "passed_phases": [
+        "mandatory-enrollment-invalid-expired-valid-one-time-code-display",
+        "totp-login-replay-denial-owner-disable-denial-csrf",
+        "logout-current-selected-session-reauth-trust-and-logout-all",
+        "backup-code-single-use-limited-reenrollment-session-revocation",
+        "operator-proof-role-binding-single-use-permit-limited-recovery",
+        "password-change-revokes-trust-and-retains-mfa",
+        "block-revokes-session-denies-code-and-operator-recovery",
+        "unenrolled-member-password-login",
+        "no-browser-script-errors",
+        "unchanged-organizations-memberships-and-blocked-password"
+      ],
+      "pageerrors": 0
+    },
+    "initial_supplemental_audit": {
+      "exit": 1,
+      "records": [
+        {
+          "phase": "finalize",
+          "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+          "failure_phase": "readonly-terminal-state",
+          "all_r2_stopped": true,
+          "containers": [
+            {
+              "name": "/marketplace-e206-owner-check-r2-postgres",
+              "id": "5a7d72c7f4cff7c74ff6c3443222d2a7be6a3ed0dd07a8ba12de26a5163574fd",
+              "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+              "started": "2026-10-02T12:13:14.164034994Z",
+              "finished": "2026-10-02T12:21:11.565004381Z"
+            },
+            {
+              "name": "/marketplace-e206-owner-check-r2-web",
+              "id": "e37f7c1d464cfa1114c628f9507951793f1296802566b2fd1c72aab20f928b8c",
+              "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+              "started": "2026-10-02T12:14:02.851530251Z",
+              "finished": "2026-10-02T12:21:12.488815035Z"
+            },
+            {
+              "name": "/marketplace-e206-owner-check-r2-controller",
+              "id": "da1663aa36beadf0feefa280fa495c46effc89fb542648117dc0865ac6492024",
+              "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+              "started": "2026-10-02T12:13:24.598903584Z",
+              "finished": "2026-10-02T12:21:26.478773528Z"
+            },
+            {
+              "name": "/marketplace-e206-owner-check-r2-issuer",
+              "id": "af12d208282c9512bbb2bf853119e018b02913c146231202457682f140785f95",
+              "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+              "started": "2026-10-02T12:14:02.844200134Z",
+              "finished": "2026-10-02T12:21:26.477329859Z"
+            }
+          ],
+          "main_metadata_unchanged": true,
+          "old_stand_stopped_unchanged": true,
+          "volume_preserved": true,
+          "private_files_preserved": true,
+          "server_repository": "2c2f8f737262267d29d06ab40d7bef3571693745",
+          "result": "FAIL"
+        }
+      ]
+    },
+    "final": {
+      "phase": "finalize",
+      "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "browser_repeated": false,
+      "only_saved_pg_controller_started": true,
+      "terminal": {
+        "finish": "PASS",
+        "sql_readonly": true,
+        "actual_migrator_login": true,
+        "private_files_unchanged": true,
+        "private_file_modes_0600": true,
+        "postgres_version": "17.11 (Debian 17.11-1.pgdg12+2)",
+        "migrations": 36,
+        "users": 4,
+        "organizations": 2,
+        "memberships": 5,
+        "locmem_only": true,
+        "state": {
+          "ownership_unchanged": true,
+          "active": false,
+          "recovery_required": false,
+          "factors": 1,
+          "sessions": 0,
+          "trusted": 0,
+          "used_permits": 1,
+          "invitations": 0
+        }
+      },
+      "restricted_web_runtime_after": "not repeated; web remains stopped",
+      "all_r2_stopped": true,
+      "containers": [
+        {
+          "name": "/marketplace-e206-owner-check-r2-postgres",
+          "id": "5a7d72c7f4cff7c74ff6c3443222d2a7be6a3ed0dd07a8ba12de26a5163574fd",
+          "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+          "started": "2026-10-02T12:22:05.775855914Z",
+          "finished": "2026-10-02T12:22:18.909298547Z"
+        },
+        {
+          "name": "/marketplace-e206-owner-check-r2-web",
+          "id": "e37f7c1d464cfa1114c628f9507951793f1296802566b2fd1c72aab20f928b8c",
+          "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+          "started": "2026-10-02T12:14:02.851530251Z",
+          "finished": "2026-10-02T12:21:12.488815035Z"
+        },
+        {
+          "name": "/marketplace-e206-owner-check-r2-controller",
+          "id": "da1663aa36beadf0feefa280fa495c46effc89fb542648117dc0865ac6492024",
+          "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+          "started": "2026-10-02T12:22:10.034917739Z",
+          "finished": "2026-10-02T12:22:33.760659204Z"
+        },
+        {
+          "name": "/marketplace-e206-owner-check-r2-issuer",
+          "id": "af12d208282c9512bbb2bf853119e018b02913c146231202457682f140785f95",
+          "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+          "started": "2026-10-02T12:14:02.844200134Z",
+          "finished": "2026-10-02T12:21:26.477329859Z"
+        }
+      ],
+      "main_metadata_unchanged": true,
+      "old_stand_stopped_unchanged": true,
+      "volume_preserved": true,
+      "private_files_preserved": true,
+      "server_repository": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "result": "PASS"
+    },
+    "audit_correction": "Supplemental contact-domain check used User.email instead of AccountContact.email; original browser exit 0 unchanged. Only saved postgres/controller were briefly started for corrected SQL readonly audit, then stopped; no full browser retry or fixture reset.",
+    "tunnel_closed": true,
+    "main_source": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "main_key_read_or_handoff": false,
+    "old_fixture_reused_or_reset": false,
+    "clock_throttle_or_last_t_modified": false,
+    "raw_secret_trace_screenshot_outputs": false,
+    "dump_restore_or_s1_matrix_repeated": false,
+    "limitations": [
+      "Synthetic isolated cluster only; real owner account or emergency proof not provisioned",
+      "Main-key K1/K2/K3 remain pending separate approval and owner verification",
+      "Business export/RBAC/RLS are adjacent tasks; synthetic revocation remains separate S1 evidence"
+    ],
+    "safe_rollback": "All four R2 containers already stopped; retain volume, network, closed files and Git release; no replay, delete, reset or live restore",
+    "evidence_directory": ".change-backups/2026-10-02/E2-06-browser-r2-run/"
   }
 }
