@@ -1,16 +1,89 @@
 {
   "task": "E2-07",
-  "recorded_at": "2026-10-05T12:29:58+03:00",
+  "recorded_at": "2026-10-05T13:25:00+03:00",
   "status": "На проверке",
   "source_branch": "beta",
   "published_before_implementation": "d6385c5d209aadaf864923be5205fdbdb6abc5be",
   "publication_method": "git ls-remote --heads origin beta; live GitHub check",
-  "implementation_published": false,
-  "server_contacted": false,
-  "postgresql_checked": false,
-  "limited_sql_login_checked": false,
-  "network_web_checked": false,
-  "backup_restore_checked": false,
+  "implementation_published": true,
+  "server_contacted": true,
+  "postgresql_checked": true,
+  "limited_sql_login_checked": true,
+  "network_web_checked": true,
+  "backup_restore_checked": true,
+  "server_checks": {
+    "authorization": "Explicit permission after live publication verification; isolated rehearsal only",
+    "revision": "3369e3196753804655a7ae0cc9a845395545036e",
+    "implementation_commit": "10c2af059abd2dedd17785c44c67dfb143e085ed",
+    "source_delivery": "Git fetch beta, fast-forward repository, clean detached release; no source uploads or server source edits",
+    "project": "marketplace-e207-20261005-01a10b2d",
+    "postgresql": "17.11 (Debian 17.11-1.pgdg12+2)",
+    "suite": {
+      "command": "python manage.py test access_control.tests account_security.tests.test_http --keepdb --noinput --verbosity=1",
+      "settings": "config.settings; PostgreSQL test_mw_beta in new isolated cluster",
+      "discovered": 72,
+      "passed": 70,
+      "errors": 2,
+      "failures": 0,
+      "skipped": 0,
+      "exit_code": 1,
+      "seconds": 703.878,
+      "error_cause": "Two static PreparationTests expect the whole repository; runtime mounts backend only, so /beta/deploy files are absent",
+      "concurrency_cases_passed": 5,
+      "migration_reverse_forward": "PASS; guards preserve revoked grants, zero only on empty access schema",
+      "full_suite_rerun": false
+    },
+    "static_rerun": {
+      "command": "python manage.py test access_control.tests.test_preparation --settings=config.access_local_checks --verbosity=1",
+      "source_mount": "same published release read-only at /source; workdir /source/backend",
+      "network": "none",
+      "secret_mounts": 0,
+      "database_used": false,
+      "passed": 2,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.012,
+      "exit_code": 0,
+      "note": "Separate static evidence, not two additional PostgreSQL tests. First unittest invocation refused by offline-settings command guard, before any tests ran"
+    },
+    "limited_login_http": "PASS; session_user=current_user=mw_beta_web, CSRF, Grant revoke/regrant, old link denial, platform support open/close",
+    "operator_commands": "PASS: actual guarded assign-platform and grant-platform",
+    "sql_denials": {
+      "scenario_count": 10,
+      "additional_platform_subject_probes": 2,
+      "sqlstate": "42501",
+      "additional_probes": ["platform Grant INSERT", "platform Grant revocation UPDATE"],
+      "probe_changes_persisted": false
+    },
+    "network_smoke": "PASS twice: Gunicorn live/ready, anonymous session denial, login method, MFA login page and web ACL/guards. Authenticated scenarios use Django HTTP client with real SQL LOGIN, not network/browser",
+    "restore": {
+      "database": "mw_e207_01a10b2d_restore",
+      "dump": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-07-20261005-01a10b2d/backups/access-after.dump",
+      "sha256": "0410d3a91c47d559491a6483e7c2628ae825c7da284e0327941a7e0b00d7fc16",
+      "pg_restore_exit_code": 0,
+      "public_rows_equal": true,
+      "grant_unrevoke_denied": true,
+      "restored_sessions_and_links_quarantined": true,
+      "original_database_unchanged_by_restore": true
+    },
+    "resources": {
+      "postgres_container": "05bb79ce05c893d41719493eb83e5c61b58df80ccf8cd3acc887e587666929b3",
+      "web_container": "cefb655163f711ef12326d3d5af6e54fd01cdf1c083fab3c1c3cf195592ca5fc",
+      "controller_container": "059c33fc04e8800c1af39fafe9d760687dffc366bbc98a09eaa8d9f0025ac742",
+      "network": "390ab14bb1a57c718096c8ce4d377988581f5cc767731c542a29b9e28b3145f8",
+      "volume": "marketplace-e207-20261005-01a10b2d-data",
+      "volume_created_at": "2026-10-05T10:01:52Z",
+      "all_stopped": true,
+      "oom_killed": false,
+      "exit_codes": {"postgres": 0, "web": 0, "controller": 137},
+      "controller_exit_note": "Idle time.sleep process stopped by Compose; OOMKilled=false; test processes exited separately",
+      "resources_preserved": true
+    },
+    "main_beta_runtime": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "main_beta_and_old_rehearsal_metadata_unchanged": true,
+    "release_clean": true,
+    "final_server_check_at": "2026-10-05T10:24:29+00:00"
+  },
   "dependencies_installed": false,
   "real_keys_read": false,
   "k3_rechecked": false,
@@ -71,16 +144,10 @@
     "server_plan_bash_syntax": "PASS: bash -n only; sandbox process restriction required local escalation, no server actions",
     "preexisting_document_diff_preserved": "PASS"
   },
-  "postgresql_pending": [
-    "two owners suspending each other",
-    "issuance racing issuer suspension",
-    "raw concurrent last-owner grant revocation",
-    "download racing grant revocation",
-    "two operator administrator revocations",
-    "composite foreign keys and deferred owner protection",
-    "actual limited LOGIN HTTP and SQL denials",
-    "network Gunicorn smoke",
-    "migration rollback/forward and dump/restore quarantine"
+  "postgresql_pending": [],
+  "acceptance_pending": [
+    "Owner review of new E2-07 evidence and original aggregate test exit 1 with separate successful static rerun",
+    "Main beta rollout and verification require a new concrete plan and separate authorization; current runtime remains E2-06"
   ],
   "earlier_failures_fixed": [
     "legacy unbound export fixtures adapted to Grant",
@@ -89,9 +156,11 @@
     "recovery token fixture refreshed after login"
   ],
   "backups": ".change-backups/E2-07-20261005-115038",
+  "server_evidence_document_backups": ".change-backups/E2-07-server-20261005-130657",
   "docs": [
     "docs/E2-07_GRANTS.md",
-    "docs/E2-07_SERVER_PLAN.md"
+    "docs/E2-07_SERVER_PLAN.md",
+    "docs/E2-07_SERVER_RESULTS.md"
   ],
   "limitations": [
     "No RLS/full-layer isolation E2-08",
