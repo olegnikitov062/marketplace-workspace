@@ -1,6 +1,6 @@
-# E2-03 — инструкция воспроизведения
+# Beta — текущий E2-07 и история воспроизведения
 
-Текущее состояние после отдельно разрешённого E2-06 S2 (01.10.2026): основной web/БД обновлены, backend закреплён read-only Git worktree 19a6d6a, используется MFA dependency image и отдельный ключ. Обычный запуск требует compose.security-web.json, SECURITY_SOURCE и SECURITY_IMAGE; команды в актуальном разделе SYSTEM_STARTUP.md. Исторические base-only/accounts overlay и E2-05 откат ниже запрещены после MFA.
+Текущее состояние после отдельно разрешённого E2-07 rollout (05.10.2026): основной web/БД обновлены, backend закреплён read-only Git worktree cf6f4ccd48106d9a44a64703bcfd79e49513ec3e, прежний MFA dependency image и secret mounts. Обычный запуск требует compose.security-web.json, SECURITY_SOURCE и SECURITY_IMAGE; команды в последнем разделе E2-07 SYSTEM_STARTUP.md. Исторические base-only/accounts overlay и обычный E2-06 ниже запрещены: они обходят MFA или Grant. Безопасный отказ — остановка только web, не автоматический rollback старого приложения.
 
 Проверенная сборка e2-03-0210f27a7ab1. Production и внешние интеграции запрещены. Только новый проект; команды не изменяют другие Compose projects или Caddy.
 
@@ -123,3 +123,13 @@ S2 runtime PASS: реальная mw_beta_web, точные ACL/guards, live/rea
 Metadata до переключения: `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-referrer-before-20261002T102702Z.metadata.json` (0600, no-overwrite, read-back equal). Старые S2 dump/key envelope проверены по наличию/режимам; нового dump/restore нет. Новый ID/StartedAt, обязательные environment/overlay и команды запуска/maintenance — в последнем разделе [SYSTEM_STARTUP.md](../SYSTEM_STARTUP.md); текущий протокол — SYSTEM_SECURITY_CHECKS.json/main_web_referrer_rollout. Ранние разделы описывают историю.
 
 E2-06 «На проверке»: ограничения полного browser runner, независимое хранение ключа владельцем и рабочий экспорт остаются. Main anonymous pageerrors=0 не подтверждает счётчик прежнего полного rehearsal. Реальные owner proof/передача ключевой копии требуют отдельного конкретного разрешения. Старый baseline rehearsal сохраняется как исторический: main web изменён именно этим разрешённым этапом. Не переиспользовать занятые БД/probes/terminal fixture; не запускать обычный старый web или live restore.
+
+## Текущая beta E2-07 — 2026-10-05T14:19:06+03:00
+
+По отдельно разрешённому [E2-07_MAIN_ROLLOUT.md](E2-07_MAIN_ROLLOUT.md) основной web работает на read-only `cf6f4ccd48106d9a44a64703bcfd79e49513ec3e/backend`, прежнем security image и secret mounts. Свежий main dump/restore, две миграции и ограниченный SQL-переход прошли; TEMP отозван у PUBLIC/web. Реальная web LOGIN-роль, 10 SQL-отказов и 10 network anonymous health/auth/default-deny/CSRF проверок — PASS. Подтверждённое окно stop→ready9мин30с. Два PostgreSQL и все 11 сохранённых rehearsal-контейнеров неизменны. Аккаунты/организации/Grant не создавались; anonymous encrypted sessions6→7.
+
+Текущие source/image/env/команды — в последнем разделе E2-07 [SYSTEM_STARTUP.md](../SYSTEM_STARTUP.md). Обязательны compose.security-web.json, SECURITY_SOURCE и SECURITY_IMAGE; не применять base-only/accounts overlay, обычный старый E2-06 или изолированный helper с другим cluster_name. Fallback — остановить только web; обратная схема/restore или возврат к старому коду требуют отдельного плана. Никакого обхода MFA или Grant.
+
+Сохранены checkpoint `beta/backups/database/e2-07-main-20261005-01a10b2d` и закрытая restore-БД `mw_e207_main_restore_20261005_01a10b2d`. Эти имена заняты. Dump mode0600, SHA256 `267dcecac7a3434870f09915deee1b6950a43df672c1eedad6dea2086e006529`; сравнение30таблиц/11sequences и ACL прошло, две формы CHECK после pg_restore проверены на эквивалентность. Не удалять и не переиспользовать ресурсы, не запускать сохранённые стенды без нового допуска. Штатное потребление старых secret mounts было отдельно разрешено; секреты не выводились/не копировались, K3 не проверялся.
+
+E2-07 технически «Готово» в согласованном синтетическом объёме; E2-06 остаётся «На проверке» с прежним ограничением рабочего экспорта и зафиксированным ограничением K3. UI/worker/RLS/финансовая фильтрация/реальные роли D3/браузерная и TLS-проверка основной E2-07 не выполнены и не объявляются частью результата. Протокол — SYSTEM_GRANT_CHECKS.json/main_rollout_result; исторические факты выше не переписывались.

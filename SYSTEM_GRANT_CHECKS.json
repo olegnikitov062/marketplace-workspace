@@ -1,7 +1,7 @@
 {
   "task": "E2-07",
-  "recorded_at": "2026-10-05T13:25:00+03:00",
-  "status": "На проверке",
+  "recorded_at": "2026-10-05T14:19:06+03:00",
+  "status": "Готово",
   "source_branch": "beta",
   "published_before_implementation": "d6385c5d209aadaf864923be5205fdbdb6abc5be",
   "publication_method": "git ls-remote --heads origin beta; live GitHub check",
@@ -85,7 +85,8 @@
     "final_server_check_at": "2026-10-05T10:24:29+00:00"
   },
   "dependencies_installed": false,
-  "real_keys_read": false,
+  "real_keys_read": true,
+  "real_keys_read_scope": "Only explicitly authorized ordinary SQL/Django/MFA service secret mounts and db_bootstrap_password in the postgres backup process; no manual inspection, value output, copying, handoff or K3",
   "k3_rechecked": false,
   "push_performed": false,
   "local_checks": [
@@ -145,10 +146,8 @@
     "preexisting_document_diff_preserved": "PASS"
   },
   "postgresql_pending": [],
-  "acceptance_pending": [
-    "Owner review of new E2-07 evidence and original aggregate test exit 1 with separate successful static rerun",
-    "Main beta rollout and verification require separate authorization of docs/E2-07_MAIN_ROLLOUT.md; current runtime remains E2-06"
-  ],
+  "acceptance_pending": [],
+  "completion_scope": "E2-07 technical criteria: synthetic resource/action/scope permissions and primary beta deployment verified. No D3/business-user, production or working-export acceptance asserted. Original isolated suite exit 1 and separate successful static rerun retained above",
   "main_rollout_plan": {
     "document": "docs/E2-07_MAIN_ROLLOUT.md",
     "prepared_at": "2026-10-05T13:40:28+03:00",
@@ -158,11 +157,61 @@
     "automatic_owner_or_platform_grants": false,
     "checkpoint": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-07-main-20261005-01a10b2d",
     "restore_database": "mw_e207_main_restore_20261005_01a10b2d",
-    "main_server_contacted_for_this_plan": false,
-    "executed": false,
-    "separate_execution_authorization_required": true,
-    "existing_secret_mount_usage_requires_explicit_confirmation": true,
+    "main_server_contacted_for_this_plan": true,
+    "executed": true,
+    "authorization": "Explicit user permission after live publication of 18e4a1856f3e078b771c34b2124af0d3153f4afc, including stop/backup/restore/migrations/ACL/web and ordinary existing secret mounts",
+    "repeat_execution_requires_new_authorization": true,
+    "existing_secret_mount_usage_explicitly_confirmed": true,
     "document_backups": ".change-backups/E2-07-main-plan-20261005-134028"
+  },
+  "main_rollout_result": {
+    "app_revision": "cf6f4ccd48106d9a44a64703bcfd79e49513ec3e",
+    "plan_and_repository_revision": "18e4a1856f3e078b771c34b2124af0d3153f4afc",
+    "source": "/home/adm_user/marketplace-workspace/beta/app/releases/cf6f4ccd48106d9a44a64703bcfd79e49513ec3e/backend",
+    "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+    "old_web_id": "53dd81f2850521138b9596d1aa5f910f7889785d8836329efbbfb0f7b57654c5",
+    "web_id": "969d11c5bfd1c13e58a9bbcef07659d3bdf0662ec0cc5e53af06b71476c17807",
+    "web_started_at": "2026-10-05T11:16:12.521846356Z",
+    "web_stop_requested_at": "2026-10-05T11:08:02+00:00",
+    "ready_verified_at": "2026-10-05T11:17:32+00:00",
+    "stop_to_verified_ready_seconds": 570,
+    "preflight": "PASS: expected 14d9f48 runtime/image/lock, empty account/organization domain, exact old ACL, exactly two pending migrations, resource names free, capacity adequate",
+    "backup": {
+      "dump": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-07-main-20261005-01a10b2d/before.dump",
+      "bytes": 295697,
+      "mode": "0600",
+      "sha256": "267dcecac7a3434870f09915deee1b6950a43df672c1eedad6dea2086e006529",
+      "restore_database": "mw_e207_main_restore_20261005_01a10b2d",
+      "restore_exit_code": 0,
+      "rows_equal_tables": 30,
+      "sequences_equal": 11,
+      "schema_and_acl": "PASS: columns/indexes/triggers/functions/table-column-default ACL identical; all constraints preserved, two CHECK text-array casts have equivalent deparsed forms",
+      "initial_textual_constraint_comparison": "FAIL: exact DDL strings differed for membership_role_valid and membership_state_valid; no other differences",
+      "constraint_resolution": "Exact two source/restored forms whitelisted; text arrays compare equal and ANY predicates match allowed, invalid and NULL cases; no schema/data changes",
+      "web_connect_denied": true,
+      "restore_kept_closed": true
+    },
+    "migrations": ["access_control.0001_initial", "access_control.0002_access_guards"],
+    "new_access_tables": 5,
+    "new_access_tables_empty": true,
+    "prior_rows_preserved": true,
+    "schema_and_dml_select_acl_atomic": true,
+    "temp_revoked_separately_by_bootstrap": true,
+    "actual_web_login": "session_user=current_user=mw_beta_web",
+    "web_contract_and_guards": "PASS",
+    "sql_denials": {"count": 10, "sqlstate": "42501", "writes_persisted": false},
+    "network_checks": {"passed": 10, "live": 200, "ready": 200, "anonymous_session": 401, "login_get": 405, "mfa_login_get": 200, "platform_anonymous": 403, "organization_anonymous": 403, "record_anonymous": 403, "change_without_csrf": 403, "grant_without_csrf": 403},
+    "security_flags": {"access_control": true, "account_security": true, "synthetic_download_probe": false, "rehearsal_environment_variable": false},
+    "final_domain_empty": true,
+    "anonymous_encrypted_sessions": {"before": 6, "after": 7},
+    "unchanged_other_containers": 13,
+    "main_postgres_restarted": false,
+    "old_rehearsals_started": false,
+    "source_clean": true,
+    "new_users_grants_or_administrators": false,
+    "checkpoint_files": ["containers.before.json", "database.before.json", "acl.before.json", "before.dump", "result.json"],
+    "non_runtime_execution_errors": ["Compose metadata comparison initially expected short secret targets; corrected to exact absolute paths and actual external-managed internal network before web stop", "First writer-count shell command had a quoting syntax error; no dump/DB changes occurred before corrected command"],
+    "document_backups": ".change-backups/E2-07-main-result-20261005-141955"
   },
   "earlier_failures_fixed": [
     "legacy unbound export fixtures adapted to Grant",
@@ -185,6 +234,7 @@
     "No UI/worker/integrations",
     "No new all-factor-loss platform-admin recovery workflow",
     "No full audit E2-11",
-    "No main-beta update authorized"
+    "Primary beta updated without accounts/organizations or Grant provisioning; authenticated main-beta/browser/TLS checks not performed",
+    "Any further restart, deployment, provisioning, restore reuse or cleanup needs separate scope/authorization"
   ]
 }

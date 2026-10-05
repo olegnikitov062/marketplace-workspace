@@ -1,6 +1,6 @@
 # E2-07 — план внедрения в основную beta
 
-2026-10-05T13:40:28+03:00, Europe/Moscow. **Подготовлен локально; серверный этап этого плана не выполнялся. Требуется отдельное разрешение после ознакомления с этим конкретным объёмом.** Исходное разрешение E2-07 относилось к отдельному стенду и не разрешало обновлять основную beta. Текущее согласие на следующий шаг использовано для подготовки плана.
+План подготовлен 2026-10-05T13:40:28+03:00, Europe/Moscow. **Выполнен после отдельного разрешения Олега на опубликованный план 18e4a18, включая штатные secret mounts; результат зафиксирован 2026-10-05T14:19:06+03:00.** Основной web работает на APP_REV cf6f4cc. Ниже сохранён согласованный план, фактический протокол — в конце и SYSTEM_GRANT_CHECKS.json/main_rollout_result. Повторное выполнение не разрешено; checkpoint/restore имена теперь заняты.
 
 ## Фиксированная ревизия и объём разрешения
 
@@ -163,3 +163,33 @@ dc -f "$release/beta/deploy/compose.security-web.json" up -d --no-deps web </dev
 После выполнения сохранить фактические время, APP_REV, dump SHA256, restore result, before/after migrations/ACL metadata, web ID и проверочные результаты. С резервными копиями обновить SYSTEM_GRANT_CHECKS.json, SYSTEM_PLAN.md, SYSTEM_STARTUP.md, docs/RUNBOOK.md, этот документ и CHANGELOG.md; исторические доказательства E2-06 не переписывать. Локальный коммит Oleg, push только Олег.
 
 На момент подготовки проверены только локальные исходники/документы и публикация GitHub. SSH, main backup/restore, миграции, изменение ACL, остановка/запуск сервисов по этому плану **не выполнялись**. План не является свидетельством успешного перехода существующего E2-06 ACL; этот путь проверяется транзакционно при будущем разрешённом исполнении, с отказом при любом отличии.
+
+## Фактический результат — 2026-10-05T14:19:06+03:00
+
+После публикации плана `18e4a1856f3e078b771c34b2124af0d3153f4afc` Олег отдельно разрешил его исполнение, включая штатное использование существующих secret mounts. GitHub публикация проверена сервером; repository fast-forward до 18e4a18, новый clean detached APP_REV `cf6f4ccd48106d9a44a64703bcfd79e49513ec3e` получен только Git. Backend/deploy совпадают с проверенным 3369e31. Серверные исходники не редактировались, установки/build/pull образов не выполнялись.
+
+Preflight подтвердил основной web14d9f48, прежний image/lock и metadata 14 контейнеров, остановку всех сохранённых rehearsal, достаточные ресурсы, свободные checkpoint/restore имена и штатные pg_dump/pg_restore17.11/timeout. Основные пользователи/организации/членства/кабинеты/account-security сущности отсутствовали; ожидаемые миграции — ровно две E2-07. Действующий E2-06 ACL совпал; web TEMP=true подтверждён непосредственно. Merged security overlay сохранил старые secret source paths, UID/read-only/лимиты и существующую internal сеть без host ports.
+
+Web остановлен по команде от `2026-10-05T11:08:02+00:00`. Повторная проверка пустоты и E2-06 ACL прошла под операторской advisory lock; иных клиентских соединений перед dump не было. Создан новый `before.dump`, 295697 bytes, mode0600, SHA256 `267dcecac7a3434870f09915deee1b6950a43df672c1eedad6dea2086e006529`. Restore в `mw_e207_main_restore_20261005_01a10b2d` прошёл с exit0; PUBLIC/web CONNECT закрыт. Dump и restore сохранены, исходная mw_beta ими не заменялась.
+
+Сравнение в памяти: строки всех 30 public-таблиц и 11 последовательностей, столбцы, индексы, триггеры, функции, table/column/default ACL совпали. Первая строгая текстовая проверка ограничений дала AssertionError: `membership_role_valid` и `membership_state_valid` после pg_restore имеют иную запись cast массива. Все остальные ограничения совпали. Для ровно этих двух сравнены точные формы, флаг validated, равенство text[] и результат ANY для допустимых, недопустимых и NULL значений; эквивалентность PASS. Ограничения/данные не менялись для прохождения проверки. Первоначальный отказ не скрывается и не выдаётся за чистый успех первой команды.
+
+Под существующим bootstrap в отдельной транзакции отозван TEMP у PUBLIC/web. Затем под настоящим migrator исполнен **Python-фрагмент именно опубликованного плана18e4a18**, извлечённый Git show без ручного изменения серверного кода. Две миграции `access_control.0001_initial`/`0002_access_guards`, отзыв старого DML/guards, ограничение SELECT/default ACL и применение точного нового контракта прошли одной транзакцией с проверкой до commit. После commit прежние строки совпали с restore; добавлены только две записи миграций и пять пустых access-таблиц. Новых пользователей/Grant/platform_admin нет.
+
+Настоящий отдельный web LOGIN (`session_user=current_user=mw_beta_web`, без SET ROLE) проверил ACL/guards и 10 SQL-отказов `42501`: CREATE TABLE/TEMP, изменение активности User/области Membership/действия Grant/PlatformRoleAssignment, DELETE/TRUNCATE Grant, изменение django_migrations и SET ROLE migrator. Пробы откатывались даже при неожиданном успехе; изменений от них нет. TEMP и CONNECT к restore отвергнуты. Операторские полномочия web не выдавались.
+
+Пересоздан только основной web со штатным compose.security-web.json:
+
+- ID `969d11c5bfd1c13e58a9bbcef07659d3bdf0662ec0cc5e53af06b71476c17807`.
+- StartedAt `2026-10-05T11:16:12.521846356Z`.
+- Source `/home/adm_user/marketplace-workspace/beta/app/releases/cf6f4ccd48106d9a44a64703bcfd79e49513ec3e/backend`, read-only.
+- Image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72`, UID10001:10001, 384MiB/0.25CPU, read-only rootfs, прежние secret mounts/internal network/no ports.
+- ACCESS_CONTROL_ENABLED и ACCOUNT_SECURITY_ENABLED=true; SECURITY_DOWNLOAD_PROBE=false, E207_REHEARSAL отсутствует, внешние действия выключены.
+
+10 сетевых проверок настоящего Gunicorn PASS: live/ready200, session401, GET legacy login405, MFA login200, anonymous platform/organization/synthetic record403, POST change/grant без CSRF403. Readiness подтверждён `2026-10-05T11:17:32+00:00`: от команды stop до подтверждённого ready 9 мин 30 с, меньше лимита 20 мин. Это не аутентифицированный browser/TLS прогон основной beta. Основные аккаунты/организации/Grant остались пустыми; зашифрованные анонимные Django sessions 6 → 7 от GET входа.
+
+Финально другие 13 контейнеров (два основных PostgreSQL, два owner rehearsal и E2-07 rehearsal) сохранили ID/image/StartedAt/mounts/network/ports/limits/state. Основные PostgreSQL не перезапускались, старые стенды не запускались. Подтверждён чистый APP_REV; source/mount/metadata web отличаются от baseline только разрешёнными ID/StartedAt/source. Private `result.json` прочитан обратно и совпал. В checkpoint сохранены `containers.before.json`, `database.before.json`, `acl.before.json`, `before.dump`, `result.json`; имена заняты, повторное создание/restore не выполнять.
+
+Технические отказы исполнения: до остановки web сравнение ожидало короткие secret targets и inline internal network; уточнено до реальных абсолютных targets и проверки Internal у уже существующей external-managed сети. Фактический дрейф не обнаружен. Первая команда подсчёта writers имела ошибку shell quoting; до исправления dump/БД не менялись, пароль не выводился. После исправления count=0 подтверждён. Эти случаи не требовали изменения runtime-кода, настроек или ослабления проверяемых прав.
+
+E2-07 технически завершена в согласованном синтетическом объёме. Сохранены все ограничения отдельного suite70PASS+2static errors/отдельный2PASS; полного повторного72-run нет. E2-06 остаётся «На проверке», K3 не возобновлялся. Реальные пользователи/Grant/администраторы, рабочий экспорт, RLS, финансовые поля, UI/worker/интеграции и следующие задачи не добавлялись. Повторные серверные изменения, очистка checkpoint/restore/rehearsal или provisioning требуют отдельного конкретного разрешения.
