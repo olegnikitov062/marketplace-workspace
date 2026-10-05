@@ -147,8 +147,23 @@
   "postgresql_pending": [],
   "acceptance_pending": [
     "Owner review of new E2-07 evidence and original aggregate test exit 1 with separate successful static rerun",
-    "Main beta rollout and verification require a new concrete plan and separate authorization; current runtime remains E2-06"
+    "Main beta rollout and verification require separate authorization of docs/E2-07_MAIN_ROLLOUT.md; current runtime remains E2-06"
   ],
+  "main_rollout_plan": {
+    "document": "docs/E2-07_MAIN_ROLLOUT.md",
+    "prepared_at": "2026-10-05T13:40:28+03:00",
+    "app_revision": "cf6f4ccd48106d9a44a64703bcfd79e49513ec3e",
+    "publication_verified_live": true,
+    "only_if_account_and_organization_tables_empty": true,
+    "automatic_owner_or_platform_grants": false,
+    "checkpoint": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-07-main-20261005-01a10b2d",
+    "restore_database": "mw_e207_main_restore_20261005_01a10b2d",
+    "main_server_contacted_for_this_plan": false,
+    "executed": false,
+    "separate_execution_authorization_required": true,
+    "existing_secret_mount_usage_requires_explicit_confirmation": true,
+    "document_backups": ".change-backups/E2-07-main-plan-20261005-134028"
+  },
   "earlier_failures_fixed": [
     "legacy unbound export fixtures adapted to Grant",
     "optional Grant field full_clean validation",
@@ -160,7 +175,8 @@
   "docs": [
     "docs/E2-07_GRANTS.md",
     "docs/E2-07_SERVER_PLAN.md",
-    "docs/E2-07_SERVER_RESULTS.md"
+    "docs/E2-07_SERVER_RESULTS.md",
+    "docs/E2-07_MAIN_ROLLOUT.md"
   ],
   "limitations": [
     "No RLS/full-layer isolation E2-08",
