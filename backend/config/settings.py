@@ -32,4 +32,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 from accounts.policy import *  # noqa: F403 -- explicit shared synthetic E2-05 policy
 from account_security.configuration import configure
 configure(globals())
-# MFA is mandatory for owners; no public registration, RBAC or source adapters.
+# Personal sessions require MFA for owners; explicit grants are enabled below.
+
+INSTALLED_APPS += ["access_control"]
+ACCESS_CONTROL_ENABLED = True

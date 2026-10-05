@@ -36,6 +36,17 @@ class SecurityHTTPTests(TestCase):
         AccountContact.objects.create(user=self.owner, email="owner@example.invalid", activated_at=timezone.now())
         AccountContact.objects.create(user=self.member, email="member@example.invalid", activated_at=timezone.now())
         self.client = Client(enforce_csrf_checks=True)
+        if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+            from access_control.models import Grant, SyntheticRecord
+            from access_control.services import template_spec
+            from ownership.models import Cabinet
+            cabinet = Cabinet.objects.create(organization=self.a, name="synthetic-security", marketplace="synthetic")
+            self.access_record = SyntheticRecord.objects.create(organization=self.a, cabinet=cabinet)
+            for member in Membership.objects.filter(organization=self.a):
+                specs = template_spec("owner", []) if member.role == "owner" else [("synthetic_record", "export", cabinet)]
+                for resource, action, scope in specs:
+                    Grant.objects.create(organization=self.a, membership=member, resource=resource, action=action, cabinet=scope)
+
 
     def post(self, path, data=None, client=None, csrf=True):
         client = client or self.client
@@ -94,6 +105,17 @@ class SecurityHTTPTests(TestCase):
     def record(self, client=None):
         client = client or self.client
         return AccountSession.objects.get(session_hash=services.digest(client.cookies[settings.SESSION_COOKIE_NAME].value))
+
+    def issue_probe(self, user, session):
+        if not getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+            return services.issue_export_probe(user, self.a, session)
+        from access_control.services import record_operation
+        marker = services.current_session.set(session.pk)
+        try:
+            result = record_operation(user, self.a.pk, self.access_record.cabinet_id, self.access_record.pk, "export")
+            return ExportPermit.objects.get(pk=result["permit_id"])
+        finally:
+            services.current_session.reset(marker)
 
     def test_owner_requires_confirmed_factor_and_get_does_not_enroll(self):
         result = self.start_login()
@@ -261,7 +283,14 @@ class SecurityHTTPTests(TestCase):
     def test_membership_change_denies_real_invitation_and_permanently_revokes_probe(self):
         self.enroll()
         self.login()
-        permit = services.issue_export_probe(self.owner, self.a, self.record())
+        if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+            from access_control.models import Grant
+            # The role-change test must leave an independent effective owner.
+            Membership.objects.filter(user=self.member, organization=self.a).update(role="owner")
+            Authenticator.objects.create(user=self.member, name="synthetic-standby", confirmed=True)
+            member = Membership.objects.get(user=self.member, organization=self.a)
+            Grant.objects.create(organization=self.a, membership=member, resource="memberships", action="manage_access")
+        permit = self.issue_probe(self.owner, self.record())
         url = f"/auth/security/probe/{permit.pk}/"
         self.assertEqual(self.client.get(url, secure=True).status_code, 200)
         Membership.objects.filter(user=self.owner, organization=self.a).update(role="observer")
@@ -273,7 +302,7 @@ class SecurityHTTPTests(TestCase):
 
     def test_probe_not_bearer_and_cross_organization_denied(self):
         self.login(self.member)
-        permit = services.issue_export_probe(self.member, self.a, self.record())
+        permit = self.issue_probe(self.member, self.record())
         from django.core.exceptions import PermissionDenied
         with self.assertRaises(PermissionDenied):
             services.issue_export_probe(self.member, self.b, self.record())
@@ -463,7 +492,7 @@ class SecurityHTTPTests(TestCase):
         remembered = Client(enforce_csrf_checks=True)
         remembered.cookies[settings.SECURITY_TRUST_COOKIE] = self.client.cookies[settings.SECURITY_TRUST_COOKIE].value
         self.login(client=remembered)
-        permit = services.issue_export_probe(self.owner, self.a, self.record(remembered))
+        permit = self.issue_probe(self.owner, self.record(remembered))
         self.assertEqual(self.post(f"/auth/security/devices/{device.pk}/revoke/").status_code, 200)
         self.assertEqual(remembered.get("/auth/session", secure=True).status_code, 401)
         self.assertTrue(ExportPermit.objects.get(pk=permit.pk).revoked_at is not None)

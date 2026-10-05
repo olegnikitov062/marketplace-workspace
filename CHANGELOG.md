@@ -1104,3 +1104,56 @@ K3 отмечен как owner-reported download, повторная техни�
 Проверки только документов: JSON/read-back, исходные backup hashes, 101 неизменная строка/критерии плана, append-only журнала и diff --check. Новых MFA/SQL/browser/crypto тестов нет и PASS не приписывается. Локальный коммит автора/коммитера Oleg, push выполняет Олег. Основная beta/production/main/Caddy/FBS/WB/Finkos и другие проекты не менялись.
 
 Безопасный откат: ключевые файлы и runtime не менялись, откат для них не нужен. Для документов сначала сравнить текущие файлы и backups, затем отменить только этот diff, сохранив позднюю/постороннюю работу; журнал дополнить, не стирать. Новые локальные evidence удалять только после сохранения нужного доказательства и проверки отсутствия потребителей. Отказ владельца от дополнительной проверки сохранять как действующее указание, пока он сам его не изменит. Не удалять/перезаписывать/перегенерировать ключевые файлы, не reset --hard/clean.
+
+
+## 2026-10-05T12:29:58+03:00 (Europe/Moscow) — Реализованы локальные разрешения E2-07 и ограниченный системный администратор
+
+По согласованной матрице добавлены Grant, серверные потребители приглашений/синтетических данных, четыре независимых действия, организационные и кабинетные области, отзыв без восстановления старой ссылки, шаблоны и ограничения выдачи, обязательный MFA при повышении, platform_admin с отдельным назначением и временной поддержкой. Подготовлены PostgreSQL guards, минимальный SQL-контракт web, отдельный серверный план и инертные средства нового синтетического стенда. Новых зависимостей/плагинов нет. Сервер/основная beta/production/main/Caddy/FBS/WB/Finkos не менялись, push не выполнялся, реальные ключи/пароли и K3 не открывались.
+
+Точные файлы относительно C:/Users/krolo/Documents/marketplace-workspace/:
+
+- `CHANGELOG.md`
+- `SYSTEM_GRANT_CHECKS.json`
+- `SYSTEM_PLAN.md`
+- `backend/access_control/__init__.py`
+- `backend/access_control/apps.py`
+- `backend/access_control/management/__init__.py`
+- `backend/access_control/management/commands/__init__.py`
+- `backend/access_control/management/commands/manage_access_operator.py`
+- `backend/access_control/migration_guards.py`
+- `backend/access_control/migrations/0001_initial.py`
+- `backend/access_control/migrations/0002_access_guards.py`
+- `backend/access_control/migrations/__init__.py`
+- `backend/access_control/models.py`
+- `backend/access_control/operator.py`
+- `backend/access_control/services.py`
+- `backend/access_control/tests/__init__.py`
+- `backend/access_control/tests/test_http.py`
+- `backend/access_control/tests/test_migrations.py`
+- `backend/access_control/tests/test_platform.py`
+- `backend/access_control/tests/test_preparation.py`
+- `backend/access_control/tests/test_role_contract.py`
+- `backend/access_control/tests/test_transactions.py`
+- `backend/access_control/urls.py`
+- `backend/access_control/views.py`
+- `backend/account_security/management/commands/prepare_owner_recovery.py`
+- `backend/account_security/services.py`
+- `backend/account_security/tests/test_http.py`
+- `backend/accounts/services.py`
+- `backend/config/access_local_checks.py`
+- `backend/config/settings.py`
+- `backend/config/urls.py`
+- `backend/tools/access_rehearsal.py`
+- `backend/tools/access_restore_check.py`
+- `backend/tools/access_web_grants.py`
+- `backend/tools/verify_access_web_runtime.py`
+- `beta/deploy/compose.access-rehearsal.json`
+- `beta/deploy/prepare_access_rehearsal.py`
+- `docs/E2-07_GRANTS.md`
+- `docs/E2-07_SERVER_PLAN.md`
+
+Проверки: основной E2-07/E2-06 HTTP-набор 68 обнаружено, 63 PASS, 5 PostgreSQL-пропусков; ещё четыре новые HTTP/подготовительные проверки PASS. E2-04/E2-05 legacy: 58 обнаружено, 47 PASS, 11 PostgreSQL-пропусков. Полный локальный E2-06 набор: 53 обнаружено, 44 PASS, 6 пропусков, три ошибки недоступного Windows TEMP; эти три синтетических файловых теста успешно повторены с TEMP внутри проекта (вместе с новым recovery-тестом: 4 PASS). Исходные ошибки не скрыты; это не K3 и не работа с реальными ключами. Django check, migration drift, pip check, AST 26 файлов, безопасные dry-plan/Windows refusal и diff --check успешны. Два shell-блока серверного плана прошли bash -n без исполнения команд; запуск Git Bash для синтаксической проверки потребовал локального выхода из sandbox. Протокол SYSTEM_GRANT_CHECKS.json содержит команды/ограничения. PostgreSQL/реальный SQL LOGIN/сетевой web/новый dump-restore не выполнены; E2-07 «На проверке», E2-06 статус не закрыт.
+
+Исходные копии существующих файлов до редактирования — `.change-backups/E2-07-20261005-115038/` с теми же относительными путями; manifest.json содержит исходные SHA256, preexisting.patch сохраняет прежний diff трёх документов. Дополнительно локальные e207-files.json, plan-addition.txt, changelog-addition.txt, SYSTEM_PLAN.md.index, CHANGELOG.md.index и пустой после тестов test-temp/ находятся в этой исключённой из Git папке. SYSTEM_ARCHITECTURE.md не редактировался; прежние правки SYSTEM_PLAN/CHANGELOG сохранены и не включаются в коммит E2-07. Автор/коммитер локального коммита — Oleg, без Co-Authored-By.
+
+Откат: сначала сравнить текущие файлы с копиями и поздними изменениями, затем применить только обратный diff E2-07. Новые файлы перечислены выше и в e207-files.json; удалять только если после этой работы не появились потребители/чужие изменения, сверив каждый точный путь. CHANGELOG дополнять, историю не стирать; reset --hard/clean не применять. Серверного отката сейчас нет. Будущий стенд при отказе только остановить, сохранить новые volume/БД/секреты/dump; не down -v/DROP/prune и не restore поверх живой БД. После внедрения нельзя возвращать обычный E2-06 код, обходящий Grant: нужен закрытый maintenance/отдельный план.

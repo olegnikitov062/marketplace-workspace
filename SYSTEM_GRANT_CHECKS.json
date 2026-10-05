@@ -1,0 +1,105 @@
+{
+  "task": "E2-07",
+  "recorded_at": "2026-10-05T12:29:58+03:00",
+  "status": "На проверке",
+  "source_branch": "beta",
+  "published_before_implementation": "d6385c5d209aadaf864923be5205fdbdb6abc5be",
+  "publication_method": "git ls-remote --heads origin beta; live GitHub check",
+  "implementation_published": false,
+  "server_contacted": false,
+  "postgresql_checked": false,
+  "limited_sql_login_checked": false,
+  "network_web_checked": false,
+  "backup_restore_checked": false,
+  "dependencies_installed": false,
+  "real_keys_read": false,
+  "k3_rechecked": false,
+  "push_performed": false,
+  "local_checks": [
+    {
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test access_control.tests account_security.tests.test_http --settings=config.access_local_checks --verbosity=1",
+      "discovered": 68,
+      "passed": 63,
+      "skipped": 5,
+      "errors": 0,
+      "seconds": 101.147,
+      "database": "SQLite in-memory",
+      "note": "Before adding four additional tests below; source application unchanged afterwards"
+    },
+    {
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test access_control.tests.test_http.AccessHTTPTests.test_owner_http_issue_organization_grant access_control.tests.test_http.AccessHTTPTests.test_password_recovery_preserves_exact_grants_and_revoked_links access_control.tests.test_preparation --settings=config.access_local_checks --verbosity=1",
+      "discovered": 4,
+      "passed": 4,
+      "skipped": 0,
+      "errors": 0,
+      "seconds": 2.958
+    },
+    {
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test tests.test_accounts tests.test_ownership tests.test_ownership_migrations tests.test_account_transactions --settings=config.accounts_local_checks --verbosity=1",
+      "discovered": 58,
+      "passed": 47,
+      "skipped": 11,
+      "errors": 0,
+      "seconds": 9.905,
+      "note": "Legacy E2-04/E2-05 settings; not E2-07 PostgreSQL evidence"
+    },
+    {
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test account_security.tests --settings=config.security_local_checks --verbosity=1",
+      "discovered": 53,
+      "passed": 44,
+      "skipped": 6,
+      "errors": 3,
+      "seconds": 69.13,
+      "note": "Three synthetic file tests failed because sandbox Windows TEMP was not writable"
+    },
+    {
+      "command": "Targeted rerun of three failed synthetic file tests with TEMP/TMP inside .change-backups/E2-07-20261005-115038/test-temp plus corrected new password-recovery test",
+      "discovered": 4,
+      "passed": 4,
+      "errors": 0,
+      "seconds": 3.615,
+      "note": "No real keys, passwords or K3 files accessed"
+    }
+  ],
+  "static": {
+    "django_check": "PASS",
+    "migration_drift": "PASS",
+    "pip_check": "PASS",
+    "python_ast_files": 26,
+    "git_diff_check": "PASS",
+    "inert_preparation_and_windows_refusal": "PASS",
+    "server_plan_bash_syntax": "PASS: bash -n only; sandbox process restriction required local escalation, no server actions",
+    "preexisting_document_diff_preserved": "PASS"
+  },
+  "postgresql_pending": [
+    "two owners suspending each other",
+    "issuance racing issuer suspension",
+    "raw concurrent last-owner grant revocation",
+    "download racing grant revocation",
+    "two operator administrator revocations",
+    "composite foreign keys and deferred owner protection",
+    "actual limited LOGIN HTTP and SQL denials",
+    "network Gunicorn smoke",
+    "migration rollback/forward and dump/restore quarantine"
+  ],
+  "earlier_failures_fixed": [
+    "legacy unbound export fixtures adapted to Grant",
+    "optional Grant field full_clean validation",
+    "SQLite test flush cannot delete retained history: isolated test teardown",
+    "recovery token fixture refreshed after login"
+  ],
+  "backups": ".change-backups/E2-07-20261005-115038",
+  "docs": [
+    "docs/E2-07_GRANTS.md",
+    "docs/E2-07_SERVER_PLAN.md"
+  ],
+  "limitations": [
+    "No RLS/full-layer isolation E2-08",
+    "No field/aggregate filtering E2-09",
+    "No working export E5-07",
+    "No UI/worker/integrations",
+    "No new all-factor-loss platform-admin recovery workflow",
+    "No full audit E2-11",
+    "No main-beta update authorized"
+  ]
+}

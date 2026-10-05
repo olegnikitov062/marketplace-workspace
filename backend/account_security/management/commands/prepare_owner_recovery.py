@@ -9,7 +9,7 @@ from django.db import transaction
 from django.views.decorators.debug import sensitive_variables
 
 from account_security.operator import require_operator_process, write_private_new
-from account_security.services import locked_user, required, event
+from account_security.services import locked_user, owner_required, event
 
 
 class Command(BaseCommand):
@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 raise PermissionDenied()
             with transaction.atomic():
                 user, _ = locked_user(options["user_id"])
-                if not required(user):
+                if not owner_required(user):
                     raise PermissionDenied()
                 raw = secrets.token_urlsafe(32)
                 verifier = json.dumps({"user_id": str(user.pk), "verifier": make_password(raw)}).encode()

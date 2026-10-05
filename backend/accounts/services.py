@@ -32,6 +32,10 @@ def active(user):
 
 
 def require_owner(actor, organization):
+    if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+        from access_control.services import invitation_manager
+        invitation_manager(actor, organization)
+        return
     if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
         from account_security.services import assert_actor_session
         assert_actor_session(actor)

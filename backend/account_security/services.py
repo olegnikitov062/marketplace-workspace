@@ -49,6 +49,14 @@ def locked_user(user_id):
 
 
 def required(user):
+    if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+        from access_control.services import platform_for
+        if platform_for(user):
+            return True
+    return owner_required(user)
+
+
+def owner_required(user):
     return Membership.objects.filter(
         user=user, role=Membership.Role.OWNER, state=Membership.State.ACTIVE,
         archived_at__isnull=True, organization__archived_at__isnull=True,
@@ -61,6 +69,11 @@ def authenticator(user):
 
 def record_valid(record, user, state, now=None):
     now = now or timezone.now()
+    if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+        from access_control.services import platform_for
+        if platform_for(user) and (record.created_at + timedelta(hours=4) <= now
+                or record.last_seen + timedelta(minutes=15) <= now):
+            return False
     if (not available(user) or record.user_id != user.pk or record.revoked_at
             or record.version != state.version
             or not constant_time_compare(record.credential_hash, user.get_session_auth_hash())
@@ -328,7 +341,7 @@ def recover_with_code(request, username, password, code):
 def issue_operator_recovery(user_id):
     """Trusted CLI only, never callable through a web URL or with web INSERT ACL."""
     user, state = locked_user(user_id)
-    if not required(user):
+    if not owner_required(user):
         raise PermissionDenied()
     state.recovery_required = True
     state.save(update_fields=["recovery_required"])
@@ -345,7 +358,7 @@ def consume_operator_recovery(request, username, password, token):
         return False
     with transaction.atomic():
         user = User.objects.select_for_update().filter(username=User.normalize_username(username)).first()
-        if not available(user) or not user.check_password(password) or not required(user):
+        if not available(user) or not user.check_password(password) or not owner_required(user):
             return False
         state = state_for(user, lock=True)
         permit = RecoveryPermit.objects.select_for_update().filter(user=user, token_hash=digest(token),
@@ -374,6 +387,9 @@ def disable(request):
 
 @transaction.atomic
 def issue_export_probe(user, organization, session):
+    if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+        # Legacy unbound permits cannot authorize E2-07 resources.
+        raise PermissionDenied()
     if not settings.SECURITY_DOWNLOAD_PROBE:
         raise PermissionDenied()
     user, state = locked_user(user.pk)
@@ -387,6 +403,13 @@ def issue_export_probe(user, organization, session):
 
 @transaction.atomic
 def read_export_probe(request, permit_id):
+    if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+        from access_control.services import download
+        from django.core.exceptions import ObjectDoesNotExist
+        try:
+            return download(request, permit_id)
+        except ObjectDoesNotExist:
+            raise PermissionDenied() from None
     if not settings.SECURITY_DOWNLOAD_PROBE:
         raise PermissionDenied()
     user, state = locked_user(request.user.pk)

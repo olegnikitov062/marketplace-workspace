@@ -20,6 +20,10 @@ def ready(request):
                 ("accounts", "0002_immutable_invitation"),
                 ("sessions", "0001_initial"),
             }.issubset(set(cursor.fetchall()))
+        if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT count(*) FROM django_migrations WHERE app='access_control' AND name='0002_access_guards'")
+                migrated = migrated and cursor.fetchone()[0] == 1
         if not migrated:
             return Response({"status": "not-ready"}, status=503)
         if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
@@ -39,3 +43,6 @@ def ready(request):
 urlpatterns = [path("api/v1/health/live", live), path("api/v1/health/ready", ready), path("auth/", include("accounts.urls"))]
 if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
     urlpatterns.append(path("auth/", include("account_security.urls")))
+
+if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
+    urlpatterns.append(path("api/v1/access/", include("access_control.urls")))
