@@ -40,6 +40,21 @@ def run(case):
                            [payload, '0'*64, str(case.owner.pk)])
             cursor.execute('SELECT count(*) FROM ownership_user')
             require(cursor.fetchone() == (0,))
+    # Even a cryptographically valid but incomplete envelope is not an
+    # identity. Exercise SQL NULL semantics rather than assuming HMAC suffices.
+    for missing in ('pid','xid','database','role','expires','statement','kind','request'):
+        with transaction.atomic(), connection.cursor() as cursor:
+            cursor.execute('SELECT pg_backend_pid(),txid_current()::text,current_database(),session_user')
+            pid,xid,database,role=cursor.fetchone()
+            statement='SELECT count(*) FROM ownership_user'
+            claims=dict(pid=pid,xid=xid,database=database,role=role,expires=int(timezone.now().timestamp())+10,
+                        statement=hashlib.sha256(statement.encode()).hexdigest(),kind='control',request=uuid.uuid4().hex)
+            claims[missing]=None
+            payload=serialize(claims)
+            cursor.execute("SELECT set_config('mw.isolation_payload',%s,true),set_config('mw.isolation_signature',%s,true)",
+                           [payload,signature(signing_key(),payload)])
+            cursor.execute(statement)
+            require(cursor.fetchone() == (0,))
     for sql in ('SELECT secret FROM mw_isolation.key',
                 "SELECT mw_isolation.hmac('x',decode(repeat('00',32),'hex'))",
                 'ALTER TABLE access_control_syntheticrecord DISABLE ROW LEVEL SECURITY',

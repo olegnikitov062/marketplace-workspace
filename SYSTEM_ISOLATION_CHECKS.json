@@ -75,7 +75,8 @@
     "python_ast_files": 24,
     "json_parse": "PASS",
     "git_diff_check": "PASS after normalizing modified/generated Python/JSON line endings; initial CRLF whitespace failure retained as history",
-    "inert_preparation_plan": "PASS; no network, container or file provisioning"
+    "inert_preparation_plan": "PASS; no network, container or file provisioning",
+    "server_plan_bash_syntax": "PASS: bash -n only; initial MSYS NamedObjects sandbox access failure, then approved local syntax-only escalation; no shell blocks executed"
   },
   "rls": {
     "tables": 27,
@@ -109,6 +110,26 @@
   },
   "backups": ".change-backups/E2-08-20261006-1140",
   "documentation": [
-    "docs/E2-08_ISOLATION.md"
-  ]
+    "docs/E2-08_ISOLATION.md",
+    "docs/E2-08_SERVER_PLAN.md"
+  ],
+  "implementation_revision": "17e03b0b6c5f452c0b25c8b6ecaf0401819d0e37",
+  "implementation_published": false,
+  "server_plan": {
+    "document": "docs/E2-08_SERVER_PLAN.md",
+    "prepared_at": "2026-10-06T12:18:06+03:00",
+    "revision": "17e03b0b6c5f452c0b25c8b6ecaf0401819d0e37",
+    "project": "marketplace-e208-20261006-01a1105a",
+    "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-08-20261006-01a1105a",
+    "database_cluster_is_new": true,
+    "restore": "mw_e208_01a1105a_restore",
+    "main_beta_authorized": false,
+    "isolated_stage_authorized": false,
+    "executed": false,
+    "publication_gate": "Oleg push, live ls-remote and full revision ancestry confirmation before explicit authorization",
+    "new_synthetic_secrets_only": true,
+    "preserve_existing_resources": true,
+    "limit_minutes": 60,
+    "source_delivery": "published beta through Git only"
+  }
 }

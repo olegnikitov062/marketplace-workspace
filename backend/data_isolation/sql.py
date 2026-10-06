@@ -55,14 +55,16 @@ BEGIN
   END LOOP;
   IF difference<>0 THEN RETURN NULL; END IF;
   c := p::jsonb;
+  IF jsonb_typeof(c)<>'object' OR NOT (c ?& ARRAY['pid','xid','database','role','expires','statement','kind','request'])
+     OR EXISTS(SELECT 1 FROM jsonb_each(c) entry WHERE entry.key IN
+       ('pid','xid','database','role','expires','statement','kind','request') AND entry.value='null'::jsonb)
+     THEN RETURN NULL; END IF;
   IF (c->>'pid')::integer<>pg_backend_pid() OR c->>'xid'<>txid_current()::text
      OR c->>'database'<>current_database() OR c->>'role'<>session_user
      OR (c->>'expires')::bigint < extract(epoch FROM clock_timestamp())
      OR (c->>'expires')::bigint > extract(epoch FROM clock_timestamp())+15
      OR c->>'statement'<>encode(sha256(convert_to(current_query(),'UTF8')),'hex')
      OR c->>'kind' NOT IN ('control','record') THEN RETURN NULL; END IF;
-  IF NOT (c ?& ARRAY['pid','xid','database','role','expires','statement','kind','request'])
-     THEN RETURN NULL; END IF;
   RETURN c;
 EXCEPTION WHEN invalid_text_representation OR numeric_value_out_of_range THEN RETURN NULL;
 END $$;
@@ -71,7 +73,7 @@ CREATE FUNCTION mw_isolation.record_allowed(r jsonb, operation text, c jsonb)
 RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $$
 DECLARE actor uuid; sid uuid; org uuid; cab uuid; requested_action text; at_time timestamptz := clock_timestamp();
 BEGIN
-  IF c->>'kind'<>'record' OR c->>'resource'<>'synthetic_record' THEN RETURN false; END IF;
+  IF c->>'kind' IS DISTINCT FROM 'record' OR c->>'resource' IS DISTINCT FROM 'synthetic_record' THEN RETURN false; END IF;
   actor := (c->>'user')::uuid; sid := (c->>'session')::uuid;
   org := (c->>'organization')::uuid; cab := (c->>'cabinet')::uuid; requested_action := c->>'action';
   IF actor IS NULL OR sid IS NULL OR org IS NULL OR cab IS NULL OR requested_action IS NULL
