@@ -8,9 +8,9 @@
 - Последняя **live-проверенная опубликованная** beta:
   `1b765629badd6fe70f605fd9f6d504954e44d618`. E2-08 в ней отсутствует.
 - Точный подготовленный код E2-08, `REV`:
-  **`17e03b0b6c5f452c0b25c8b6ecaf0401819d0e37`**.
+  **`a1eeff72d72369c492c078fb5bd5ce91268f19cd`**.
   На момент составления плана это локальный неопубликованный коммит Oleg.
-- Этот документ публикуется следующим отдельным локальным коммитом без
+- Актуальная редакция этого документа публикуется следующим отдельным локальным коммитом без
   изменения backend/deploy. Олег проверяет и выполняет push самостоятельно.
 - Перед разрешением повторить live `git ls-remote --heads origin beta`,
   подтвердить достижимость полного REV из фактически опубликованного SHA.
@@ -21,6 +21,8 @@
   Создать новый detached worktree `beta/app/releases/<REV>` из опубликованного
   REV; если путь существует — остановиться до проверки назначения/чистоты.
   Никаких архивов исходников, SCP исходников или ручного редактирования кода.
+  Использовать актуальный план из опубликованной beta, а backend — из указанного
+  REV; более ранняя редакция плана внутри source-release не заменяет этот допуск.
 
 Последний зафиксированный основной runtime —
 `cf6f4ccd48106d9a44a64703bcfd79e49513ec3e`, RO backend в соответствующем release.
@@ -98,8 +100,9 @@ HMAC/key/record_allowed не становятся публичным API. Provis
 подготовлен чистый immutable release. Эти команды сейчас не исполнялись.
 
 ```sh
+set -eu
 base=/home/adm_user/marketplace-workspace/beta
-REV=17e03b0b6c5f452c0b25c8b6ecaf0401819d0e37
+REV=a1eeff72d72369c492c078fb5bd5ce91268f19cd
 release="$base/app/releases/$REV"
 export SECURITY_SOURCE="$release/backend"
 export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72
@@ -173,6 +176,7 @@ DATABASE … FROM PUBLIC. `pg_restore --exit-on-error` только в неё, t
 CONNECT restore = false. Не выдавать временный CONNECT ради smoke.
 
 ```sh
+set -eu
 dc run --rm -T controller python -m tools.isolation_restore_check </dev/null
 dc up -d web </dev/null
 dc exec -T web python -m tools.verify_isolation_web_runtime </dev/null

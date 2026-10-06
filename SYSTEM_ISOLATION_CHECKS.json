@@ -76,7 +76,8 @@
     "json_parse": "PASS",
     "git_diff_check": "PASS after normalizing modified/generated Python/JSON line endings; initial CRLF whitespace failure retained as history",
     "inert_preparation_plan": "PASS; no network, container or file provisioning",
-    "server_plan_bash_syntax": "PASS: bash -n only; initial MSYS NamedObjects sandbox access failure, then approved local syntax-only escalation; no shell blocks executed"
+    "server_plan_bash_syntax": "PASS: bash -n only; initial MSYS NamedObjects sandbox access failure, then approved local syntax-only escalation; no shell blocks executed",
+    "signed_null_context_review": "Required claims reject JSON null; missing/null record resource denied; eight actual-web probes prepared, not executed on PostgreSQL"
   },
   "rls": {
     "tables": 27,
@@ -113,12 +114,12 @@
     "docs/E2-08_ISOLATION.md",
     "docs/E2-08_SERVER_PLAN.md"
   ],
-  "implementation_revision": "17e03b0b6c5f452c0b25c8b6ecaf0401819d0e37",
+  "implementation_revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
   "implementation_published": false,
   "server_plan": {
     "document": "docs/E2-08_SERVER_PLAN.md",
     "prepared_at": "2026-10-06T12:18:06+03:00",
-    "revision": "17e03b0b6c5f452c0b25c8b6ecaf0401819d0e37",
+    "revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
     "project": "marketplace-e208-20261006-01a1105a",
     "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-08-20261006-01a1105a",
     "database_cluster_is_new": true,
@@ -130,6 +131,7 @@
     "new_synthetic_secrets_only": true,
     "preserve_existing_resources": true,
     "limit_minutes": 60,
-    "source_delivery": "published beta through Git only"
+    "source_delivery": "published beta through Git only",
+    "updated_at": "2026-10-06T12:23:32+03:00"
   }
 }
