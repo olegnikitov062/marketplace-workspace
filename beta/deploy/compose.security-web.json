@@ -3,10 +3,12 @@
     "web": {
       "image": "${SECURITY_IMAGE:?reviewed E2-06 dependency image required}",
       "environment": {
-        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key"
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key",
+        "ISOLATION_KEY_FILE": "/run/secrets/isolation_signing_key"
       },
       "secrets": [
-        "mfa_encryption_key"
+        "mfa_encryption_key",
+        "isolation_signing_key"
       ],
       "volumes": [
         {
@@ -20,10 +22,12 @@
     "migrate": {
       "image": "${SECURITY_IMAGE:?reviewed E2-06 dependency image required}",
       "environment": {
-        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key"
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key",
+        "ISOLATION_KEY_FILE": "/run/secrets/isolation_signing_key"
       },
       "secrets": [
-        "mfa_encryption_key"
+        "mfa_encryption_key",
+        "isolation_signing_key"
       ],
       "volumes": [
         {
@@ -38,6 +42,9 @@
   "secrets": {
     "mfa_encryption_key": {
       "file": "../config/secrets/mfa_encryption_key"
+    },
+    "isolation_signing_key": {
+      "file": "../config/secrets/isolation_signing_key"
     }
   }
 }

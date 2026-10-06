@@ -26,6 +26,16 @@ def ready(request):
                 migrated = migrated and cursor.fetchone()[0] == 1
         if not migrated:
             return Response({"status": "not-ready"}, status=503)
+        if getattr(settings, 'ISOLATION_ENABLED', False) and connection.vendor == 'postgresql':
+            from data_isolation.sql import TABLES
+            with connection.cursor() as cursor:
+                cursor.execute('SELECT mw_isolation.claims() IS NOT NULL')
+                if cursor.fetchone() != (True,):
+                    return Response({'status': 'not-ready'}, status=503)
+                cursor.execute("SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
+                               "WHERE n.nspname='public' AND c.relname=ANY(%s) AND c.relrowsecurity AND c.relforcerowsecurity", [list(TABLES)])
+                if cursor.fetchone()[0] != len(TABLES):
+                    return Response({'status': 'not-ready'}, status=503)
         if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
             from account_security.crypto import cipher
             from account_security.models import Authenticator

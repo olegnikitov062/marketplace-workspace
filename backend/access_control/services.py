@@ -16,6 +16,7 @@ from ownership.models import Organization, Cabinet, Membership, User
 from account_security import services as security
 from account_security.models import AccountSession, ExportPermit
 from .models import Grant, PlatformRoleAssignment, SyntheticRecord, SupportWindow, ExportBinding
+from data_isolation.context import record_scope
 
 
 def platform_for(user):
@@ -242,21 +243,40 @@ def record_operation(actor, organization_id, cabinet_id, record_id, action, valu
     if not settings.SECURITY_DOWNLOAD_PROBE:
         raise PermissionDenied()
     org, actor = lock_scope(organization_id, actor.pk)
-    obj = resolve_record(org, cabinet_id, record_id)
-    grant = authorize(actor, org, 'synthetic_record', action, obj.cabinet)
-    if action == 'view':
-        return {'value': obj.value}
-    if action == 'change':
-        if type(value) is not int or not -1000000 <= value <= 1000000:
-            raise PermissionDenied()
-        SyntheticRecord.objects.filter(pk=obj.pk).update(value=value)
-        return {'status': 'ok'}
-    if action == 'export':
-        permit = ExportPermit.objects.create(user=actor, organization=org, session=session_for(actor),
-            expires_at=timezone.now() + timedelta(minutes=5))
-        ExportBinding.objects.create(permit=permit, grant=grant, record=obj)
-        return {'permit_id': str(permit.pk)}
+    cabinet = Cabinet.objects.get(pk=cabinet_id, organization=org, archived_at__isnull=True)
+    grant = authorize(actor, org, 'synthetic_record', action, cabinet)
+    session = session_for(actor)
+    with record_scope(actor, session, org, cabinet, action):
+        obj = resolve_record(org, cabinet_id, record_id)
+        if action == 'view':
+            return {'value': obj.value}
+        if action == 'change':
+            if type(value) is not int or not -1000000 <= value <= 1000000:
+                raise PermissionDenied()
+            if SyntheticRecord.objects.filter(pk=obj.pk).update(value=value) != 1:
+                raise PermissionDenied()
+            return {'status': 'ok'}
+        if action == 'export':
+            permit = ExportPermit.objects.create(user=actor, organization=org, session=session,
+                expires_at=timezone.now() + timedelta(minutes=5))
+            ExportBinding.objects.create(permit=permit, grant=grant, record=obj)
+            return {'permit_id': str(permit.pk)}
     raise PermissionDenied()
+
+
+@transaction.atomic
+def list_records(actor, organization_id, cabinet_id, record_id=None):
+    """Narrow synthetic list/search consumer; no cross-cabinet aggregation."""
+    if not settings.SECURITY_DOWNLOAD_PROBE:
+        raise PermissionDenied()
+    org, actor = lock_scope(organization_id, actor.pk)
+    cabinet = Cabinet.objects.get(pk=cabinet_id, organization=org, archived_at__isnull=True)
+    authorize(actor, org, 'synthetic_record', 'view', cabinet)
+    with record_scope(actor, session_for(actor), org, cabinet, 'view'):
+        rows = SyntheticRecord.objects.filter(organization=org, cabinet=cabinet, archived_at__isnull=True)
+        if record_id is not None:
+            rows = rows.filter(pk=record_id)
+        return {'records': list(rows.order_by('pk').values('id', 'value')[:100])}
 
 
 @transaction.atomic
@@ -268,11 +288,20 @@ def download(request, permit_id):
     record = session_for(actor)
     permit = ExportPermit.objects.get(pk=permit_id, user=actor, session=record,
         revoked_at__isnull=True, expires_at__gt=timezone.now())
-    binding = ExportBinding.objects.select_related('grant', 'record').get(permit=permit)
-    obj = resolve_record(org, binding.record.cabinet_id, binding.record_id)
-    if not matching(actor, org, 'synthetic_record', 'export', obj.cabinet).filter(pk=binding.grant_id).exists():
+    binding = ExportBinding.objects.select_related('grant').get(permit=permit)
+    from django.db import connection
+    if getattr(settings, 'ISOLATION_ENABLED', False) and connection.vendor == 'postgresql':
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT mw_isolation.export_cabinet(%s,%s,%s)', [permit.pk, actor.pk, record.pk])
+            cabinet_id = cursor.fetchone()[0]
+    else:
+        cabinet_id = binding.record.cabinet_id
+    cabinet = Cabinet.objects.get(pk=cabinet_id, organization=org, archived_at__isnull=True)
+    if not matching(actor, org, 'synthetic_record', 'export', cabinet).filter(pk=binding.grant_id).exists():
         raise PermissionDenied()
-    return ('synthetic,value\nexample.invalid,' + str(obj.value) + '\n').encode()
+    with record_scope(actor, record, org, cabinet, 'export'):
+        obj = resolve_record(org, cabinet_id, binding.record_id)
+        return ('synthetic,value\nexample.invalid,' + str(obj.value) + '\n').encode()
 
 
 @transaction.atomic

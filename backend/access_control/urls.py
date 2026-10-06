@@ -12,6 +12,7 @@ urlpatterns = [
     path(tenant + 'memberships/<uuid:membership_id>/suspend/', views.suspend),
     path(tenant + 'support/', views.support_open),
     path(tenant + 'support/<uuid:window_id>/close/', views.support_close),
+    path(tenant + 'cabinets/<uuid:cabinet_id>/synthetic/', views.records),
     path(record, views.record),
     path(record + 'change/', views.change),
     path(record + 'export/', views.export),

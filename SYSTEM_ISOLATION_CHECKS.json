@@ -1,0 +1,114 @@
+{
+  "task": "E2-08",
+  "recorded_at": "2026-10-06T12:07:42+03:00",
+  "status": "На проверке",
+  "scope": "Local implementation and preparation only; PostgreSQL RLS not yet executed",
+  "baseline": {
+    "branch": "beta",
+    "head": "1b765629badd6fe70f605fd9f6d504954e44d618",
+    "initial_worktree_clean": true,
+    "live_remote_beta": "1b765629badd6fe70f605fd9f6d504954e44d618",
+    "method": "git ls-remote --heads origin beta; initial sandbox DNS failure then successful read-only escalation",
+    "last_confirmed_runtime_from_user_and_docs": "cf6f4ccd48106d9a44a64703bcfd79e49513ec3e",
+    "runtime_verified_this_task": false
+  },
+  "server_contacted": false,
+  "postgresql_checked": false,
+  "real_web_login_checked": false,
+  "backup_restore_checked": false,
+  "push_performed": false,
+  "dependencies_installed": false,
+  "real_key_or_password_files_read": false,
+  "k3_rechecked": false,
+  "local_tools": {
+    "python": "existing backend/.venv",
+    "Django": "5.2.17",
+    "psycopg": "3.3.6",
+    "cryptography": "50.0.2",
+    "django-two-factor-auth": "1.18.1",
+    "django-otp": "1.7.3",
+    "postgresql_docker": "psql/postgres/pg_ctl/docker not found in PATH; no installation",
+    "pip_check": "PASS"
+  },
+  "local_checks": [
+    {
+      "command": "manage.py test data_isolation.tests.test_context plus two targeted IsolationHTTPTests --settings=config.isolation_local_checks",
+      "passed": 5,
+      "seconds": 2.87,
+      "database": "SQLite"
+    },
+    {
+      "command": "manage.py test data_isolation.tests access_control.tests.test_http access_control.tests.test_platform account_security.tests.test_http --settings=config.isolation_local_checks",
+      "passed": 91,
+      "seconds": 141.891,
+      "database": "SQLite",
+      "note": "Intermediate run, includes duplicate discovery of imported legacy class; not 91 independent new security cases"
+    },
+    {
+      "command": "manage.py test data_isolation.tests access_control.tests.test_platform account_security.tests.test_http --settings=config.isolation_local_checks",
+      "discovered": 70,
+      "passed": 68,
+      "skipped": 2,
+      "seconds": 123.549,
+      "database": "SQLite",
+      "note": "Final HTTP/context behavior; two PostgreSQL migration tests skipped. Preparation module was added afterward and run separately"
+    },
+    {
+      "command": "manage.py test data_isolation.tests.test_preparation data_isolation.tests.test_context --settings=config.isolation_local_checks",
+      "passed": 5,
+      "seconds": 0.222,
+      "database": null
+    },
+    {
+      "command": "manage.py test tests.test_accounts tests.test_ownership tests.test_ownership_migrations tests.test_account_transactions --settings=config.accounts_local_checks",
+      "discovered": 58,
+      "passed": 47,
+      "skipped": 11,
+      "seconds": 10.095,
+      "database": "SQLite",
+      "note": "Legacy account/ownership regression, not E2-08 RLS proof"
+    }
+  ],
+  "static": {
+    "django_check": "PASS",
+    "migration_drift": "PASS",
+    "python_ast_files": 24,
+    "json_parse": "PASS",
+    "git_diff_check": "PASS after normalizing modified/generated Python/JSON line endings; initial CRLF whitespace failure retained as history",
+    "inert_preparation_plan": "PASS; no network, container or file provisioning"
+  },
+  "rls": {
+    "tables": 27,
+    "mechanism": "Exact statement HMAC capability bound to transaction/backend/database/role/expiry; URL organization bounds; live row-level scope/action/session/Grant predicate for SyntheticRecord",
+    "control_plane_trust": "Existing reviewed Python authentication and access-management services plus signer remain trusted. SQL control queries are attested exactly; password/TOTP/delegation are not reimplemented independently in SQL. Full Python/key or operator compromise excluded.",
+    "key": "New independent synthetic 32-byte key on future isolated rehearsal only; not created on server",
+    "trusted_trigger_functions": 11,
+    "operator_policies": true,
+    "real_sql_behavior": "NOT EXECUTED"
+  },
+  "pending": [
+    "Publish local commits by Oleg and verify live beta ancestry",
+    "Separate authorization for new isolated rehearsal",
+    "PostgreSQL migration/actual ClientCursor current_query/signature interoperability",
+    "Real web LOGIN positive and negative SELECT/UPDATE, GUC forgery and key/role/DDL denials",
+    "SQL rollback/savepoint/reused and concurrent connections",
+    "Full current grant/session/MFA/support/revocation regression on PostgreSQL",
+    "Concurrent grants/membership/last-owner/archive checks",
+    "New dump/restore, policies/key preservation and restored session/link quarantine",
+    "Separate main-beta plan and authorization after successful isolated run"
+  ],
+  "absent_layers": [
+    "Business result cache/cache-hit consumer",
+    "Worker/job queue",
+    "Business file storage and working export E5-07",
+    "Integrations"
+  ],
+  "unchanged_task_statuses": {
+    "E2-06": "На проверке",
+    "E2-07": "Готово"
+  },
+  "backups": ".change-backups/E2-08-20261006-1140",
+  "documentation": [
+    "docs/E2-08_ISOLATION.md"
+  ]
+}

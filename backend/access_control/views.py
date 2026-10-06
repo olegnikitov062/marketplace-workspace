@@ -1,4 +1,5 @@
 from functools import wraps
+from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.db import transaction
@@ -68,6 +69,14 @@ def suspend(request, organization_id, membership_id):
 @protected_read
 def record(request, organization_id, cabinet_id, record_id):
     return JsonResponse(services.record_operation(request.user, organization_id, cabinet_id, record_id, 'view'))
+
+
+@protected_read
+def records(request, organization_id, cabinet_id):
+    if set(request.GET) - {'record_id'} or any(len(request.GET.getlist(k)) != 1 for k in request.GET):
+        raise PermissionDenied()
+    record_id = UUID(request.GET['record_id']) if 'record_id' in request.GET else None
+    return JsonResponse(services.list_records(request.user, organization_id, cabinet_id, record_id))
 
 
 @mutation('access_change', ['value'])

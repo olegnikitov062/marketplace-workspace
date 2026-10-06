@@ -36,3 +36,20 @@ configure(globals())
 
 INSTALLED_APPS += ["access_control"]
 ACCESS_CONTROL_ENABLED = True
+
+# E2-08 is mandatory for this revision; absence of the dedicated key is a
+# deployment error, never a reason to fall back to the pre-isolation web.
+INSTALLED_APPS += ['data_isolation']
+ISOLATION_ENABLED = True
+ISOLATION_KEY_FILE = os.environ.get('ISOLATION_KEY_FILE')
+MIDDLEWARE.insert(0, 'data_isolation.middleware.IsolationBoundary')
+MIDDLEWARE.append('data_isolation.middleware.ActorContext')
+if EFFECTIVE['mode'] == 'web':
+    if ISOLATION_KEY_FILE != '/run/secrets/isolation_signing_key':
+        raise ImproperlyConfigured('Isolation signing key mount required')
+    from pathlib import Path
+    try:
+        if len(Path(ISOLATION_KEY_FILE).read_bytes()) != 32:
+            raise ValueError()
+    except (OSError, ValueError):
+        raise ImproperlyConfigured('Isolation signing key unavailable') from None

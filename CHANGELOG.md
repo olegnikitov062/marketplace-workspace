@@ -1225,3 +1225,61 @@ Preflight подтвердил runtime14d9f48, прежние image/lock, metada
 Побайтовые копии восьми существующих локальных файлов до изменений — `.change-backups/E2-07-main-result-20261005-141955/` с теми же относительными путями; SHA256/полный список — `.change-backups/E2-07-main-result-20261005-141955/manifest.json`. Эти9локальных файлов исключены из Git. Проверки документов: оба JSON, сохранность прежних startup/server доказательств, backup hashes, append-only CHANGELOG, 101строка задач с изменением только статуса E2-07, синтаксис актуального shell-блока без исполнения и git diff --check. Коммит автора/коммитера Oleg только7отслеживаемых документов, без Co-Authored-By; push делает Олег.
 
 Безопасный откат: после новой схемы остановить только основной web; обычный E2-06 не возвращать, он обходил Grant. Не выполнять reverse/zero/restore поверх mw_beta, не удалять новые/старые БД/volume/секреты/dump, не down -v/DROP/prune. Возврат схемы/данных, новый деплой/provisioning и очистка требуют отдельного конкретного плана/разрешения; release сначала проверить на отсутствие потребителей. Для локальных документов сравнить актуальное содержимое с указанными копиями и отменить только этот diff, сохранив позднюю/постороннюю работу; журнал дополнить. Девять backup-файлов удалять только после проверки точных путей/потребителей и сохранения доказательств/возможности отката; общий .change-backups не удалять, reset --hard/clean не применять.
+
+
+## 2026-10-06T12:07:42+03:00 (Europe/Moscow) — Подготовлена локальная изоляция E2-08 и проверены HTTP-потребители
+
+По текущему запросу Олега выполнена только локальная работа в чистой beta от 1b765629badd6fe70f605fd9f6d504954e44d618; публикация исходной beta проверена live GitHub после sandbox DNS-отказа. Сервер не опрашивался и не менялся, исходное runtime cf6f4cc взято из задания/документов. Добавлены RLS/FORCE 27 таблиц, короткая HMAC capability точного SQL/транзакции/соединения/области, живая проверка SyntheticRecord и signed control plane с явно доверенными auth/Grant-сервисами. Произвольный SET не считается идентификацией. Для deferred проверки владельца и полного каскада отзыва 11 фиксированных trigger-only функций подготовлены как SECURITY DEFINER; запреты web current_user остаются INVOKER. Добавлен узкий synthetic list/search; рабочий экспорт/бренды/финансовые поля/worker/интеграции не добавлены.
+
+Новая миграция не меняет предметные строки; populated reverse закрыт. Пустую private schema создаёт отдельный bootstrap, не выдаётся широкое CREATE migrator. Штатный security overlay подготовлен к новому отдельному RO signing key; серверный ключ не создавался/не читался. Без ключа/политик новый runtime должен отказать; возврат к обходящему RLS/Grant/MFA приложению запрещён. Подготовлены только новые E2-08 rehearsal/SQL/runtime/restore tools; старые ресурсы/скрипты и их разрешения не переиспользованы.
+
+Точные затронутые файлы относительно C:/Users/krolo/Documents/marketplace-workspace/:
+
+- `CHANGELOG.md`
+- `SYSTEM_ISOLATION_CHECKS.json`
+- `SYSTEM_PLAN.md`
+- `backend/access_control/services.py`
+- `backend/access_control/urls.py`
+- `backend/access_control/views.py`
+- `backend/config/isolation_local_checks.py`
+- `backend/config/settings.py`
+- `backend/config/urls.py`
+- `backend/data_isolation/__init__.py`
+- `backend/data_isolation/apps.py`
+- `backend/data_isolation/context.py`
+- `backend/data_isolation/middleware.py`
+- `backend/data_isolation/migrations/0001_statement_and_row_policies.py`
+- `backend/data_isolation/migrations/__init__.py`
+- `backend/data_isolation/sql.py`
+- `backend/data_isolation/tests/__init__.py`
+- `backend/data_isolation/tests/test_context.py`
+- `backend/data_isolation/tests/test_http.py`
+- `backend/data_isolation/tests/test_migrations.py`
+- `backend/data_isolation/tests/test_preparation.py`
+- `backend/tools/isolation_rehearsal.py`
+- `backend/tools/isolation_restore_check.py`
+- `backend/tools/isolation_sql_probe.py`
+- `backend/tools/isolation_web_contract.py`
+- `backend/tools/verify_isolation_web_runtime.py`
+- `beta/deploy/compose.isolation-rehearsal.json`
+- `beta/deploy/compose.security-web.json`
+- `beta/deploy/prepare_isolation_rehearsal.py`
+- `docs/E2-08_ISOLATION.md`
+
+Исходные побайтовые копии восьми существующих файлов: `.change-backups/E2-08-20261006-1140/` с теми же относительными путями; точный список и SHA256 — `manifest.json` там же. Новые локальные backup-артефакты: эти восемь копий и manifest.json; каталог исключён из Git. Новые отслеживаемые файлы — перечисленные выше пути, отсутствующие в baseline 1b76562; runtime data/секреты не создавались.
+
+Проверки: первый targeted 5 PASS; промежуточный 91 PASS SQLite включал повторную discovery импортированного legacy-класса, не 91 независимый новый сценарий. Итоговый HTTP/context 68 PASS/2 PostgreSQL skips за 123.549с; отдельно static/context 5 PASS/0.222с; legacy ownership/accounts 47 PASS/11 skips/10.095с. check, makemigrations --check --dry-run, pip check, AST 24 Python files, JSON и инертный plan успешны. Первоначальный diff --check выявил CRLF на добавленных строках; изменённые Python/JSON нормализованы в LF, проверка повторена успешно. PostgreSQL/реальный SQL LOGIN/серверный HTTP/миграции/backup-restore не выполнены; подготовленные тесты не выдаются за PASS. Код после HTTP-прогона менялся только в PostgreSQL DDL/contract/серверной подготовке, для которых остаётся отдельная проверка.
+
+SYSTEM_PLAN: только E2-08 → «На проверке» и добавленная фактическая запись; E2-06 не закрывается, E2-07 сохраняется «Готово». Нет установки, SSH, push, production/main/Caddy/FBS/WB/Finkos изменений, реальных аккаунтов/секретных значений/передачи ключа/повторения K3. Локальный коммит автора и коммитера Oleg, без Co-Authored-By.
+
+Безопасный откат: сначала сравнить текущие файлы с указанными копиями/коммитом и отменить только этот diff, сохраняя позднюю/постороннюю работу; журнал дополнять. Новые пути удалять только после проверки отсутствия поздних изменений и потребителей и сохранения нужных доказательств; общий .change-backups не удалять. Не reset --hard/clean. Серверного отката сейчас нет. После будущего RLS включения — остановленный web; не отключать политики, не возвращать обычный E2-07/E2-06 и не restore поверх рабочей БД. Любые SSH/новые контейнеры/БД/роли/ключи/миграции/restore требуют отдельного разрешения по конкретному опубликованному плану; основная beta — следующий отдельный этап.
+
+
+### 2026-10-06T12:11:55+03:00 — Уточнён подготовленный SQL-прогон E2-08 перед фиксацией исходников
+
+В backend/tools/isolation_rehearsal.py добавлен отдельный синтетический кабинетный view Grant второй организации; backend/tools/isolation_sql_probe.py проверяет обе организации под одним настоящим web LOGIN и RLS на Cabinet при SELECT без WHERE. Это подготовленные, ещё не исполненные PostgreSQL-проверки; локальное HTTP-поведение не изменилось. Промежуточные версии этих двух новых файлов и CHANGELOG.md сохранены в `.change-backups/E2-08-20261006-1140/before-final-sql-probe/` под их basename; три новых backup-файла исключены из Git. Исходный коммит этой же незавершённой локальной подготовки ещё не публиковался; перед выдачей на проверку уточняется локально. Первая попытка commit отказала из-за отсутствующего Git email; использован email предыдущего коммита только в ENV процесса, без вывода и без изменения глобального Git config. Author/committer Oleg проверены. AST/diff проверяются повторно; откат только обратным diff после сравнения, сохранённые ресурсы/ключи не затрагиваются.
+
+
+### 2026-10-06T12:13:26+03:00 — Устранена неоднозначность имён PL/pgSQL при локальном review
+
+В backend/data_isolation/sql.py параметры requested_action/requested_session отделены от одноимённых SQL-столбцов; иначе разрешение переменных PL/pgSQL могло отказать при первом выполнении. Промежуточные sql.py и CHANGELOG.md сохранены в `.change-backups/E2-08-20261006-1140/before-sql-parameter-review/`. Проверка исходников/AST/diff, без PostgreSQL исполнения; серверные критерии остаются открыты. Откат только обратным diff после сравнения; эти две новые копии исключены из Git.
