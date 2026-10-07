@@ -679,3 +679,8 @@ E2-08 «На проверке»: нужны публикация Олегом, �
 По текущему допуску live beta971600e8fca04b23d0de41f06bca950b09116883/source149414466473053a5eff7ad2edab4415a216c6b4 получены через Git. R3 bootstrap/configure/test_database успешны, 27 FORCE/ENABLE RLS tables/ACL проверены. Suite остановлен failfast: 5 tests/42.991с, FAIL test_default_deny_and_four_independent_actions; exact assert неизвестен. Sanitized state/suite-events.jsonl перечитан,0600. R3 остановлен к2026-10-07T07:52:04Z, ресурсы сохранены, main/старые стенды/R1/R2 metadata неизменны. Real web LOGIN/SQL/network HTTP/restore не запускались. Отчёт docs/E2-08_ISOLATED_R3_RESULT.md.
 
 По коду найдено отсутствие test-key provisioning в test_mw_beta, необходимого SQL export_cabinet; связь с конкретным assert пока не доказана. Локально добавлен guarded IsolationDiscoverRunner с реальным signed claims probe до suite и безопасные статические test-location metadata. Новые R4 имена сохраняют stopped R1/R2/R3. 13 локальных checks PASS, это не PostgreSQL. Нужны push Олега, live ancestry и отдельный допуск docs/E2-08_SERVER_PLAN.md. E2-08/E2-06 «На проверке» без формального закрытия, main beta не внедрялась.
+
+
+### 2026-10-07T10:58:55+03:00 — E2-08: закреплена локальная ревизия R4
+
+Полный source REV `409c71f65db53873183c6ffd8d059561c05185d2` закреплён в docs/E2-08_SERVER_PLAN.md. Требуются push Олега, live ancestry и отдельный допуск R4. R1/R2/R3 сохранены stopped, main beta без внедрения, E2-08/E2-06 «На проверке».

@@ -14,7 +14,7 @@ live-проверка публикации и отдельное разреше�
   `971600e8fca04b23d0de41f06bca950b09116883` (проверено 07.10.2026).
   Миграции и ACL R3 прошли; suite остановлен на первом FAIL, 5 tests/42.991с.
 - Точный подготовленный код E2-08, `REV`:
-  **`R4_REV_PENDING_LOCAL_COMMIT`**.
+  **`409c71f65db53873183c6ffd8d059561c05185d2`**.
   На момент составления плана это локальный неопубликованный коммит Oleg.
 - Актуальная редакция этого документа публикуется следующим отдельным локальным коммитом без
   изменения backend/deploy. Олег проверяет и выполняет push самостоятельно.
@@ -139,7 +139,7 @@ ACL/RLS не меняются. Затем реальный StatementSigner до�
 ```sh
 set -eu
 base=/home/adm_user/marketplace-workspace/beta
-REV=R4_REV_PENDING_LOCAL_COMMIT
+REV=409c71f65db53873183c6ffd8d059561c05185d2
 release="$base/app/releases/$REV"
 export SECURITY_SOURCE="$release/backend"
 export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72

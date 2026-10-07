@@ -1377,3 +1377,10 @@ SYSTEM_PLAN: только E2-08 → «На проверке» и добавле�
 Откат: новые процессы уже остановлены, всеR1/R2/R3 и старые ресурсы/evidence сохранить; не repeat configure/suite, не DROP/down-v/prune/restore поверхБД, не отключать RLS/MFA/Grant. Локальный diff отменять только после сравнения с копиями/поздней работой, журнал дополнить. Новые runner/report/backup artifacts удалять лишь после проверки потребителей и сохранения evidence. Для R4 — push Олега,live ancestry и отдельный допуск; для основной beta — следующий самостоятельный план/допуск.
 
 Проверки той же подготовки R4 завершены: makemigrations --check --dry-run, AST/JSON, 13 backup hashes, append-only SYSTEM_PLAN/CHANGELOG, git diff --check и bash -n PASS. Серверные команды R4 не исполнялись.
+
+
+## 2026-10-07T10:58:55+03:00 (Europe/Moscow) — Закреплена ревизия плана R4 E2-08
+
+Точный source REV `409c71f65db53873183c6ffd8d059561c05185d2` записан в docs/E2-08_SERVER_PLAN.md и SYSTEM_ISOLATION_CHECKS.json; SYSTEM_PLAN.md/CHANGELOG.md дополнены. Только четыре документа; backend/deploy неизменны. Четыре исходные копии по относительным путям в .change-backups/E2-08-20261007-r3-result/r4-source-pin/, hashes в manifest.json; новый server-r4-blocks.sh там же для bash-n. Шесть локальных артефактов ignored. Проверки JSON/full pin/backup hashes/append-only/diff/shell syntax без исполнения. R4 не опубликован/не разрешён/не исполнен.
+
+Откат только обратным документальным diff после сравнения с копиями/поздней работой, журнал дополнять. Новые backup/syntax artifacts удалять лишь при отсутствии поздних потребителей и сохранённом evidence. Source-pin не разрешает запуск; R1/R2/R3 сохранять stopped, защиту не отключать. Push выполняет Олег; R4 и основная beta требуют отдельных допусков.

@@ -1,6 +1,6 @@
 {
   "task": "E2-08",
-  "recorded_at": "2026-10-07T10:57:38+03:00",
+  "recorded_at": "2026-10-07T10:58:55+03:00",
   "status": "На проверке",
   "scope": "R3 install/ACL passed, suite FAIL after 5 tests, stopped/preserved. Local R4 test-key provisioning prepared; not executed.",
   "baseline": {
@@ -303,13 +303,14 @@
   },
   "r4_plan": {
     "document": "docs/E2-08_SERVER_PLAN.md",
-    "revision": "R4_REV_PENDING_LOCAL_COMMIT",
+    "revision": "409c71f65db53873183c6ffd8d059561c05185d2",
     "project": "marketplace-e208-20261007-01a1105a-r4",
     "published": false,
     "authorized": false,
     "executed": false,
     "restore": "mw_e208_01a1105a_r4_restore",
-    "test_database_provisioning": "Guarded test_mw_beta only, fresh key, actual signed claims probe before suite; no ACL/policy changes"
+    "test_database_provisioning": "Guarded test_mw_beta only, fresh key, actual signed claims probe before suite; no ACL/policy changes",
+    "pinned_at": "2026-10-07T10:58:55+03:00"
   },
   "local_r4_checks": {
     "passed": 13,
