@@ -1,8 +1,8 @@
 {
   "task": "E2-08",
-  "recorded_at": "2026-10-07T10:26:21+03:00",
+  "recorded_at": "2026-10-07T10:46:38+03:00",
   "status": "На проверке",
-  "scope": "R1 isolated PostgreSQL configure failed; resources stopped/preserved; local R2 correction awaits publication and authorization",
+  "scope": "R2 installation/ACL passed; PostgreSQL suite interrupted by SSH loss, result unknown; stopped/preserved. Local R3 runner prepared.",
   "baseline": {
     "branch": "beta",
     "head": "1b765629badd6fe70f605fd9f6d504954e44d618",
@@ -11,7 +11,7 @@
     "method": "git ls-remote --heads origin beta; initial sandbox DNS failure then successful read-only escalation",
     "last_confirmed_runtime_from_user_and_docs": "cf6f4ccd48106d9a44a64703bcfd79e49513ec3e",
     "runtime_verified_this_task": true,
-    "runtime_metadata_verified_at": "2026-10-07T07:18:01Z"
+    "runtime_metadata_verified_at": "2026-10-07T07:40:20Z"
   },
   "server_contacted": true,
   "postgresql_checked": false,
@@ -84,14 +84,14 @@
     "tables": 27,
     "mechanism": "Exact statement HMAC capability bound to transaction/backend/database/role/expiry; URL organization bounds; live row-level scope/action/session/Grant predicate for SyntheticRecord",
     "control_plane_trust": "Existing reviewed Python authentication and access-management services plus signer remain trusted. SQL control queries are attested exactly; password/TOTP/delegation are not reimplemented independently in SQL. Full Python/key or operator compromise excluded.",
-    "key": "Dedicated synthetic R1 key created by helper; contents not displayed; retained in stopped isolated resources",
+    "key": "Separate synthetic R1/R2 keys retained in stopped resources; key contents never displayed",
     "trusted_trigger_functions": 11,
     "operator_policies": true,
-    "real_sql_behavior": "RLS installation failed/rolled back: zero RLS tables; actual-web tests NOT EXECUTED"
+    "real_sql_behavior": "Installation and 27 FORCE/ENABLE RLS policies/ACL contract PASS; suite interrupted/unknown; actual web role behaviors NOT EXECUTED"
   },
   "pending": [
-    "Publish local R2 correction by Oleg and verify full revision live beta ancestry",
-    "Separate authorization for fresh R2 resources; never reuse R1",
+    "Publish local R3 runner/profile and verify full revision live beta ancestry",
+    "Separate authorization for fresh R3 resources; preserve stopped R1/R2",
     "PostgreSQL migration/actual ClientCursor current_query/signature interoperability",
     "Real web LOGIN positive and negative SELECT/UPDATE, GUC forgery and key/role/DDL denials",
     "SQL rollback/savepoint/reused and concurrent connections",
@@ -115,7 +115,7 @@
     "docs/E2-08_ISOLATION.md",
     "docs/E2-08_SERVER_PLAN.md"
   ],
-  "implementation_revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
+  "implementation_revision": "21548e9040948b16d371fe31add6c0aca2fbbf3f",
   "implementation_published": true,
   "server_plan": {
     "document": "docs/E2-08_ISOLATED_R1_RESULT.md",
@@ -137,8 +137,8 @@
     "result": "FAILED at configure, stopped and preserved",
     "completed_at": "2026-10-07T07:18:01Z"
   },
-  "postgresql_check_note": "PostgreSQL 17.11 reached; configure failed before RLS installation. No passing PostgreSQL E2-08 verification.",
-  "live_remote_beta_verified": "9e6458ed9d145633e47480e12a8dcbf3be351b3f",
+  "postgresql_check_note": "R2 migrations and SQL metadata contract passed; behavioral suite result unavailable after SSH loss. No actual web LOGIN or HTTP/restore proof.",
+  "live_remote_beta_verified": "e8f857d0fa07d1f419bf1364eb98b25239c77613",
   "isolated_r1": {
     "published_beta": "9e6458ed9d145633e47480e12a8dcbf3be351b3f",
     "source_revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
@@ -174,14 +174,15 @@
     "transport_note": "First read-only preflight ended with --short CRLF argument error; rerun with CR removed, before any mutation; no credentials disclosed"
   },
   "r2_plan": {
-    "document": "docs/E2-08_SERVER_PLAN.md",
+    "document": "docs/E2-08_ISOLATED_R2_RESULT.md",
     "revision": "21548e9040948b16d371fe31add6c0aca2fbbf3f",
     "project": "marketplace-e208-20261007-01a1105a-r2",
-    "published": false,
-    "authorized": false,
-    "executed": false,
+    "published": true,
+    "authorized": true,
+    "executed": true,
     "restore": "mw_e208_01a1105a_r2_restore",
-    "pinned_at": "2026-10-07T10:26:21+03:00"
+    "pinned_at": "2026-10-07T10:26:21+03:00",
+    "result": "INTERRUPTED: SSH exit1 before suite summary"
   },
   "backups_r1_result": ".change-backups/E2-08-20261007-isolated-failure",
   "local_r2_checks": {
@@ -207,5 +208,61 @@
     "append_only_plan_changelog": "PASS",
     "diff_check": "PASS",
     "server_plan_bash_syntax_only": "PASS"
-  }
+  },
+  "isolated_r2": {
+    "published_beta": "e8f857d0fa07d1f419bf1364eb98b25239c77613",
+    "source_revision": "21548e9040948b16d371fe31add6c0aca2fbbf3f",
+    "started_at": "2026-10-07T07:28:37Z",
+    "stopped_at": "2026-10-07T07:40:20Z",
+    "prepare_exit": 0,
+    "bootstrap_exit": 0,
+    "configure_exit": 0,
+    "test_database_exit": 0,
+    "rls_metadata_tables": 27,
+    "suite_status": "UNKNOWN: transport interrupted; process still present at stop; no summary received",
+    "ssh_exit": 1,
+    "suite_passes": null,
+    "suite_failures": null,
+    "suite_skips": null,
+    "real_web_login_tests_run": false,
+    "network_http_tests_run": false,
+    "dump_created": false,
+    "restore_created": false,
+    "all_new_services_stopped": true,
+    "oom": false,
+    "main_and_previous_rehearsal_metadata_unchanged": true,
+    "postgres_id": "ccfbd90da741b62b9086512311920e000acaa6fd5f29a98dc6bd68ffdbba64a7",
+    "controller_id": "433f5c7cbff295134af2bddc551fd3c377ae257267cbd5ef3dbbd555b07548ef",
+    "network_id": "160b35bcbe3bca7451d8730aa051b40ad812848ae3193dd3d8cddd775c4d6778",
+    "volume": "marketplace-e208-20261007-01a1105a-r2-data",
+    "report": "docs/E2-08_ISOLATED_R2_RESULT.md",
+    "cause": "SSH closed by remote host; idle timeout not proven; no retry executed"
+  },
+  "r3_plan": {
+    "document": "docs/E2-08_SERVER_PLAN.md",
+    "revision": "R3_REV_PENDING_LOCAL_COMMIT",
+    "project": "marketplace-e208-20261007-01a1105a-r3",
+    "published": false,
+    "authorized": false,
+    "executed": false,
+    "restore": "mw_e208_01a1105a_r3_restore",
+    "evidence": "state/suite-events.jsonl; sanitized allowlist, O_EXCL, mode0600, fsync",
+    "keepalive": "SSH ServerAliveInterval15/ServerAliveCountMax3",
+    "runtime_validation": "NOT EXECUTED"
+  },
+  "local_r3_checks": {
+    "passed": 11,
+    "seconds": 0.574,
+    "database": null,
+    "scope": "safe evidence filtering/durable summary gate, preparation/migration graph/context; no PostgreSQL",
+    "system_check": "PASS",
+    "migration_drift": "PASS",
+    "ast_json": "PASS",
+    "final_repeat_seconds": 0.333,
+    "zero_tests_is_not_pass": true,
+    "backup_hashes_11": "PASS",
+    "shell_syntax_only": "PASS",
+    "diff_check": "PASS"
+  },
+  "backups_r2_result": ".change-backups/E2-08-20261007-r2-result"
 }
