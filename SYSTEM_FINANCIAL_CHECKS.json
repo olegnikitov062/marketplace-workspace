@@ -195,7 +195,7 @@
   "next_isolated_attempt": {
     "project": "marketplace-e209-20261007-01a115d9-r2",
     "plan": "docs/E2-09_R2_SERVER_PLAN.md",
-    "source_commit": "post-commit pin required",
+    "source_commit": "b7e0d66c6ad632544a0db73d7e38d59e0d54a511",
     "server_authorized": false,
     "server_started": false,
     "preserve_r1": true,
@@ -208,6 +208,7 @@
       "AST_JSON_diff": "PASS",
       "shell_blocks_syntax_only": 2,
       "business_financial_and_Django_limits_unchanged": true
-    }
+    },
+    "source_pin_recorded_at": "2026-10-07T15:26:52+03:00"
   }
 }

@@ -736,3 +736,8 @@ E2-09 остаётся «На проверке». Новый локальный 
 В12:14:46Z подтверждены неизменные metadata основной beta (runtime409c71f…) и старых стендов. R1 stopped, все БД/ключи/volume/network/evidence/release сохранены; web/dump/restore не создавались. Результат — docs/E2-09_ISOLATED_R1_RESULT.md, SYSTEM_FINANCIAL_CHECKS.json. E2-09 остаётся «На проверке», E2-06/E2-08 без изменений.
 
 Локально подготовлены новый R2 с уникальными именами и сохранением R1, guard-проверяемый runtime_limits до suite, последовательная остановка web/controller перед postgres. Штатные таймауты и финансовый код доступа не изменены.9 preparation-тестов PASS0.795с; не PostgreSQL R2. docs/E2-09_R2_SERVER_PLAN.md требует нового source pin, публикации Олегом и отдельного разрешения; прежний допуск не переносится, сейчас R2 не запускался.
+
+
+### 2026-10-07T15:26:52+03:00 — E2-09 R2: закреплён новый source SHA
+
+Новый source R2: b7e0d66c6ad632544a0db73d7e38d59e0d54a511; полный SHA закреплён в docs/E2-09_R2_SERVER_PLAN.md и SYSTEM_FINANCIAL_CHECKS.json/next_isolated_attempt. Это локальная подготовка после остановки R1, не повтор сервера. Нужны push Олегом и отдельное разрешение R2; main beta не входит. E2-09/E2-06/E2-08 остаются «На проверке».
