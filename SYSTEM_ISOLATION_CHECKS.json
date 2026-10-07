@@ -1,6 +1,6 @@
 {
   "task": "E2-08",
-  "recorded_at": "2026-10-07T10:46:38+03:00",
+  "recorded_at": "2026-10-07T10:48:08+03:00",
   "status": "На проверке",
   "scope": "R2 installation/ACL passed; PostgreSQL suite interrupted by SSH loss, result unknown; stopped/preserved. Local R3 runner prepared.",
   "baseline": {
@@ -240,7 +240,7 @@
   },
   "r3_plan": {
     "document": "docs/E2-08_SERVER_PLAN.md",
-    "revision": "R3_REV_PENDING_LOCAL_COMMIT",
+    "revision": "149414466473053a5eff7ad2edab4415a216c6b4",
     "project": "marketplace-e208-20261007-01a1105a-r3",
     "published": false,
     "authorized": false,
@@ -248,7 +248,8 @@
     "restore": "mw_e208_01a1105a_r3_restore",
     "evidence": "state/suite-events.jsonl; sanitized allowlist, O_EXCL, mode0600, fsync",
     "keepalive": "SSH ServerAliveInterval15/ServerAliveCountMax3",
-    "runtime_validation": "NOT EXECUTED"
+    "runtime_validation": "NOT EXECUTED",
+    "pinned_at": "2026-10-07T10:48:08+03:00"
   },
   "local_r3_checks": {
     "passed": 11,

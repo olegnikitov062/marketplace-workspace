@@ -14,7 +14,7 @@ live-проверка публикации и отдельное разреше�
   `e8f857d0fa07d1f419bf1364eb98b25239c77613` (проверено 07.10.2026).
   Миграции и ACL R2 прошли; итог suite не получен из-за обрыва SSH.
 - Точный подготовленный код E2-08, `REV`:
-  **`R3_REV_PENDING_LOCAL_COMMIT`**.
+  **`149414466473053a5eff7ad2edab4415a216c6b4`**.
   На момент составления плана это локальный неопубликованный коммит Oleg.
 - Актуальная редакция этого документа публикуется следующим отдельным локальным коммитом без
   изменения backend/deploy. Олег проверяет и выполняет push самостоятельно.
@@ -126,7 +126,7 @@ traceback, причины исключений и токены не записы
 ```sh
 set -eu
 base=/home/adm_user/marketplace-workspace/beta
-REV=R3_REV_PENDING_LOCAL_COMMIT
+REV=149414466473053a5eff7ad2edab4415a216c6b4
 release="$base/app/releases/$REV"
 export SECURITY_SOURCE="$release/backend"
 export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72

@@ -1353,3 +1353,10 @@ SYSTEM_PLAN: только E2-08 → «На проверке» и добавле�
 Безопасный откат: R2 уже остановлен, R1 и старые ресурсы сохранить; не повторять suite/bootstrap/configure, не DROP/down -v/prune и не открывать restore. Локально сравнить копии/позднюю работу, применять только обратный diff, журнал дополнять. Новые runner/tests/report удалять только при отсутствии поздних изменений/потребителей и после сохранения evidence; не откатывать runtime на обход RLS/Grant/MFA. Для R3 нужны push Олега, live ancestry и отдельный допуск; основная beta — самостоятельный следующий этап.
 
 Уточнение той же проверки R3: нулевое число тестов также не считается PASS; после этого изменения повторные 11 PASS за0.333с. 11 backup hashes, append-only SYSTEM_PLAN/CHANGELOG, AST/JSON, git diff --check и bash -n PASS. Серверные команды R3 не исполнялись.
+
+
+## 2026-10-07T10:48:08+03:00 (Europe/Moscow) — Закреплена ревизия плана R3 E2-08
+
+Точный новый source REV `149414466473053a5eff7ad2edab4415a216c6b4` записан в docs/E2-08_SERVER_PLAN.md и SYSTEM_ISOLATION_CHECKS.json; SYSTEM_PLAN.md и CHANGELOG.md дополнены. Только эти четыре документа; backend/deploy не менялись. Четыре копии до изменения — .change-backups/E2-08-20261007-r2-result/r3-source-pin/ по относительным путям, hashes в manifest.json. Новый server-r3-blocks.sh там же — только извлечённый shell для bash -n. Шесть локальных артефактов ignored. Проверяются JSON/full pin, backup hashes, append-only журнал/план, отсутствие backend/deploy diff, git diff --check и bash -n без исполнения. R3 не опубликован, не разрешён, не запускался.
+
+Откат: сравнить копии и позднюю работу, отменить только документальный diff, журнал дополнить; новый source-pin не разрешает запуск. Backup/syntax artifacts удалять только после сохранения evidence и проверки отсутствия поздних потребителей. R1/R2 сохранять остановленными; не повторять их suite/bootstrap/configure и не отключать защиту. Push — Олег; R3 и основная beta требуют отдельных допусков.
