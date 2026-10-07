@@ -6,6 +6,26 @@ from django.test import SimpleTestCase
 
 
 class FinancialPreparationTests(SimpleTestCase):
+    def test_limits_accept_stricter_django_session_options(self):
+        from tools.financial_runtime_limits import validate
+        for values in ((20,5000,2000,20000,1),(20,15000,5000,20000,8)):
+            self.assertEqual(validate(values)['statement_timeout_ms'],values[1])
+
+    def test_limits_reject_unlimited_and_excessive_settings(self):
+        from tools.financial_runtime_limits import validate
+        for values in ((20,0,2000,20000,1),(20,15001,2000,20000,1),
+                       (20,5000,0,20000,1),(20,5000,5001,20000,1),
+                       (20,5000,2000,0,1),(20,5000,2000,20001,1),
+                       (21,5000,2000,20000,1),(20,5000,2000,20000,9)):
+            with self.assertRaises(ValueError):
+                validate(values)
+
+    def test_limits_require_complete_numeric_context(self):
+        from tools.financial_runtime_limits import validate
+        for values in ((),(20,5000,2000,20000),(20,'5000',2000,20000,1),(20,None,2000,20000,1)):
+            with self.assertRaises(ValueError):
+                validate(values)
+
     def test_default_plan_is_inert_and_secret_mounts_are_new(self):
         root = Path(__file__).resolve().parents[3]
         script = root/'beta/deploy/prepare_financial_rehearsal.py'

@@ -1512,3 +1512,38 @@ Staged-проверка выявила CRLF в новом SYSTEM_FINANCIAL_CHECK
 До правок сохранены четыре файла в .change-backups/E2-09-20261007-01a115d9-source-pin/<тот же путь>; новый manifest.json содержит SHA256 и время. Все эти backup-артефакты ignored. Проверки: полный SHA совпадает с HEAD кода, только четыре документальных файла, JSON/schema-plan/source совпадают; backup hashes, append-only журнал/план, отсутствие смены статусов и git diff --check. Программные тесты повторно не нужны: runtime diff отсутствует. Ранее115+6 локальных проверок не заменяют PostgreSQL.
 
 Откат: сверить текущие четыре документа с backup и более поздней работой; отменить только ошибочный pin/связанную запись, сохранив код/чужую работу. CHANGELOG дополнять. Backup/manifest удалять только после проверки поздних зависимостей и сохранения необходимых доказательств. Не reset --hard/clean и не откатывать runtime/БД этим документальным изменением. Публикация Олегом, отдельное разрешение изолированного плана и отдельный будущий main rollout по-прежнему необходимы.
+
+
+## 2026-10-07T15:22:20+03:00 (Europe/Moscow) — Зафиксирована остановка E2-09 R1 и подготовлен новый R2
+
+Причина: выполнить отдельно разрешённый изолированный план после push, остановиться при первом отказе и подготовить исправленный проверяемый повтор без переиспользования ресурсов. Серверный интервал: preflight12:04:14Z, git release12:04:56Z, postgres/bootstrap/controller12:06:08–13Z, fresh configure12:06:51Z exit0, test DB12:07:28Z, suite12:07:53Z. Ошибочный ad-hoc monitor ожидал точно15s/5s, хотя config.settings задаёт более строгие5s/2s; по exit1 выполнена остановка только новых контейнеров. Suite:20 tests/210.89с, ERROR в financial scope test setUp/login, exit1/223с во время shutdown; это не20 PASS и не доказанный дефект финансового доступа. PG stopped12:11:40.736837088Z, controller12:11:55.478633792Z. Параллельный docker stop завершил БД раньше runner; для R2 остановка последовательная.
+
+Изменения сервера: только Git fetch beta в штатном repository, новый detached release faed9681ff4540cb49bc46f147c738e516b6dc2e, новый root /home/adm_user/marketplace-workspace/beta/rehearsals/e2-09-20261007-01a115d9-r1, контейнеры marketplace-e209-20261007-01a115d9-r1-postgres/controller, сеть того же префикса-private, volume-data, mw_beta/test_mw_beta и bootstrap/migrator/web роли только этого кластера. В root созданы secrets/pg_bootstrap_password, secrets/db_bootstrap_password, secrets/db_migrator_password, secrets/db_web_password, secrets/django_secret_key, secrets/mfa_encryption_key, secrets/isolation_signing_key, state/manifest.json, state/suite-events.jsonl, baseline.json, preserved-rehearsal.json и пустые каталоги backups/operator-output. Эти данные остаются на сервере; секреты в Git/терминал не копировались. Web/dump/restore не создавались.12:14:46Z read-only metadata подтвердили неизменность main runtime409c71f… и прежних E2-06/E2-07/E2-08 стендов. Чтение закрытого safe events сначала отказало adm_user; затем выполнено read-only sudo без chmod/чтения secret-файлов. Все R1 ресурсы остановлены и сохранены, не удалены и не переиспользованы.
+
+Локально новый runtime_limits валидирует положительные значения <= лимитам, отклоняет unlimited/превышения/неполный контекст; вызывается до suite, печатает только несекретные числа. E209 профиль перенесён на новый R2; подготовка защищает также остановленные R1 postgres/controller, restore получает новое имя. Финансовые функции/Grant/потребители и штатные Django таймауты не менялись. Отчёт сохраняет ошибки и непроверенные критерии, R2 plan требует отдельной публикации/разрешения.
+
+Точные изменённые существующие файлы:
+
+- CHANGELOG.md
+- SYSTEM_FINANCIAL_CHECKS.json
+- SYSTEM_PLAN.md
+- backend/access_control/tests/test_financial_preparation.py
+- backend/data_isolation/apps.py
+- backend/tools/financial_rehearsal.py
+- backend/tools/financial_restore_check.py
+- beta/deploy/compose.financial-rehearsal.json
+- beta/deploy/prepare_financial_rehearsal.py
+
+Точные новые файлы:
+
+- backend/tools/financial_runtime_limits.py
+- docs/E2-09_ISOLATED_R1_RESULT.md
+- docs/E2-09_R2_SERVER_PLAN.md
+
+До изменений сохранены9 существующих файлов в .change-backups/E2-09-20261007-01a115d9-isolated-r1-result/<тот же путь>; SHA256/время в manifest.json и r2-preparation-manifest.json. Новые backup-артефакты ignored. Локально9 preparation-тестов PASS без skipped за0.795с, Django check PASS; проверяются AST/JSON/source diff/backup hashes/append-only/statuses/bash -n. Прежние115 тестов относились к неизменённому финансовому коду; не выдаются за PostgreSQL R1/R2. Полный PG suite, actual web LOGIN, HTTP/upgrade/concurrency/backup-restore/main rollout ещё не проверены. E2-09/E2-06/E2-08 «На проверке».
+
+Безопасный откат серверного этапа выполнен остановкой только R1; сохранить все БД/роли/ключи/volume/network/release/evidence. Не down-v/prune/DROP/перезапись/повтор. Локальный откат: сравнить перечисленные файлы с backup и поздней работой, отменить только R2-подготовку обратным патчем; не стирать фактический R1-результат, CHANGELOG дополнять. Новые helper/plan удалять только если нет поздних потребителей/публикаций, отчёт/evidence сохранять; backup/manifest удалять только после отдельного решения о сохранности. Никаких ослаблений Grant/MFA/RLS/финансового доступа, main/Finkos/Caddy/FBS/WB API/K3/установок/push.
+
+Дополнительно актуализирована docs/E2-09_FINANCIAL_VISIBILITY.md: R1 fresh configure подтверждён, полный suite не подтверждён, следующий план R2. Её исходная копия сохранена в том же backup-корне по относительному пути, SHA256/время в новом visibility-manifest.json; всего10 исходных файлов сохранено. Карта не объявляет полный PostgreSQL PASS.
+
+Завершены локальные проверки R2:9 preparation tests PASS; AST/JSON,10 backup SHA256, append-only журнал/план, неизменные статусы и финансовый код, полный состав файлов, git diff --check PASS. Два shell-блока нового плана прошли bash -n (только синтаксис, без выполнения). Новый runtime_limits при нарушении числовых пределов сохраняет только фиксированную пятёрку чисел (лимиты/счётчик), чтобы отказ не терял несекретную причину; строки данных/учётные значения не выводятся.
