@@ -69,6 +69,8 @@ def matching(actor, org, resource, action, cabinet=None, platform=False):
 def authorize(actor, org, resource, action, cabinet=None, sensitive=False):
     record = session_for(actor, sensitive)
     is_platform = platform_for(actor) is not None
+    if is_platform and resource == 'synthetic_finance':
+        raise PermissionDenied()
     grants = matching(actor, org, resource, action, cabinet, platform=is_platform)
     if is_platform and resource == 'synthetic_record':
         if action != 'view':
@@ -125,6 +127,7 @@ def revoke_grant(grant):
     Grant.objects.filter(pk=grant.pk, revoked_at__isnull=True).update(revoked_at=now)
     # Also explicit for service readability; DB guards cover raw updates.
     ExportPermit.objects.filter(exportbinding__grant=grant, revoked_at__isnull=True).update(revoked_at=now)
+    ExportPermit.objects.filter(exportbinding__finance_grant=grant, revoked_at__isnull=True).update(revoked_at=now)
     SupportWindow.objects.filter(grant=grant, revoked_at__isnull=True).update(revoked_at=now)
 
 
@@ -135,6 +138,8 @@ def issue_grant(actor, organization_id, membership_id, resource, action, cabinet
     target = target_member(org, membership_id, actor)
     cabinet = Cabinet.objects.get(pk=cabinet_id, organization=org, archived_at__isnull=True) if cabinet_id else None
     if platform_for(actor):
+        if resource == 'synthetic_finance':
+            raise PermissionDenied()
         require_manager(actor, org)
         # Platform grants bound delegation; they do not authorize direct data
         # mutation/export. Read-only support uses an additional timed window.
@@ -159,6 +164,8 @@ def remove_grant(actor, organization_id, grant_id):
     target_member(org, initial.membership_id, actor)
     grant = Grant.objects.select_related('cabinet').get(pk=grant_id, revoked_at__isnull=True)
     if platform_for(actor):
+        if grant.resource == 'synthetic_finance':
+            raise PermissionDenied()
         require_manager(actor, org)
         if not matching(actor, org, grant.resource, grant.action, grant.cabinet, platform=True).exists():
             raise PermissionDenied()
@@ -204,6 +211,8 @@ def apply_template(actor, organization_id, membership_id, role, cabinet_ids):
             authorize(actor, org, resource, action, cabinet)
     for grant in Grant.objects.filter(membership=target, revoked_at__isnull=True):
         if platform_for(actor):
+            if grant.resource == 'synthetic_finance':
+                raise PermissionDenied()
             if not matching(actor, org, grant.resource, grant.action, grant.cabinet, platform=True).exists():
                 raise PermissionDenied()
         else:
@@ -240,6 +249,7 @@ def resolve_record(org, cabinet_id, record_id):
 
 @transaction.atomic
 def record_operation(actor, organization_id, cabinet_id, record_id, action, value=None):
+    from . import financial
     if not settings.SECURITY_DOWNLOAD_PROBE:
         raise PermissionDenied()
     org, actor = lock_scope(organization_id, actor.pk)
@@ -249,7 +259,11 @@ def record_operation(actor, organization_id, cabinet_id, record_id, action, valu
     with record_scope(actor, session, org, cabinet, action):
         obj = resolve_record(org, cabinet_id, record_id)
         if action == 'view':
-            return {'value': obj.value}
+            fg = financial.grant_for(actor, org, cabinet, 'view')
+            result = {'value': obj.value, 'finance_visibility': 'allowed' if fg else 'restricted'}
+            if fg:
+                result['finance'] = financial.output(financial.read(actor, org, cabinet, [obj.pk]).get(obj.pk))
+            return result
         if action == 'change':
             if type(value) is not int or not -1000000 <= value <= 1000000:
                 raise PermissionDenied()
@@ -257,9 +271,10 @@ def record_operation(actor, organization_id, cabinet_id, record_id, action, valu
                 raise PermissionDenied()
             return {'status': 'ok'}
         if action == 'export':
+            fg = financial.grant_for(actor, org, cabinet, 'export')
             permit = ExportPermit.objects.create(user=actor, organization=org, session=session,
                 expires_at=timezone.now() + timedelta(minutes=5))
-            ExportBinding.objects.create(permit=permit, grant=grant, record=obj)
+            ExportBinding.objects.create(permit=permit, grant=grant, record=obj, finance_grant=fg)
             return {'permit_id': str(permit.pk)}
     raise PermissionDenied()
 
@@ -267,6 +282,7 @@ def record_operation(actor, organization_id, cabinet_id, record_id, action, valu
 @transaction.atomic
 def list_records(actor, organization_id, cabinet_id, record_id=None):
     """Narrow synthetic list/search consumer; no cross-cabinet aggregation."""
+    from . import financial
     if not settings.SECURITY_DOWNLOAD_PROBE:
         raise PermissionDenied()
     org, actor = lock_scope(organization_id, actor.pk)
@@ -276,11 +292,36 @@ def list_records(actor, organization_id, cabinet_id, record_id=None):
         rows = SyntheticRecord.objects.filter(organization=org, cabinet=cabinet, archived_at__isnull=True)
         if record_id is not None:
             rows = rows.filter(pk=record_id)
-        return {'records': list(rows.order_by('pk').values('id', 'value')[:100])}
+        records = list(rows.order_by('pk').values('id', 'value')[:100])
+        fg = financial.grant_for(actor, org, cabinet, 'view')
+        result = {'records': records, 'finance_visibility': 'allowed' if fg else 'restricted'}
+        if fg:
+            financial_rows = financial.read(actor, org, cabinet, [row['id'] for row in records])
+            for row in records:
+                row['finance'] = financial.output(financial_rows.get(row['id']))
+            result['finance_totals'] = financial.totals(financial_rows)
+        return result
+
+
+@transaction.atomic
+def change_finance(actor, organization_id, cabinet_id, record_id, values):
+    from . import financial
+    if not settings.SECURITY_DOWNLOAD_PROBE:
+        raise PermissionDenied()
+    org, actor = lock_scope(organization_id, actor.pk)
+    cabinet = Cabinet.objects.get(pk=cabinet_id, organization=org, archived_at__isnull=True)
+    with record_scope(actor, session_for(actor), org, cabinet, 'change'):
+        financial.require(actor, org, cabinet, 'change')
+        obj = resolve_record(org, cabinet_id, record_id)
+        financial.write(actor, org, cabinet, obj, values)
+    return {'status': 'ok'}
 
 
 @transaction.atomic
 def download(request, permit_id):
+    from . import financial
+    if request.GET:
+        raise PermissionDenied()
     if not settings.SECURITY_DOWNLOAD_PROBE or not request.user.is_authenticated:
         raise PermissionDenied()
     initial = ExportPermit.objects.get(pk=permit_id, user=request.user)
@@ -301,7 +342,10 @@ def download(request, permit_id):
         raise PermissionDenied()
     with record_scope(actor, record, org, cabinet, 'export'):
         obj = resolve_record(org, cabinet_id, binding.record_id)
-        return ('synthetic,value\nexample.invalid,' + str(obj.value) + '\n').encode()
+        if binding.finance_grant_id is not None:
+            row = financial.read(actor, org, cabinet, [obj.pk], 'export', binding).get(obj.pk)
+            return financial.csv_bytes(obj.value, financial.output(row), include_finance=True)
+        return financial.csv_bytes(obj.value)
 
 
 @transaction.atomic

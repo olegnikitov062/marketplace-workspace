@@ -6,12 +6,16 @@ class DataIsolationConfig(AppConfig):
 
     def ready(self):
         import os
-        profile = os.environ.get('E208_REHEARSAL')
+        financial = os.environ.get('E209_REHEARSAL')
+        if financial and os.environ.get('E208_REHEARSAL'):
+            raise RuntimeError('Conflicting rehearsal profiles')
+        profile = financial or os.environ.get('E208_REHEARSAL')
         if profile:
             from django.conf import settings
             from django.db import connection
             from django.core.exceptions import ImproperlyConfigured
-            if profile != 'marketplace-e208-20261007-01a1105a-r4' or settings.EFFECTIVE['environment'] != 'beta':
+            expected = 'marketplace-e209-20261007-01a115d9-r1' if financial else 'marketplace-e208-20261007-01a1105a-r4'
+            if profile != expected or settings.EFFECTIVE['environment'] != 'beta':
                 raise ImproperlyConfigured('Unrecognized isolation rehearsal')
             with connection.cursor() as cursor:
                 cursor.execute("SELECT current_setting('cluster_name')")

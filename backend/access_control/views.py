@@ -68,6 +68,8 @@ def suspend(request, organization_id, membership_id):
 
 @protected_read
 def record(request, organization_id, cabinet_id, record_id):
+    if request.GET:
+        raise PermissionDenied()
     return JsonResponse(services.record_operation(request.user, organization_id, cabinet_id, record_id, 'view'))
 
 
@@ -81,13 +83,25 @@ def records(request, organization_id, cabinet_id):
 
 @mutation('access_change', ['value'])
 def change(request, organization_id, cabinet_id, record_id):
+    if request.GET:
+        raise PermissionDenied()
     return JsonResponse(services.record_operation(actor(request), organization_id, cabinet_id, record_id,
         'change', int(request.POST['value'])))
 
 
 @mutation('access_export', [])
 def export(request, organization_id, cabinet_id, record_id):
+    if request.GET:
+        raise PermissionDenied()
     return JsonResponse(services.record_operation(actor(request), organization_id, cabinet_id, record_id, 'export'), status=201)
+
+
+@mutation('finance_change', ['revenue', 'cost', 'expenses', 'payout'])
+def finance_change(request, organization_id, cabinet_id, record_id):
+    if request.GET:
+        raise PermissionDenied()
+    return JsonResponse(services.change_finance(actor(request), organization_id, cabinet_id, record_id,
+        {key: request.POST[key] for key in ('revenue', 'cost', 'expenses', 'payout')}))
 
 
 @mutation('access_support_open', ['grant_id', 'reason'])

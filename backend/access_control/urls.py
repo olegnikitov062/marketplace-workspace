@@ -15,5 +15,6 @@ urlpatterns = [
     path(tenant + 'cabinets/<uuid:cabinet_id>/synthetic/', views.records),
     path(record, views.record),
     path(record + 'change/', views.change),
+    path(record + 'finance/change/', views.finance_change),
     path(record + 'export/', views.export),
 ]

@@ -1442,3 +1442,64 @@ Backup204905bytes0600 SHA256b24f013c801fbd148f9e8f398fde460e7bee5751c6d57d4a517d
 Откат: сначала сравнить текущие файлы с указанными копиями и поздней работой, затем отменить только добавление E5-13, её зависимость и изменение счётчиков/документальной записи; CHANGELOG дополнять, историю не стирать. Backup-файлы и manifest удалять только после проверки отсутствия поздних потребителей и сохранения нужных доказательств. Не reset --hard/clean; серверный откат не требуется.
 
 Проверки завершены: 102 уникальных ID, 13 задач этапа 5, прежние статусы сохранены, зависимости существуют, цикл из E5-10 отсутствует, обе backup-копии совпали по SHA256, старый журнал сохранён побайтным префиксом, git diff --check PASS. Изменены только два перечисленных документа.
+
+
+## 2026-10-07T14:52:34+03:00 (Europe/Moscow) — Реализован локальный финансовый доступ E2-09
+
+Причина: после согласования модели логических таблиц подготовить проверяемую защиту финансового блока через существующие HTTP/Grant/RLS. Реализованы отдельный ресурс synthetic_finance, независимые права в пересечении областей, closed financial table и фиксированные SQL read/write, скрытие полей/формул/итогов, защита входов, финансовая привязка синтетической ссылки с необратимым отзывом, явный операторский bootstrap первого MFA-owner и запрет platform/support. Шаблоны/обычные действия не получают финансовые права. UI E5-13 только в плане. Добавлены новые проверки и guard-ограниченный новый изолированный стенд, backup/restore checker, финансовый контракт/schema/ACL/server plan. Никакого выполнения сервера, установки, push или доступа к реальным секретам.
+
+Точные изменённые существующие файлы:
+
+- CHANGELOG.md
+- SYSTEM_PLAN.md
+- backend/access_control/management/commands/manage_access_operator.py
+- backend/access_control/models.py
+- backend/access_control/operator.py
+- backend/access_control/services.py
+- backend/access_control/tests/test_http.py
+- backend/access_control/urls.py
+- backend/access_control/views.py
+- backend/config/urls.py
+- backend/data_isolation/apps.py
+- backend/data_isolation/tests/test_http.py
+- backend/data_isolation/tests/test_migrations.py
+- backend/tools/access_web_grants.py
+- backend/tools/isolation_sql_probe.py
+- backend/tools/isolation_web_contract.py
+- docs/E2-09_FINANCIAL_VISIBILITY.md
+
+Точные новые файлы:
+
+- SYSTEM_FINANCIAL_CHECKS.json
+- backend/access_control/financial.py
+- backend/access_control/financial_guards.py
+- backend/access_control/financial_migration_operations.py
+- backend/access_control/migrations/0003_financial_schema.py
+- backend/access_control/tests/test_financial.py
+- backend/access_control/tests/test_financial_migrations.py
+- backend/access_control/tests/test_financial_preparation.py
+- backend/access_control/tests/test_financial_transactions.py
+- backend/data_isolation/financial_sql.py
+- backend/data_isolation/migrations/0002_financial_operations.py
+- backend/tools/financial_django_runner.py
+- backend/tools/financial_rehearsal.py
+- backend/tools/financial_restore_check.py
+- backend/tools/financial_sql_probe.py
+- backend/tools/financial_test_runner.py
+- backend/tools/financial_web_contract.py
+- backend/tools/verify_financial_web_runtime.py
+- beta/deploy/compose.financial-rehearsal.json
+- beta/deploy/prepare_financial_rehearsal.py
+- docs/E2-09_SERVER_PLAN.md
+
+Резервные копии существующих файлов до изменений: .change-backups/E2-09-20261007-01a115d9-implementation/<тот же относительный путь>; полный перечень и исходные SHA256 в manifest.json. Для backend/tools/isolation_sql_probe.py — дополнительный sql-probe-manifest.json в том же корне. SYSTEM_PLAN.md, CHANGELOG.md и карта E2-09 также сохранены до изменений. Backup-артефакты/manifest исключены из Git.
+
+Проверено: 115 актуальных HTTP/context тестов, в том числе 24 новых финансовых, PASS без skips, 194.690с, SQLite. Ещё 6 preparation-тестов PASS, 0.530с; Django check, makemigrations --check --dry-run PASS. Промежуточный поднабор50 PASS не прибавляется к покрытию115. Broad discovery завершился ошибкой legacy E2-06 test_role_scenario после34/75.204с: вызываемый issue_export_probe намеренно запрещён при ACCESS_CONTROL_ENABLED со времени E2-07. Старый обход не возвращён; несовместимый режим исключён из актуального server runner. На разработке исправлены SQLite trigger-preservation при rebuild и ожидания новых archive/export тестов; итоговый набор прошёл. Подробности/команды — SYSTEM_FINANCIAL_CHECKS.json. Git live remote beta=aac9cbd32eb5e9c846ece90a0ad75c4aca74a57b повторно проверен read-only после sandbox DNS failure.
+
+PostgreSQL schema/ACL/RLS/functions, настоящий web LOGIN, конкуренция/rollback/reuse и backup/restore нового кода не запускались. План фиксирует новый project/root/network/volume/containers/restore, лимиты/коллизии, новые synthetic secrets и штатные mounts, точную schema/ACL дельту, сравнение и quarantine; full source SHA закрепляется отдельным документальным коммитом после исходников. E2-09/E2-06/E2-08 остаются «На проверке». Отсутствующие cache/worker/storage/реальный готовый экспорт/UI/интеграции/D3 не создавались и не проверены.
+
+Безопасный откат: сравнить текущие файлы, backup и более позднюю работу; обратным патчем отменять только E2-09, не весь рабочий каталог. Новые перечисленные файлы удалять только если после сравнения нет поздних зависимостей/данных/результатов; backup/evidence хранить до отдельного решения. CHANGELOG дополнять, историю не стирать. На заполненной финансовой схеме reverse запрещён; не возвращать pre-finance/pre-RLS runtime и не отключать Grant/MFA/RLS. Будущий серверный отказ — остановка только новых процессов, сохранение всех БД/ключей/dump/restore, без DROP/down-v/prune. Основная beta сейчас не менялась; её rollout потребует отдельного плана/разрешения.
+
+Финальная локальная проверка: Python AST/JSON/git diff --check,17 backup SHA256, полный состав38 изменённых/новых файлов, append-only SYSTEM_PLAN/CHANGELOG и неизменные строки статусов PASS. Два shell-блока серверного плана прошли локальный bash -n; первый старт MSYS блокировался песочницей, повторная syntax-only проверка успешна, команды не исполнялись. Исправлена только кодировка UTF-8 в одноразовом валидаторе Windows, не данные проекта.
+
+Staged-проверка выявила CRLF в новом SYSTEM_FINANCIAL_CHECKS.json: окончания строк приведены к LF, содержание сохранено; повторный staged diff --check обязателен перед commit. Запись Git index потребовала локальной sandbox escalation; публикация не выполнялась.

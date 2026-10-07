@@ -36,6 +36,11 @@ def ready(request):
                                "WHERE n.nspname='public' AND c.relname=ANY(%s) AND c.relrowsecurity AND c.relforcerowsecurity", [list(TABLES)])
                 if cursor.fetchone()[0] != len(TABLES):
                     return Response({'status': 'not-ready'}, status=503)
+                cursor.execute("SELECT count(*) FROM django_migrations WHERE app='data_isolation' AND name='0002_financial_operations'")
+                if cursor.fetchone() != (1,):
+                    return Response({'status': 'not-ready'}, status=503)
+                from tools.financial_web_contract import verify as verify_finance
+                verify_finance(cursor)
         if getattr(settings, "ACCOUNT_SECURITY_ENABLED", False):
             from account_security.crypto import cipher
             from account_security.models import Authenticator

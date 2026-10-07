@@ -67,8 +67,9 @@ def revoke_statements(role):
     return statements
 
 
-def verify_privileges(cursor, role, applied):
+def verify_privileges(cursor, role, applied, extra_insert=None):
     role = checked_role(role)
+    expected_insert = {**INSERT, **(extra_insert or {})}
     cursor.execute("SELECT rolsuper, rolcreatedb, rolcreaterole, rolreplication, rolbypassrls FROM pg_roles WHERE rolname=%s", [role])
     flags = cursor.fetchone()
     if flags is None or any(flags):
@@ -97,7 +98,7 @@ def verify_privileges(cursor, role, applied):
         JOIN pg_attribute a ON a.attrelid=c.oid
         WHERE n.nspname='public' AND c.relkind IN ('r','p') AND a.attnum>0 AND NOT a.attisdropped""", [role] * 3)
     for table, column, insert, update, references in cursor.fetchall():
-        if (insert != (applied and column in INSERT.get(table, ()))
+        if (insert != (applied and column in expected_insert.get(table, ()))
                 or update != (applied and column in UPDATE.get(table, ())) or references):
             raise ContractError("unexpected_column_privileges")
     cursor.execute("""SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace

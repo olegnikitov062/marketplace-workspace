@@ -47,6 +47,8 @@ def revoke_platform(assignment_id):
 @transaction.atomic
 def grant_platform(assignment_id, organization_id, resource, action, cabinet_id=None):
     operator_lock()
+    if resource == 'synthetic_finance':
+        raise PermissionDenied()
     org = Organization.objects.select_for_update().get(pk=organization_id, archived_at__isnull=True)
     assignment = PlatformRoleAssignment.objects.get(pk=assignment_id, revoked_at__isnull=True)
     user, _ = security.locked_user(assignment.user_id)
@@ -84,6 +86,27 @@ def bootstrap_owner(membership_id):
     for resource, action, cabinet in template_spec('owner', []):
         Grant.objects.create(organization=org, membership=member, resource=resource, action=action)
     security.event(user, 'owner_grants_bootstrapped')
+
+
+@transaction.atomic
+def bootstrap_finance(membership_id):
+    """Explicit first financial authority; no migration/template/recovery caller."""
+    operator_lock()
+    initial = Membership.objects.get(pk=membership_id)
+    org = Organization.objects.select_for_update().get(pk=initial.organization_id, archived_at__isnull=True)
+    user, state = security.locked_user(initial.user_id)
+    member = Membership.objects.get(pk=membership_id, state='active', archived_at__isnull=True, role='owner')
+    if (security.authenticator(user) is None or state.recovery_required or
+            PlatformRoleAssignment.objects.filter(user=user, revoked_at__isnull=True).exists() or
+            Grant.objects.filter(organization=org, resource='synthetic_finance').exists()):
+        raise PermissionDenied()
+    from .services import matching
+    for action in Grant.Action.values:
+        if not matching(user, org, 'synthetic_record', action).exists():
+            raise PermissionDenied()
+    for action in Grant.Action.values:
+        Grant.objects.create(organization=org, membership=member, resource='synthetic_finance', action=action)
+    security.event(user, 'finance_bootstrapped')
 
 
 @transaction.atomic

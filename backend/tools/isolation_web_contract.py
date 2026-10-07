@@ -18,8 +18,9 @@ def apply(cursor, key):
     verify(cursor)
 
 
-def verify(cursor):
-    previous.verify_privileges(cursor, ROLE, True)
+def verify(cursor, financial=False):
+    extra = {'access_control_exportbinding': (*previous.INSERT['access_control_exportbinding'], 'finance_grant_id')} if financial else None
+    previous.verify_privileges(cursor, ROLE, True, extra_insert=extra)
     previous.verify_guards(cursor, ROLE, True)
     cursor.execute("SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,r.rolname "
                    "FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
@@ -39,7 +40,7 @@ def verify(cursor):
         raise previous.ContractError('web_can_access_signing_key')
     cursor.execute("SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace "
                    "WHERE n.nspname='mw_isolation' AND has_function_privilege(%s,p.oid,'EXECUTE')", [ROLE])
-    if cursor.fetchone()[0] != len(PUBLIC_FUNCTIONS):
+    if cursor.fetchone()[0] != len(PUBLIC_FUNCTIONS) + (2 if financial else 0):
         raise previous.ContractError('unexpected_isolation_function_acl')
     cursor.execute("SELECT p.proname,p.prosecdef,r.rolname,p.proconfig,has_function_privilege(%s,p.oid,'EXECUTE') "
                    "FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_roles r ON r.oid=p.proowner "

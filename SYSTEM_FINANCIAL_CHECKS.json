@@ -1,0 +1,129 @@
+{
+  "task": "E2-09",
+  "recorded_at": "2026-10-07T14:52:34+03:00",
+  "status": "На проверке",
+  "scope": "Локальная реализация финансового блока логической синтетической таблицы; UI E5-13 отдельно",
+  "baseline": {
+    "branch": "beta",
+    "implementation_parent": "72b4915",
+    "live_remote_beta": "aac9cbd32eb5e9c846ece90a0ad75c4aca74a57b",
+    "live_remote_checked": "2026-10-07T14:50:23+03:00",
+    "method": "git ls-remote --heads origin beta: sandbox DNS failure, read-only escalation success",
+    "last_confirmed_runtime_from_user_and_docs": "409c71f65db53873183c6ffd8d059561c05185d2",
+    "runtime_verified_this_task": false
+  },
+  "server_contacted": false,
+  "postgresql_checked": false,
+  "real_web_login_checked": false,
+  "backup_restore_checked": false,
+  "push_performed": false,
+  "dependencies_installed": false,
+  "real_key_or_password_files_read": false,
+  "k3_rechecked": false,
+  "source_commit_pin": "docs/E2-09_SERVER_PLAN.md (separate post-commit pin)",
+  "local_tools": {
+    "python": "3.14.7, existing backend/.venv",
+    "Django": "5.2.17",
+    "psycopg": "3.3.6",
+    "cryptography": "50.0.2",
+    "django-two-factor-auth": "1.18.1",
+    "django-otp": "1.7.3",
+    "pip_check": "PASS",
+    "postgresql": "docker/psql/postgres/pg_ctl absent in PATH; no installation"
+  },
+  "local_checks": [
+    {
+      "command": "manage.py test access_control.tests.test_financial access_control.tests.test_http access_control.tests.test_platform account_security.tests.test_http data_isolation.tests.test_context data_isolation.tests.test_http --settings=config.isolation_local_checks --verbosity=1 --failfast",
+      "result": "PASS",
+      "tests": 115,
+      "financial_tests": 24,
+      "seconds": 194.69,
+      "skipped": 0,
+      "database": "SQLite only"
+    },
+    {
+      "command": "manage.py test access_control.tests.test_financial_preparation data_isolation.tests.test_preparation --settings=config.isolation_local_checks --verbosity=1",
+      "result": "PASS",
+      "tests": 6,
+      "seconds": 0.53,
+      "skipped": 0,
+      "database": "none: inert plan/syntax/contract preparation"
+    },
+    {
+      "command": "manage.py makemigrations --check --dry-run --settings=config.isolation_local_checks",
+      "result": "No changes detected"
+    },
+    {
+      "command": "manage.py check --settings=config.isolation_local_checks",
+      "result": "PASS"
+    },
+    {
+      "command": "earlier focused financial/isolation/platform HTTP run",
+      "result": "PASS",
+      "tests": 50,
+      "seconds": 98.81,
+      "skipped": 0,
+      "note": "Intermediate subset, not additional independent coverage"
+    },
+    {
+      "command": "changed Python AST / JSON / git diff --check / backup manifests / append-only journal and plan / task status preservation",
+      "result": "PASS",
+      "backup_hashes": 17
+    },
+    {
+      "command": "bash -n on the two E2-09_SERVER_PLAN shell blocks",
+      "result": "PASS",
+      "executed_commands": false,
+      "note": "Initial MSYS sandbox NamedObjects refusal; local syntax-only escalation succeeded. No server calls."
+    }
+  ],
+  "failed_attempts": [
+    {
+      "scope": "Broad ownership/accounts/account_security/access_control/data_isolation discovery",
+      "result": "FAILED after 34 tests / 75.204s",
+      "test": "account_security.tests.test_role_scenario.SecurityRoleScenarioTests.test_http_scenario_prepared_for_restricted_login",
+      "cause": "Legacy E2-06 scenario invokes issue_export_probe, deliberately denied when ACCESS_CONTROL_ENABLED since E2-07; unchanged source confirms mismatch. Not included in current isolation runner; broad discovery not claimed green."
+    },
+    {
+      "scope": "Initial SQLite financial migration",
+      "cause": "Django rebuild checks triggers on other tables; preservation now snapshots/restores all existing trigger definitions inside the atomic offline migration. Final migration application and HTTP suite pass; not PG evidence."
+    },
+    {
+      "scope": "Expanded financial archive test development",
+      "cause": "Existing record archive is irreversible; test corrected to assert IntegrityError and use a new synthetic record. Helper export has no argument, corrected to actual HTTP POST. Final 24 financial tests pass."
+    }
+  ],
+  "prepared_postgresql_checks": [
+    "FinancialMigrationTests (2): E2-08 upgrade data/grants/guards preserved, populated reverse denied",
+    "FinancialConcurrencyTests (2): separate connections revoke vs view/change/download and regrant",
+    "tools.financial_rehearsal + financial_sql_probe: actual web LOGIN, fixed operations, signed/missing/forged/mismatched context, SQL ACL denial, HTTP and CSRF, rollback/reuse/concurrency/revocation",
+    "tools.financial_restore_check: rows/private synthetic key in-memory, schema/ACL/owners/FK/RLS/functions/triggers/sequences/defaults, irreversible finance links, closed restore quarantine",
+    "tools.verify_financial_web_runtime: actual web ACL and 6 network status probes"
+  ],
+  "unverified_required": [
+    "PostgreSQL migration/SQL functions/ACL/RLS and real web LOGIN",
+    "PostgreSQL concurrency/rollback/reuse tests",
+    "Isolated HTTP/PG suite and network readiness",
+    "Backup/restore exact comparison and quarantine",
+    "Main beta rollout preservation and checks under compose.security-web.json with SECURITY_SOURCE and SECURITY_IMAGE"
+  ],
+  "absent_layers_not_covered": [
+    "business cache",
+    "worker/jobs",
+    "real file/storage/ready export (E5-07)",
+    "real financial reports/integrations",
+    "UI checkbox access management (E5-13)",
+    "real employees and final D3 matrix (E6-03)"
+  ],
+  "unchanged_statuses": {
+    "E2-06": "На проверке",
+    "E2-07": "Готово",
+    "E2-08": "На проверке"
+  },
+  "rollback": "Compare current tree with .change-backups/E2-09-20261007-01a115d9-implementation and later changes; reverse only this patch. Never downgrade populated finance/RLS or restore over a live source; isolated failure stops only new containers and retains resources.",
+  "authorization_required": [
+    "Oleg publishes source commit in beta",
+    "Separate approval for exact isolated E2-09_SERVER_PLAN",
+    "Separate main-beta rollout plan and approval after isolated results"
+  ]
+}

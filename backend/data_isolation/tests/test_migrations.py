@@ -14,13 +14,13 @@ class IsolationMigrationTests(TransactionTestCase):
         with connection.cursor() as cursor:
             cursor.execute("SELECT relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
                            "WHERE n.nspname='public' AND c.relrowsecurity AND c.relforcerowsecurity")
-            self.assertEqual({r[0] for r in cursor.fetchall()}, set(TABLES))
+            self.assertEqual({r[0] for r in cursor.fetchall()}, set(TABLES) | {'access_control_syntheticfinance'})
         with self.assertRaises(IrreversibleError), transaction.atomic():
             MigrationExecutor(connection).migrate([('data_isolation',None)])
         self.assertTrue(Organization.objects.filter(pk=org.pk).exists())
         with connection.cursor() as cursor:
             cursor.execute("SELECT count(*) FROM django_migrations WHERE app='data_isolation'")
-            self.assertEqual(cursor.fetchone(), (1,))
+            self.assertEqual(cursor.fetchone(), (2,))
 
     def test_empty_schema_reverse_forward(self):
         targets = MigrationExecutor(connection).loader.graph.leaf_nodes()
@@ -30,4 +30,4 @@ class IsolationMigrationTests(TransactionTestCase):
             MigrationExecutor(connection).migrate(targets)
         with connection.cursor() as cursor:
             cursor.execute("SELECT count(*) FROM pg_class WHERE relrowsecurity AND relforcerowsecurity")
-            self.assertEqual(cursor.fetchone(), (len(TABLES),))
+            self.assertEqual(cursor.fetchone(), (len(TABLES) + 1,))

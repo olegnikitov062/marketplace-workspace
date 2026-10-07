@@ -22,14 +22,14 @@ def require(value):
         raise RuntimeError('isolation_probe_failed')
 
 
-def run(case):
+def run(case, project='marketplace-e208-20261007-01a1105a-r4', verifier=verify):
     from account_security.models import AccountSession
     from account_security.services import digest
     import psycopg
     with connection.cursor() as cursor:
         cursor.execute("SELECT current_database(),session_user,current_user,current_setting('cluster_name')")
-        require(cursor.fetchone() == ('mw_beta','mw_beta_web','mw_beta_web','marketplace-e208-20261007-01a1105a-r4'))
-        verify(cursor)
+        require(cursor.fetchone() == ('mw_beta','mw_beta_web','mw_beta_web',project))
+        verifier(cursor)
         for table in (*CONTROL_TABLES, 'access_control_syntheticrecord'):
             cursor.execute(f'SELECT count(*) FROM public.{table}')
             require(cursor.fetchone() == (0,))
@@ -76,7 +76,7 @@ def run(case):
     with transaction.atomic(), connection.execute_wrapper(StatementSigner(connection, uuid.uuid4().hex)):
         session = AccountSession.objects.get(session_hash=digest(case.member_client.cookies[settings.SESSION_COOKIE_NAME].value))
     # A single personal session can use two independently granted organizations.
-    require(case.member_client.get(case.url(case.rb),secure=True).json() == {'value':11})
+    require(case.member_client.get(case.url(case.rb),secure=True).json() == {'value':11,'finance_visibility':'restricted'})
     with transaction.atomic(), record_scope(case.member,session,case.b,case.cb,'view'):
         with connection.execute_wrapper(StatementSigner(connection,uuid.uuid4().hex)), connection.cursor() as cursor:
             cursor.execute('SELECT id FROM access_control_syntheticrecord ORDER BY id')
@@ -155,7 +155,7 @@ def run(case):
                 return cur.fetchall()
     with ThreadPoolExecutor(max_workers=2) as pool:
         require(list(pool.map(independent,[case.ca,case.ca2])) == [[(case.ra.pk,)],[]])
-    require(case.member_client.get(case.url(),secure=True).json() == {'value':7})
+    require(case.member_client.get(case.url(),secure=True).json() == {'value':7,'finance_visibility':'restricted'})
     require(case.post(case.org_url(f"grants/{issued['view']}/revoke/")).status_code == 200)
     # Same live session, correctly signed capability, revoked view grant:
     # the SQL predicate must still deny. Signing is not an authorization cache.

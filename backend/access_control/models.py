@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 
 from django.db import models
 from django.db.models import Q
@@ -20,6 +21,7 @@ class Grant(models.Model):
     class Resource(models.TextChoices):
         MEMBERSHIPS = 'memberships'
         RECORD = 'synthetic_record'
+        FINANCE = 'synthetic_finance'
 
     class Action(models.TextChoices):
         VIEW = 'view'
@@ -41,7 +43,9 @@ class Grant(models.Model):
             models.CheckConstraint(condition=(Q(membership__isnull=False, platform__isnull=True) |
                                                Q(membership__isnull=True, platform__isnull=False)), name='access_one_subject'),
             models.CheckConstraint(condition=(Q(resource='memberships', action__in=['view', 'manage_access'], cabinet__isnull=True) |
-                Q(resource='synthetic_record', action__in=['view', 'export', 'change', 'manage_access'])), name='access_known_operation'),
+                Q(resource='synthetic_record', action__in=['view', 'export', 'change', 'manage_access']) |
+                Q(resource='synthetic_finance', platform__isnull=True,
+                  action__in=['view', 'export', 'change', 'manage_access'])), name='access_known_operation'),
         ]
 
 
@@ -68,3 +72,22 @@ class ExportBinding(models.Model):
     permit = models.OneToOneField('account_security.ExportPermit', primary_key=True, on_delete=models.PROTECT)
     grant = models.ForeignKey(Grant, on_delete=models.PROTECT)
     record = models.ForeignKey(SyntheticRecord, on_delete=models.PROTECT)
+    # NULL is an immutable non-financial projection, including all old permits.
+    finance_grant = models.ForeignKey(Grant, null=True, blank=True, on_delete=models.PROTECT,
+                                     related_name='financial_exports')
+
+
+class SyntheticFinance(models.Model):
+    """Explicit synthetic RUB event; never interprets SyntheticRecord.value."""
+    record = models.OneToOneField(SyntheticRecord, primary_key=True, on_delete=models.PROTECT)
+    organization = models.ForeignKey('ownership.Organization', on_delete=models.PROTECT)
+    cabinet = models.ForeignKey('ownership.Cabinet', on_delete=models.PROTECT)
+    revenue = models.DecimalField(max_digits=14, decimal_places=2)
+    cost = models.DecimalField(max_digits=14, decimal_places=2)
+    expenses = models.DecimalField(max_digits=14, decimal_places=2)
+    payout = models.DecimalField(max_digits=14, decimal_places=2)
+
+    class Meta:
+        constraints = [models.CheckConstraint(
+            condition=Q(**{name + '__gte': 0}) & Q(**{name + '__lte': Decimal('999999999999.99')}),
+            name='finance_' + name + '_range') for name in ('revenue', 'cost', 'expenses', 'payout')]

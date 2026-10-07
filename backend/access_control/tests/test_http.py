@@ -77,7 +77,7 @@ class AccessHTTPTests(TestCase):
         self.assertEqual(self.post(self.url(suffix='change/'), {'value': '4'}, client=self.member_client).status_code, 200)
         self.assertEqual(self.member_client.get(self.url(), secure=True).status_code, 403)
         self.grant('view', self.ca)
-        self.assertEqual(self.member_client.get(self.url(), secure=True).json(), {'value': 4})
+        self.assertEqual(self.member_client.get(self.url(), secure=True).json(), {'value': 4, 'finance_visibility': 'restricted'})
         self.assertEqual(self.post(self.org_url('grants/'), {'membership_id': str(self.om.pk),
             'resource': 'synthetic_record', 'action': 'view', 'cabinet_id': str(self.ca.pk)}, client=self.member_client).status_code, 403)
 

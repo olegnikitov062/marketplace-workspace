@@ -18,7 +18,8 @@ class IsolationHTTPTests(legacy.AccessHTTPTests):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['records'], [{'id': str(self.ra.pk), 'value': 7}])
         for other in (self.ra2, self.rb):
-            self.assertEqual(self.member_client.get(self.list_url() + '?record_id=' + str(other.pk), secure=True).json(), {'records': []})
+            self.assertEqual(self.member_client.get(self.list_url() + '?record_id=' + str(other.pk), secure=True).json(),
+                             {'records': [], 'finance_visibility': 'restricted'})
             self.assertEqual(self.member_client.get(self.list_url(other), secure=True).status_code, 403)
         for query in ('organization_id=' + str(self.b.pk), 'resource=memberships',
                       'record_id=invalid', f'record_id={self.ra.pk}&record_id={self.rb.pk}'):
