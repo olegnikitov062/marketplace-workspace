@@ -20,7 +20,7 @@
   "dependencies_installed": false,
   "real_key_or_password_files_read": false,
   "k3_rechecked": false,
-  "source_commit_pin": "docs/E2-09_SERVER_PLAN.md (separate post-commit pin)",
+  "source_commit_pin": "docs/E2-09_SERVER_PLAN.md",
   "local_tools": {
     "python": "3.14.7, existing backend/.venv",
     "Django": "5.2.17",
@@ -125,5 +125,7 @@
     "Oleg publishes source commit in beta",
     "Separate approval for exact isolated E2-09_SERVER_PLAN",
     "Separate main-beta rollout plan and approval after isolated results"
-  ]
+  ],
+  "source_commit": "faed9681ff4540cb49bc46f147c738e516b6dc2e",
+  "source_pin_recorded_at": "2026-10-07T14:58:31+03:00"
 }
