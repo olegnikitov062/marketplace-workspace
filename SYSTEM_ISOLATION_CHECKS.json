@@ -1,6 +1,6 @@
 {
   "task": "E2-08",
-  "recorded_at": "2026-10-07T10:25:36+03:00",
+  "recorded_at": "2026-10-07T10:26:21+03:00",
   "status": "На проверке",
   "scope": "R1 isolated PostgreSQL configure failed; resources stopped/preserved; local R2 correction awaits publication and authorization",
   "baseline": {
@@ -175,12 +175,13 @@
   },
   "r2_plan": {
     "document": "docs/E2-08_SERVER_PLAN.md",
-    "revision": "R2_REV_PENDING_LOCAL_COMMIT",
+    "revision": "21548e9040948b16d371fe31add6c0aca2fbbf3f",
     "project": "marketplace-e208-20261007-01a1105a-r2",
     "published": false,
     "authorized": false,
     "executed": false,
-    "restore": "mw_e208_01a1105a_r2_restore"
+    "restore": "mw_e208_01a1105a_r2_restore",
+    "pinned_at": "2026-10-07T10:26:21+03:00"
   },
   "backups_r1_result": ".change-backups/E2-08-20261007-isolated-failure",
   "local_r2_checks": {
