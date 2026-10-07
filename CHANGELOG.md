@@ -1597,3 +1597,39 @@ Staged-проверка выявила CRLF в новом SYSTEM_FINANCIAL_CHECK
 До изменения сохранены4 файла в .change-backups/E2-09-20261007-01a115d9-r3-pin/<тот же путь>, новый manifest.json с SHA256/временем ignored. Проверки: JSON, четыре backup hashes, точный source pin, append-only журнал/план, неизменные статусы, отсутствие code/deploy diff и git diff --check. Программные тесты повторно не нужны для документации;11 preparation PASS не PostgreSQL R3.
 
 Откат: сравнить с backup/поздней работой и отменить только ошибочную привязку обратным патчем; журнал дополнять, факт R2 и чужую работу сохранять. Новые backup/manifest удалять только после отдельного решения о сохранности. Сервер не вызывался после финальных read-only проверок R2; stopped R1/R2 и main не менялись. Олег проверяет и публикует beta сам, новый изолированный R3 требует отдельного разрешения из-за остановки R2; main rollout — ещё один самостоятельный план/допуск.
+
+
+## 2026-10-07T16:57:57+03:00 (Europe/Moscow) — Зафиксирована остановка E2-09 R3 и подготовлен новый R4
+
+Причина: выполнить отдельно разрешённый Олегом изолированный R3 после публикации bb272948, сохранить фактический failfast и подготовить локальное устранение подтверждённого lock-scope дефекта в проверяемом восстановлении владельца. Сервер получил только Git source88347474f2e8ac6064e893127280dbb3371480d6. Созданы только новый marketplace-e209-20261007-01a115d9-r3 root/release/postgres/controller/network/data volume, mw_beta/test_mw_beta/роли/7synthetic secrets/state; точные пути/ID/images/UTC в docs/E2-09_ISOLATED_R3_RESULT.md. Fresh migrations/ACL/лимиты PASS, но suite ERROR SecurityConcurrencyTests.test_same_operator_permit_has_one_successful_consumer:130 учтённых тестов1309.324с,runner1323с/exit1 в13:46:37Z. Ни130 PASS, ни точный SQLSTATE/причина не заявляются. Controller остановлен13:47:14.984Z, затем PG13:47:15.467Z; повторов нет. Web/scenario/dump/restore не создавались/не выполнялись. Metadata13:48:09Z подтвердила прежний main409c71f… и сохранность R1/R2/старых стендов. Все R3-ресурсы сохранены.
+
+Изменены существующие файлы:
+
+- SYSTEM_FINANCIAL_CHECKS.json
+- SYSTEM_PLAN.md
+- CHANGELOG.md
+- docs/E2-09_FINANCIAL_VISIBILITY.md
+- backend/account_security/services.py
+- backend/account_security/tests/test_transactions.py
+- backend/tools/financial_django_runner.py
+- backend/tools/financial_test_runner.py
+- backend/access_control/tests/test_financial_preparation.py
+- backend/tools/financial_restore_check.py
+- backend/tools/financial_rehearsal.py
+- backend/data_isolation/apps.py
+- beta/deploy/prepare_financial_rehearsal.py
+- beta/deploy/compose.financial-rehearsal.json
+
+Новые файлы:
+
+- docs/E2-09_ISOLATED_R3_RESULT.md
+- docs/E2-09_R4_SERVER_PLAN.md
+- backend/tools/financial_test_diagnostics.py
+
+До изменений14 исходных файлов сохранены в .change-backups/E2-09-20261007-01a115d9-isolated-r3-result/<тот же путь>; новый manifest.json содержит SHA256/время; backup ignored. Локально подтверждён отдельный дефект: password proof consume_operator_recovery находился в transaction.atomic после select_for_update. Новый тест сначала FAIL0.405с, затем после минимального переноса proof до lock PASS. Под lock повторно сверяются текущий hash/available/owner/state/permit; одноразовость, MFA, границы/права не расширены, hashers/CPU/timeouts не ослаблены. Это не доказанное объяснение R3 SQL error. Новые3 теста включают смену пароля/блокировку между proof и lock;38 security/lock-scope PASS69.087с и82 financial/Grant/isolation PASS120.594с,0 skips,SQLite. PostgreSQL concurrency нового кода не проверена.13 preparation/redaction PASS0.446с,без БД/сети; локальный запуск вне Windows sandbox из-за подтверждённого TemporaryDirectory ограничения.
+
+R4 подготовлен с новыми именами и сохранением R3 postgres/controller. Runner добавляет только фиксированную allowlisted категорию SQLSTATE/ASSERTION/OTHER, не сообщение/type/SQL/данные; неизвестные строки отбрасываются. Прежние restore checkpoints/строгое сравнение, исходный конкурентный тест и полный suite сохранены. R4 не разрешён/не запускался. Причина restore R2 остаётся неизвестной. E2-09/E2-06/E2-08 «На проверке», отсутствующие cache/worker/storage/готовый экспорт не закрываются. UI E5-13, экспорт E5-07, реальные сотрудники/D3 E6-03 отдельно.
+
+До коммита проверяются AST/JSON,14 backup hashes, append-only журнала/плана, прежние строки статусов, неизменные финансовые SQL/миграции/сравнения, git diff --check, bash -n двух R4-блоков. Безопасный серверный откат выполнен остановкой только R3; сохранить DB/roles/keys/volume/network/release/evidence и все прежние dump/restore/checkpoint. Не reuse/delete/restart/down-v/prune/DROP. Локально сравнить файлы с backup/поздней работой и применять только обратный патч, фактический отчёт/журнал не стирать; новые helper/план удалять только без поздних потребителей/публикаций, backup/manifest сохранять до отдельного решения. Не отключать Grant/MFA/RLS/финансовые ограничения и не downgrade populated схему. Push выполняет Олег; R4 требует публикации source/pin и отдельного допуска, main rollout — своего плана/разрешения. Другие проекты/main/Caddy/FBS/WB API/Finkos/K3/установки не затронуты.
+
+Завершены проверки R4-подготовки:38 security tests PASS69.087с,82 financial/Grant/isolation tests PASS120.594с (SQLite),13 preparation/redaction PASS0.446с без БД. AST/JSON,14 backup SHA256, append-only/statuses, неизменные financial SQL/migrations/limits/restore METADATA, git diff --check PASS. Оба R4 shell-блока прошли bash -n без исполнения. Это не PG R4 и не устранение неизвестной причины restore R2.

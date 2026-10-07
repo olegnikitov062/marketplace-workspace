@@ -1,7 +1,7 @@
 """NEW isolated restore only; comparisons stay in memory, output is pass/fail."""
 from tools.financial_rehearsal import guard, expect, PROJECT
 
-TARGET = 'mw_e209_01a115d9_r3_restore'
+TARGET = 'mw_e209_01a115d9_r4_restore'
 METADATA = (
     "SELECT schemaname,tablename FROM pg_tables WHERE schemaname IN ('public','mw_isolation') ORDER BY 1,2",
     "SELECT n.nspname,c.relname,c.relkind,r.rolname,c.relrowsecurity,c.relforcerowsecurity,c.relacl::text "

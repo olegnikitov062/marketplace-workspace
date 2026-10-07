@@ -62,6 +62,57 @@ class RecoveryLockScopeTests(TransactionTestCase):
         self.assertTrue(RecoveryCode.objects.filter(used_at__isnull=True).exists())
 
 
+class OperatorRecoveryLockScopeTests(TransactionTestCase):
+    def setUp(self):
+        self.password = secrets.token_urlsafe(24)
+        self.user = User.objects.create_user('synthetic-operator-lock', self.password)
+        organization = Organization.objects.create(name='synthetic-operator-lock')
+        Membership.objects.create(user=self.user, organization=organization, role='owner')
+        self.token = services.issue_operator_recovery(self.user.pk)
+
+    def consume(self):
+        request = RequestFactory().post('/auth/mfa/operator-recovery/', secure=True)
+        request.session = SessionStore()
+        request.user = AnonymousUser()
+        return services.consume_operator_recovery(request, self.user.username, self.password, self.token)
+
+    def test_password_proof_does_not_hold_transaction(self):
+        from unittest.mock import patch
+        original = User.check_password
+        def password_check(user, value):
+            self.assertFalse(connection.in_atomic_block)
+            return original(user, value)
+        with patch.object(User, 'check_password', password_check):
+            self.assertTrue(self.consume())
+            self.assertFalse(self.consume())
+        self.assertEqual(AccountSession.objects.filter(level='recover', revoked_at__isnull=True).count(), 1)
+
+    def test_password_change_after_proof_denies_recovery(self):
+        from unittest.mock import patch
+        from account_security.models import RecoveryPermit
+        original = User.check_password
+        def password_check(user, value):
+            valid = original(user, value)
+            self.user.set_password(secrets.token_urlsafe(24))
+            self.user.save(update_fields=['password'])
+            return valid
+        with patch.object(User, 'check_password', password_check):
+            self.assertFalse(self.consume())
+        self.assertFalse(AccountSession.objects.exists())
+        self.assertTrue(RecoveryPermit.objects.filter(used_at__isnull=True).exists())
+
+    def test_block_after_proof_denies_recovery(self):
+        from unittest.mock import patch
+        original = User.check_password
+        def password_check(user, value):
+            valid = original(user, value)
+            block_account(self.user.pk)
+            return valid
+        with patch.object(User, 'check_password', password_check):
+            self.assertFalse(self.consume())
+        self.assertFalse(AccountSession.objects.exists())
+
+
 @skipUnless(connection.vendor == "postgresql", "PostgreSQL row locks and independent connections required")
 class SecurityConcurrencyTests(TransactionTestCase):
     def setUp(self):

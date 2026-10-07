@@ -356,9 +356,15 @@ def issue_operator_recovery(user_id):
 def consume_operator_recovery(request, username, password, token):
     if not allow_attempt("operator_recovery", request.META.get("REMOTE_ADDR", ""), username):
         return False
+    # Verify the expensive password proof before taking User's row lock, as in
+    # recovery-code consumption. Recheck the credential and live state below.
+    snapshot = User.objects.filter(username=User.normalize_username(username)).first()
+    if not available(snapshot) or not snapshot.check_password(password):
+        return False
     with transaction.atomic():
-        user = User.objects.select_for_update().filter(username=User.normalize_username(username)).first()
-        if not available(user) or not user.check_password(password) or not owner_required(user):
+        user = User.objects.select_for_update().filter(pk=snapshot.pk).first()
+        if (not available(user) or not constant_time_compare(user.password, snapshot.password)
+                or not owner_required(user)):
             return False
         state = state_for(user, lock=True)
         permit = RecoveryPermit.objects.select_for_update().filter(user=user, token_hash=digest(token),

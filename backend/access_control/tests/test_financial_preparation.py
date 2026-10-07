@@ -6,6 +6,39 @@ from django.test import SimpleTestCase
 
 
 class FinancialPreparationTests(SimpleTestCase):
+    def test_failure_category_never_formats_exception_or_unknown_sqlstate(self):
+        from tools.financial_test_diagnostics import category
+        from tools.financial_test_runner import safe_line
+        class HiddenError(Exception):
+            def __str__(self):
+                raise AssertionError('Exception text must never be read')
+        inner = HiddenError()
+        inner.sqlstate = '55P03'
+        outer = HiddenError()
+        outer.__cause__ = inner
+        self.assertEqual(category(outer), 'LOCK_UNAVAILABLE')
+        inner.sqlstate = 'synthetic-secret'
+        self.assertEqual(category(outer), 'OTHER')
+        self.assertIsNone(safe_line('E209_DIAGNOSTIC=synthetic-secret'))
+        self.assertIsNone(safe_line('E209_DIAGNOSTIC=LOCK_UNAVAILABLE Cookie: hidden'))
+
+    def test_real_result_failure_produces_only_allowlisted_diagnostic(self):
+        import unittest
+        from io import StringIO
+        from tools.financial_test_diagnostics import DiagnosticResult
+        from tools.financial_test_runner import safe_line
+        class Fixture(unittest.TestCase):
+            def runTest(self):
+                error = RuntimeError('synthetic-secret SELECT cost; Cookie: hidden')
+                error.sqlstate = '57014'
+                raise error
+        output = StringIO()
+        result = unittest.TextTestRunner(stream=output, resultclass=DiagnosticResult).run(Fixture())
+        self.assertEqual(len(result.errors), 1)
+        events = [event for line in output.getvalue().splitlines() if (event := safe_line(line))]
+        self.assertIn({'event':'failure_category','category':'QUERY_CANCELLED'}, events)
+        self.assertNotIn('synthetic-secret', json.dumps(events))
+
     def test_restore_evidence_redacts_exception_and_retains_failed_stage(self):
         from contextlib import redirect_stdout
         from io import StringIO

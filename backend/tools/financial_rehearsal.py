@@ -8,7 +8,7 @@ import json
 import os
 from pathlib import Path
 
-PROJECT = 'marketplace-e209-20261007-01a115d9-r3'
+PROJECT = 'marketplace-e209-20261007-01a115d9-r4'
 ROOT = Path('/run/rehearsal-state')
 
 

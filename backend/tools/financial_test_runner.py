@@ -28,6 +28,12 @@ LABELS = (
 def safe_line(line):
     """Return only complete fixed unittest records; never echo unknown text."""
     line = line.strip()
+    if line.startswith('E209_DIAGNOSTIC='):
+        from tools.financial_test_diagnostics import CATEGORIES
+        category = line.removeprefix('E209_DIAGNOSTIC=')
+        if category in CATEGORIES:
+            return {'event': 'failure_category', 'category': category}
+        return None
     match = re.fullmatch(r'Ran (\d+) tests? in (\d+(?:\.\d+)?)s', line)
     if match:
         return {'event': 'count', 'tests': int(match[1]), 'seconds': float(match[2])}

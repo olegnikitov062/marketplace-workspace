@@ -753,3 +753,10 @@ E2-09 остаётся «На проверке»: нужны полный restor
 ### 2026-10-07T16:16:28+03:00 — E2-09 R3: закреплён source commit
 
 Исходники R3 закреплены в 88347474f2e8ac6064e893127280dbb3371480d6; полный SHA внесён в docs/E2-09_R3_SERVER_PLAN.md и SYSTEM_FINANCIAL_CHECKS.json. Это локальная диагностическая подготовка, не исправление неизвестной причины restore и не серверный PASS. Нужны публикация source/pin Олегом и отдельный допуск R3. E2-09/E2-06/E2-08 остаются «На проверке», main runtime не менялся.
+
+
+### 2026-10-07T16:56:57+03:00 — E2-09: R3 остановлен на concurrency, подготовлен R4
+
+По отдельному допуску выполнен docs/E2-09_R3_SERVER_PLAN.md из live beta bb272948/source88347474. Fresh configure/минимальный ACL/лимиты PASS; полный suite остановился на ERROR SecurityConcurrencyTests.test_same_operator_permit_has_one_successful_consumer,130 учтённых тестов/1309.324с,exit1. Это не130 PASS. До real web LOGIN/scenario/web/dump/restore не дошёл; причина restore R2 всё ещё неизвестна. При первой ошибке controller остановлен перед PG, R3 не повторялся. Metadata13:48:09Z: main409c71f… и все прежние стенды неизменны; ресурсы R3 сохранены. Отчёт docs/E2-09_ISOLATED_R3_RESULT.md, подробности SYSTEM_FINANCIAL_CHECKS.json.
+
+Локально воспроизведено дорогое password proof внутри row-lock транзакции operator recovery; минимально вынесено до lock, с повторной сверкой hash/состояния/owner/permit под lock по существующей схеме recover_with_code. Связь с серверным ERROR не доказана без SQLSTATE.38 security+lock-scope и82 financial/Grant/isolation теста PASS SQLite;13 preparation/redaction PASS. Таймауты/CPU/hashers/права не расширены. R4 с новыми именами сохраняет R1/R2/R3 и добавляет фиксированную категорию ошибки к прежним safe events; точный план docs/E2-09_R4_SERVER_PLAN.md требует публикации source/pin и отдельного допуска. E2-09 остаётся «На проверке»: новый PG concurrency/full suite, actual web/HTTP/SQL, restore comparison/quarantine, отдельный main rollout не подтверждены. E2-06/E2-08 статусы без изменений; отсутствующие слои и UI E5-13/экспорт E5-07/D3 E6-03 не закрываются.

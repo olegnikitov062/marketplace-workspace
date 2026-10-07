@@ -14,7 +14,7 @@ class DataIsolationConfig(AppConfig):
             from django.conf import settings
             from django.db import connection
             from django.core.exceptions import ImproperlyConfigured
-            expected = 'marketplace-e209-20261007-01a115d9-r3' if financial else 'marketplace-e208-20261007-01a1105a-r4'
+            expected = 'marketplace-e209-20261007-01a115d9-r4' if financial else 'marketplace-e208-20261007-01a1105a-r4'
             if profile != expected or settings.EFFECTIVE['environment'] != 'beta':
                 raise ImproperlyConfigured('Unrecognized isolation rehearsal')
             with connection.cursor() as cursor:

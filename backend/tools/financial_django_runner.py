@@ -27,6 +27,10 @@ def prepare_test_signing_key():
 
 
 class IsolationDiscoverRunner(DiscoverRunner):
+    def get_resultclass(self):
+        from tools.financial_test_diagnostics import DiagnosticResult
+        return DiagnosticResult
+
     def setup_databases(self, **kwargs):
         old_config = super().setup_databases(**kwargs)
         prepare_test_signing_key()

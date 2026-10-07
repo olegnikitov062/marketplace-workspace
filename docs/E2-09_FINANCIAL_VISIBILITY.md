@@ -295,3 +295,10 @@ SQLite проверяет прикладное поведение через я�
 Новый PG17.11 suite134/0 skipped PASS,1325.015с; actual web LOGIN/financial SQL/RLS/HTTP и6 network checks PASS. Источник b7e0d66c6ad632544a0db73d7e38d59e0d54a511, отдельный разрешённый R2. Dump/restore import exit0, но verification exit1: точная причина/этап неизвестны; equivalence/quarantine не подтверждены. R2 остановлен без повторов, все ресурсы сохранены, main409c71f… неизменён. Полный отчёт — docs/E2-09_ISOLATED_R2_RESULT.md.
 
 E2-09 остаётся «На проверке» до restore и main; прежние статусы не закрыты. Новый локальный R3-план docs/E2-09_R3_SERVER_PLAN.md добавляет только безопасную диагностику restore и новые имена, не ослабляет сравнения. Нужны публикация Олегом и отдельный допуск. Это не доказанное исправление причины R2.
+
+
+## Фактический результат R3 — 2026-10-07T16:56:57+03:00
+
+R3(source88347474) остановлен на ERROR конкурентного operator recovery:130 учтённых тестов/1309.324с,exit1. Fresh migrations/ACL и лимиты прошли, но до нового web/scenario/restore не дошёл. R2 PASS остаётся историческим, его restore-ошибка неизвестна. Все ресурсы остановленного R3 сохранены; main409c71f… и прежние стенды неизменны. Отчёт docs/E2-09_ISOLATED_R3_RESULT.md.
+
+Локально исправлен подтверждённый lock-scope дефект consume_operator_recovery с повторной проверкой актуального hash/owner/state/permit; SQLSTATE серверной ошибки неизвестен.38 security и82 financial/isolation теста PASS только SQLite,13 preparation PASS. Финансовые Grant/ACL/RLS/формулы/строгое сравнение restore неизменны. Новый R4-план docs/E2-09_R4_SERVER_PLAN.md требует публикации и отдельного разрешения; E2-09/E2-06/E2-08 остаются «На проверке».
