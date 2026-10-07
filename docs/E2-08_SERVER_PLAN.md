@@ -1,14 +1,20 @@
-# E2-08 — отдельный изолированный стенд, план для разрешения
+# E2-08 — повторный изолированный стенд R2, план для отдельного разрешения
 
-06.10.2026, Europe/Moscow. **Не исполнен. SSH и любые серверные действия
-не разрешены. Основная beta в этот этап не входит.**
+07.10.2026, Europe/Moscow. **R1 разрешён и остановлен после сбоя миграции.
+Этот новый план R2 не исполнен и отдельно не разрешён. Основная beta не входит.**
+
+Результат R1: [E2-08_ISOLATED_R1_RESULT.md](E2-08_ISOLATED_R1_RESULT.md).
+Сохранённые ресурсы R1 не использовать повторно. Исправление пока локальное;
+после коммита ниже закрепляется новый полный REV, затем требуется push Олега,
+live-проверка публикации и отдельное разрешение R2.
 
 ## Точные исходники и условие публикации
 
 - Последняя **live-проверенная опубликованная** beta:
-  `1b765629badd6fe70f605fd9f6d504954e44d618`. E2-08 в ней отсутствует.
+  `9e6458ed9d145633e47480e12a8dcbf3be351b3f` (проверено 07.10.2026).
+  Она содержит дефект порядка миграций R1; повторно её не запускать.
 - Точный подготовленный код E2-08, `REV`:
-  **`a1eeff72d72369c492c078fb5bd5ce91268f19cd`**.
+  **`R2_REV_PENDING_LOCAL_COMMIT`**.
   На момент составления плана это локальный неопубликованный коммит Oleg.
 - Актуальная редакция этого документа публикуется следующим отдельным локальным коммитом без
   изменения backend/deploy. Олег проверяет и выполняет push самостоятельно.
@@ -34,12 +40,12 @@ source/image основного web и сохраняет сравнимые met
 
 | Ресурс | Точное значение |
 | --- | --- |
-| Compose project / cluster_name | `marketplace-e208-20261006-01a1105a` |
-| Корень | `/home/adm_user/marketplace-workspace/beta/rehearsals/e2-08-20261006-01a1105a` |
-| Network | `marketplace-e208-20261006-01a1105a-private`, internal |
-| Volume | `marketplace-e208-20261006-01a1105a-data` |
+| Compose project / cluster_name | `marketplace-e208-20261007-01a1105a-r2` |
+| Корень | `/home/adm_user/marketplace-workspace/beta/rehearsals/e2-08-20261007-01a1105a-r2` |
+| Network | `marketplace-e208-20261007-01a1105a-r2-private`, internal |
+| Volume | `marketplace-e208-20261007-01a1105a-r2-data` |
 | Контейнеры | project + `-postgres`, `-web`, `-controller` |
-| БД только нового кластера | `mw_beta`, `test_mw_beta`, новая `mw_e208_01a1105a_restore` |
+| БД только нового кластера | `mw_beta`, `test_mw_beta`, новая `mw_e208_01a1105a_r2_restore` |
 | SQL-роли только нового кластера | `mw_beta_bootstrap`, `mw_beta_migrator`, `mw_beta_web` |
 | Схема | новая пустая `mw_isolation`, owner migrator |
 | Новый dump | `<корень>/backups/isolation-after.dump` |
@@ -58,7 +64,10 @@ mw_beta. Helper проверяет cluster_name при каждом админи
 
 Старые E2-04–E2-07 БД/роли/restore/dumps, оба owner rehearsal и E2-07 rehearsal
 сохраняются. Предусмотрено сравнение metadata трёх основных контейнеров и всех
-трёх сохранённых rehearsal. Сохранённые стенды должны оставаться stopped.
+трёх сохранённых rehearsal. Сохранённые стенды должны оставаться stopped. Дополнительно проверяется
+сохранённый postgres R1 `marketplace-e208-20261006-01a1105a-postgres`: он должен
+оставаться stopped, с теми же ID/image/mounts/StartedAt/network/ports. У R1
+не осталось постоянных web/controller — configure запускался в --rm контейнере.
 
 ## Ресурсы, секреты и SQL-права
 
@@ -102,19 +111,20 @@ HMAC/key/record_allowed не становятся публичным API. Provis
 ```sh
 set -eu
 base=/home/adm_user/marketplace-workspace/beta
-REV=a1eeff72d72369c492c078fb5bd5ce91268f19cd
+REV=R2_REV_PENDING_LOCAL_COMMIT
 release="$base/app/releases/$REV"
 export SECURITY_SOURCE="$release/backend"
 export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72
-dc() { timeout 1800 docker compose --project-name marketplace-e208-20261006-01a1105a --env-file /dev/null -f "$release/beta/deploy/compose.isolation-rehearsal.json" "$@"; }
+dc() { timeout 1800 docker compose --project-name marketplace-e208-20261007-01a1105a-r2 --env-file /dev/null -f "$release/beta/deploy/compose.isolation-rehearsal.json" "$@"; }
 python3 "$release/beta/deploy/prepare_isolation_rehearsal.py" --apply --revision "$REV"
 dc config --quiet </dev/null
 dc up -d --wait postgres </dev/null
 dc run --rm -T bootstrap </dev/null
-dc run --rm -T controller python -m tools.isolation_rehearsal configure </dev/null
+dc up -d controller </dev/null
+dc exec -T controller python -m tools.isolation_rehearsal configure </dev/null
 dc run --rm -T bootstrap python -m tools.isolation_rehearsal test_database </dev/null
-dc run --rm -T controller python manage.py test data_isolation.tests.test_context data_isolation.tests.test_http data_isolation.tests.test_migrations access_control.tests.test_platform access_control.tests.test_transactions account_security.tests.test_http account_security.tests.test_transactions --keepdb --noinput --verbosity=1 </dev/null
-dc run --rm -T controller python -m tools.isolation_rehearsal scenario </dev/null
+dc exec -T controller python manage.py test data_isolation.tests.test_context data_isolation.tests.test_http data_isolation.tests.test_migrations access_control.tests.test_platform access_control.tests.test_transactions account_security.tests.test_http account_security.tests.test_transactions --keepdb --noinput --verbosity=1 </dev/null
+dc exec -T controller python -m tools.isolation_rehearsal scenario </dev/null
 dc up -d web </dev/null
 dc exec -T web python -m tools.verify_isolation_web_runtime </dev/null
 ```
@@ -123,6 +133,10 @@ dc exec -T web python -m tools.verify_isolation_web_runtime </dev/null
 Полный Compose config/ENV и подробные ошибки SQL/HTTP не печатать. PostgreSQL
 не должен протоколировать SQL с параметрами; logging none не отменяет запрета
 сохранять собственные request/response/cookie dumps.
+
+В R2 controller создаётся один раз через `up -d`, а команды выполняются через
+`exec -T`: итоговый metadata-verifier проверяет три постоянных контейнера.
+Прежний `run --rm controller` не создавал проверяемый named controller.
 
 Static `data_isolation.tests.test_preparation` требует полного дерева repository:
 он запускается отдельно read-only `/source`, workdir `/source/backend`, в том же
@@ -164,7 +178,7 @@ Static `data_isolation.tests.test_preparation` требует полного д�
 После успешного fixture остановить только новый web, убедиться в отсутствии
 активных writers нового кластера. Не останавливать основные PostgreSQL.
 Проверить отсутствие `<корень>/backups/isolation-after.dump` и
-`mw_e208_01a1105a_restore`; при наличии — стоп. Под новым bootstrap внутри
+`mw_e208_01a1105a_r2_restore`; при наличии — стоп. Под новым bootstrap внутри
 нового postgres, без shell tracing, создать custom pg_dump mw_beta в этот
 новый файл, mode0600, timeout600. Проверить exit, ненулевой размер и SHA256.
 
@@ -177,7 +191,7 @@ CONNECT restore = false. Не выдавать временный CONNECT рад
 
 ```sh
 set -eu
-dc run --rm -T controller python -m tools.isolation_restore_check </dev/null
+dc exec -T controller python -m tools.isolation_restore_check </dev/null
 dc up -d web </dev/null
 dc exec -T web python -m tools.verify_isolation_web_runtime </dev/null
 python3 "$release/beta/deploy/prepare_isolation_rehearsal.py" --verify --revision "$REV"

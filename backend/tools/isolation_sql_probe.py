@@ -28,7 +28,7 @@ def run(case):
     import psycopg
     with connection.cursor() as cursor:
         cursor.execute("SELECT current_database(),session_user,current_user,current_setting('cluster_name')")
-        require(cursor.fetchone() == ('mw_beta','mw_beta_web','mw_beta_web','marketplace-e208-20261006-01a1105a'))
+        require(cursor.fetchone() == ('mw_beta','mw_beta_web','mw_beta_web','marketplace-e208-20261007-01a1105a-r2'))
         verify(cursor)
         for table in (*CONTROL_TABLES, 'access_control_syntheticrecord'):
             cursor.execute(f'SELECT count(*) FROM public.{table}')

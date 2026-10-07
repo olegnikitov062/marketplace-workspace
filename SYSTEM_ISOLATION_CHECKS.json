@@ -1,8 +1,8 @@
 {
   "task": "E2-08",
-  "recorded_at": "2026-10-06T12:07:42+03:00",
+  "recorded_at": "2026-10-07T10:25:36+03:00",
   "status": "На проверке",
-  "scope": "Local implementation and preparation only; PostgreSQL RLS not yet executed",
+  "scope": "R1 isolated PostgreSQL configure failed; resources stopped/preserved; local R2 correction awaits publication and authorization",
   "baseline": {
     "branch": "beta",
     "head": "1b765629badd6fe70f605fd9f6d504954e44d618",
@@ -10,9 +10,10 @@
     "live_remote_beta": "1b765629badd6fe70f605fd9f6d504954e44d618",
     "method": "git ls-remote --heads origin beta; initial sandbox DNS failure then successful read-only escalation",
     "last_confirmed_runtime_from_user_and_docs": "cf6f4ccd48106d9a44a64703bcfd79e49513ec3e",
-    "runtime_verified_this_task": false
+    "runtime_verified_this_task": true,
+    "runtime_metadata_verified_at": "2026-10-07T07:18:01Z"
   },
-  "server_contacted": false,
+  "server_contacted": true,
   "postgresql_checked": false,
   "real_web_login_checked": false,
   "backup_restore_checked": false,
@@ -83,14 +84,14 @@
     "tables": 27,
     "mechanism": "Exact statement HMAC capability bound to transaction/backend/database/role/expiry; URL organization bounds; live row-level scope/action/session/Grant predicate for SyntheticRecord",
     "control_plane_trust": "Existing reviewed Python authentication and access-management services plus signer remain trusted. SQL control queries are attested exactly; password/TOTP/delegation are not reimplemented independently in SQL. Full Python/key or operator compromise excluded.",
-    "key": "New independent synthetic 32-byte key on future isolated rehearsal only; not created on server",
+    "key": "Dedicated synthetic R1 key created by helper; contents not displayed; retained in stopped isolated resources",
     "trusted_trigger_functions": 11,
     "operator_policies": true,
-    "real_sql_behavior": "NOT EXECUTED"
+    "real_sql_behavior": "RLS installation failed/rolled back: zero RLS tables; actual-web tests NOT EXECUTED"
   },
   "pending": [
-    "Publish local commits by Oleg and verify live beta ancestry",
-    "Separate authorization for new isolated rehearsal",
+    "Publish local R2 correction by Oleg and verify full revision live beta ancestry",
+    "Separate authorization for fresh R2 resources; never reuse R1",
     "PostgreSQL migration/actual ClientCursor current_query/signature interoperability",
     "Real web LOGIN positive and negative SELECT/UPDATE, GUC forgery and key/role/DDL denials",
     "SQL rollback/savepoint/reused and concurrent connections",
@@ -115,9 +116,9 @@
     "docs/E2-08_SERVER_PLAN.md"
   ],
   "implementation_revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
-  "implementation_published": false,
+  "implementation_published": true,
   "server_plan": {
-    "document": "docs/E2-08_SERVER_PLAN.md",
+    "document": "docs/E2-08_ISOLATED_R1_RESULT.md",
     "prepared_at": "2026-10-06T12:18:06+03:00",
     "revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
     "project": "marketplace-e208-20261006-01a1105a",
@@ -125,13 +126,85 @@
     "database_cluster_is_new": true,
     "restore": "mw_e208_01a1105a_restore",
     "main_beta_authorized": false,
-    "isolated_stage_authorized": false,
-    "executed": false,
+    "isolated_stage_authorized": true,
+    "executed": true,
     "publication_gate": "Oleg push, live ls-remote and full revision ancestry confirmation before explicit authorization",
     "new_synthetic_secrets_only": true,
     "preserve_existing_resources": true,
     "limit_minutes": 60,
     "source_delivery": "published beta through Git only",
-    "updated_at": "2026-10-06T12:23:32+03:00"
+    "updated_at": "2026-10-06T12:23:32+03:00",
+    "result": "FAILED at configure, stopped and preserved",
+    "completed_at": "2026-10-07T07:18:01Z"
+  },
+  "postgresql_check_note": "PostgreSQL 17.11 reached; configure failed before RLS installation. No passing PostgreSQL E2-08 verification.",
+  "live_remote_beta_verified": "9e6458ed9d145633e47480e12a8dcbf3be351b3f",
+  "isolated_r1": {
+    "published_beta": "9e6458ed9d145633e47480e12a8dcbf3be351b3f",
+    "source_revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
+    "preflight_started_at": "2026-10-07T07:15:34Z",
+    "postgres_stopped_at": "2026-10-07T07:18:01.338589131Z",
+    "postgres_version": "17.11 (Debian 17.11-1.pgdg12+2)",
+    "python_server": "3.12.3",
+    "docker": "29.1.3",
+    "compose": "5.1.3",
+    "prepare_exit": 0,
+    "bootstrap_exit": 0,
+    "configure_exit": 1,
+    "rls_tables_after_failure": 0,
+    "private_schema_tables_after_failure": 0,
+    "missing_rls_targets": [
+      "django_session"
+    ],
+    "missing_trusted_trigger_functions": [],
+    "diagnosis": "Migration graph lacks sessions.0001_initial dependency; isolation scheduled first. Original exception details suppressed, not recovered; missing table independently verified by read-only catalog/graph.",
+    "test_database_created": false,
+    "real_web_login_tests_run": false,
+    "http_tests_run": false,
+    "dump_created": false,
+    "restore_created": false,
+    "new_postgres_id": "14dd0ff594e2a813c39d0068c41a6df44acd36202b1a4802abad96f4807625aa",
+    "new_network_id": "70ebab398222948d5dd5abf7ea60c6889af8e77cf1400a76bf7e26898f12284b",
+    "new_network_internal": true,
+    "new_volume": "marketplace-e208-20261006-01a1105a-data",
+    "all_new_services_stopped": true,
+    "oom": false,
+    "main_and_three_old_rehearsal_metadata_unchanged": true,
+    "retained": "New R1 root, synthetic secrets, state/manifest, baseline/preserved metadata, postgres container, internal network, volume, SQL roles/database/schema and prior successful migrations",
+    "transport_note": "First read-only preflight ended with --short CRLF argument error; rerun with CR removed, before any mutation; no credentials disclosed"
+  },
+  "r2_plan": {
+    "document": "docs/E2-08_SERVER_PLAN.md",
+    "revision": "R2_REV_PENDING_LOCAL_COMMIT",
+    "project": "marketplace-e208-20261007-01a1105a-r2",
+    "published": false,
+    "authorized": false,
+    "executed": false,
+    "restore": "mw_e208_01a1105a_r2_restore"
+  },
+  "backups_r1_result": ".change-backups/E2-08-20261007-isolated-failure",
+  "local_r2_checks": {
+    "migration_inventory_red": "FAIL before dependency fix: missing django_session; initial test implementation TypeError corrected before red/green",
+    "preparation_context": {
+      "passed": 6,
+      "seconds": 0.313,
+      "postgresql": false
+    },
+    "http_regression": {
+      "discovered": 73,
+      "passed": 71,
+      "skipped": 2,
+      "seconds": 127.363,
+      "database": "SQLite",
+      "note": "PostgreSQL migration tests skipped; SQL RLS not proven"
+    },
+    "migration_drift": "PASS: makemigrations --check --dry-run",
+    "system_check": "PASS",
+    "server_retry": "NOT EXECUTED",
+    "ast_json": "PASS",
+    "backup_hashes_12": "PASS",
+    "append_only_plan_changelog": "PASS",
+    "diff_check": "PASS",
+    "server_plan_bash_syntax_only": "PASS"
   }
 }

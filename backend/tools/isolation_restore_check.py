@@ -10,7 +10,7 @@ def main():
     from account_security.services import quarantine_restored_access
     import psycopg
     from psycopg import sql
-    target = 'mw_e208_01a1105a_restore'
+    target = 'mw_e208_01a1105a_r2_restore'
     params = connection.get_connection_params()
     params.pop('cursor_factory', None)
     params.pop('context', None)
