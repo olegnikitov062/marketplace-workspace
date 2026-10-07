@@ -1,6 +1,6 @@
-# Beta — текущий E2-07 и история воспроизведения
+# Beta — текущий E2-08 и история воспроизведения
 
-Текущее состояние после отдельно разрешённого E2-07 rollout (05.10.2026): основной web/БД обновлены, backend закреплён read-only Git worktree cf6f4ccd48106d9a44a64703bcfd79e49513ec3e, прежний MFA dependency image и secret mounts. Обычный запуск требует compose.security-web.json, SECURITY_SOURCE и SECURITY_IMAGE; команды в последнем разделе E2-07 SYSTEM_STARTUP.md. Исторические base-only/accounts overlay и обычный E2-06 ниже запрещены: они обходят MFA или Grant. Безопасный отказ — остановка только web, не автоматический rollback старого приложения.
+Текущее состояние после отдельно разрешённого E2-08 rollout (07.10.2026): основной web/БД обновлены, backend закреплён read-only Git worktree409c71f65db53873183c6ffd8d059561c05185d2, 27 FORCE RLS tables, прежний MFA dependency image и отдельный isolation key. Обычный запуск требует compose.security-web.json, SECURITY_SOURCE и SECURITY_IMAGE; команды в последнем разделе E2-08 SYSTEM_STARTUP.md. Исторические base-only/accounts overlay и pre-RLS runtime ниже запрещены. Безопасный fallback — остановка только web, без reverse/live restore или downgrade. Протокол — [E2-08_MAIN_RESULT.md](E2-08_MAIN_RESULT.md).
 
 Проверенная сборка e2-03-0210f27a7ab1. Production и внешние интеграции запрещены. Только новый проект; команды не изменяют другие Compose projects или Caddy.
 
@@ -133,3 +133,12 @@ E2-06 «На проверке»: ограничения полного browser r
 Сохранены checkpoint `beta/backups/database/e2-07-main-20261005-01a10b2d` и закрытая restore-БД `mw_e207_main_restore_20261005_01a10b2d`. Эти имена заняты. Dump mode0600, SHA256 `267dcecac7a3434870f09915deee1b6950a43df672c1eedad6dea2086e006529`; сравнение30таблиц/11sequences и ACL прошло, две формы CHECK после pg_restore проверены на эквивалентность. Не удалять и не переиспользовать ресурсы, не запускать сохранённые стенды без нового допуска. Штатное потребление старых secret mounts было отдельно разрешено; секреты не выводились/не копировались, K3 не проверялся.
 
 E2-07 технически «Готово» в согласованном синтетическом объёме; E2-06 остаётся «На проверке» с прежним ограничением рабочего экспорта и зафиксированным ограничением K3. UI/worker/RLS/финансовая фильтрация/реальные роли D3/браузерная и TLS-проверка основной E2-07 не выполнены и не объявляются частью результата. Протокол — SYSTEM_GRANT_CHECKS.json/main_rollout_result; исторические факты выше не переписывались.
+
+
+## Текущая beta E2-08 — 2026-10-07T12:47:04+03:00
+
+Основной переход после отдельного разрешения выполнен: APP_REV409c71f65db53873183c6ffd8d059561c05185d2, live repository1d3076a0825cf90259d16333e3cc24668fa33e81. Fresh dump/closed restore и полное сравнение данных/ACL успешны, три CHECK cast definitions доказаны эквивалентными. Одна атомарная RLS migration/key/ACL,27 FORCE tables; прежние строки/права сохранены. 9 настоящих web SQL-отказов,9 внутренних HTTP/2 CSRF checks PASS. Оба PostgreSQL и старые стенды неизменны. Подробности — [E2-08_MAIN_RESULT.md](E2-08_MAIN_RESULT.md).
+
+Текущие команды — последний раздел E2-08 [SYSTEM_STARTUP.md](../SYSTEM_STARTUP.md), обязательны compose.security-web.json/SECURITY_SOURCE/SECURITY_IMAGE. Прежние E2-07 и более старые обычные запуски — только история: pre-RLS код не возвращать. Новый isolated verifier на main не запускать. Fallback — остановка только web, не reverse/отключение защиты/live restore. Новый запуск, восстановление или очистка требуют своего плана/разрешения.
+
+Checkpoint e2-08-main-20261007-01a1105a, restore mw_e208_main_restore_20261007_01a1105a и config/secrets/isolation_signing_key уже существуют, не CREATE/provision/reuse/удалять. Dump и семь metadata JSON закрыты0600; актуальный результат result.final.json + containers.after.json, промежуточный result.json не перезаписывался. Secret mounts читают только штатные процессы, значения/отпечатки не выводить; K3 не возобновлять. E2-08 «На проверке» только по отсутствующим cache/worker/file-export критериям; E2-06 без изменения, рабочий экспорт/E2-09/D3/UI не выполнены.

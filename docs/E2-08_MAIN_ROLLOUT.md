@@ -1,7 +1,10 @@
 # E2-08 — отдельный план основной beta
 
-07.10.2026, Europe/Moscow. **Не исполнен и не разрешён.** Успешный R4
-не разрешает остановку/миграцию/перезапуск основной beta.
+07.10.2026, Europe/Moscow. **Исполнен по отдельному текущему разрешению Олега;
+основной rollout PASS.** [Фактический протокол](E2-08_MAIN_RESULT.md) содержит
+результаты, промежуточные ошибки проверок и их проверенное разрешение.
+Ниже сохранён план этапа: его CREATE/provision нельзя повторять, имена заняты.
+Live beta при допуске `1d3076a0825cf90259d16333e3cc24668fa33e81`, runtime APP_REV ниже.
 
 ## Точные исходники и границы
 
@@ -131,6 +134,7 @@ Bootstrap, после повторной проверки main identity, соз�
 
 ```python
 from pathlib import Path
+from psycopg import Cursor
 from django.db import connection, transaction
 from django.db.migrations.executor import MigrationExecutor
 from account_security.operator import require_operator_process
@@ -150,10 +154,14 @@ with transaction.atomic():
         ('data_isolation', '0001_statement_and_row_policies', False),
     ]
     executor.migrate(targets)
-    with connection.cursor() as cursor:
+    with Cursor(connection.connection) as cursor:
         new.apply(cursor, Path('/run/secrets/isolation_signing_key').read_bytes())
 ```
 
+В исполненном этапе key INSERT использовал server-bound Cursor: до записи
+проверены log_statement=none, log_parameter_max_length_on_error=0,
+log_min_duration_statement/log_min_duration_sample=-1. Значение ключа не
+включается в текст SQL; runtime ClientCursor signer не изменён.
 До фрагмента обязательны повторные counts/preflight/backup/restore; он не
 разрешает обход этих условий. `apply_fresh` E2-07 и rehearsal configure запрещены.
 Новые права web — только USAGE mw_isolation и EXECUTE allowed/claims/export_cabinet;
@@ -217,6 +225,13 @@ E2-06/рабочий экспорт, E2-09, D3/E6-03, browser/TLS, absent cache/
 
 После выполнения обновить с backups: SYSTEM_ISOLATION_CHECKS.json,
 SYSTEM_PLAN.md, SYSTEM_STARTUP.md, docs/RUNBOOK.md, этот протокол, CHANGELOG.md.
-Локальные коммиты Oleg; push только Олег. Пока выполнен исключительно R4,
-описанные main-действия, подключения существующих secrets и новая key generation
-требуют отдельного явного допуска.
+Локальные коммиты Oleg; push только Олег. Main-действия, штатное потребление
+существующих secrets и новая key generation отдельно разрешены и выполнены
+07.10.2026; повторное выполнение этим документом не разрешается.
+
+Дополнение по фактическому сравнению: четыре константных массива в трёх
+CHECK после pg_restore имеют иную форму varchar[]→text[] cast. Их значения,
+типы и полные определения после только этих точных замен совпали; неизвестные
+различия по-прежнему запрещены. PUBLIC EXECUTE удалён только у 11 функций из
+TRUSTED_TRIGGERS, как прямо задано install; остальные function ACL сохранены.
+Промежуточный result.json не перезаписывался, итог — result.final.json.

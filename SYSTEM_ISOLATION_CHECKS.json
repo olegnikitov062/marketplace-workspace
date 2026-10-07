@@ -1,8 +1,8 @@
 {
   "task": "E2-08",
-  "recorded_at": "2026-10-07T11:30:45+03:00",
+  "recorded_at": "2026-10-07T12:47:04+03:00",
   "status": "На проверке",
-  "scope": "R4 isolated PostgreSQL/actual SQL web LOGIN/HTTP/backup-restore PASS; main beta not deployed, separate plan pending",
+  "scope": "R4 and main-beta rollout PASS for existing consumers; absent cache/job/file-export criteria remain unverified",
   "baseline": {
     "branch": "beta",
     "head": "1b765629badd6fe70f605fd9f6d504954e44d618",
@@ -11,7 +11,7 @@
     "method": "git ls-remote --heads origin beta; initial sandbox DNS failure then successful read-only escalation",
     "last_confirmed_runtime_from_user_and_docs": "cf6f4ccd48106d9a44a64703bcfd79e49513ec3e",
     "runtime_verified_this_task": true,
-    "runtime_metadata_verified_at": "2026-10-07T08:21:17Z"
+    "runtime_metadata_verified_at": "2026-10-07T09:45:55Z"
   },
   "server_contacted": true,
   "postgresql_checked": true,
@@ -90,10 +90,9 @@
     "real_sql_behavior": "PASS on isolated R4 actual web LOGIN: unsigned/forged/null claims, SQL/key/role/DDL denials, scope/actions, rollback/reuse/concurrency, current Grant revoke"
   },
   "pending": [
-    "Oleg publication and separate authorization of docs/E2-08_MAIN_ROLLOUT.md; live APP_REV ancestry",
-    "Main-beta preflight, domain-empty gate, fresh main backup/closed restore including full table/column ACL comparison",
-    "Main-beta RLS migration/key/ACL transition and data preservation",
-    "Main-beta real SQL web LOGIN/runtime/HTTP/CSRF checks and unchanged adjacent services"
+    "Absent business result cache: cache-hit isolation and denial after revocation not checked",
+    "Absent worker/job consumer: background-job isolation not checked",
+    "Absent business file storage and working prepared export: synthetic link only; working export belongs to E5-07"
   ],
   "absent_layers": [
     "Business result cache/cache-hit consumer",
@@ -108,7 +107,9 @@
   "backups": ".change-backups/E2-08-20261006-1140",
   "documentation": [
     "docs/E2-08_ISOLATION.md",
-    "docs/E2-08_SERVER_PLAN.md"
+    "docs/E2-08_SERVER_PLAN.md",
+    "docs/E2-08_MAIN_ROLLOUT.md",
+    "docs/E2-08_MAIN_RESULT.md"
   ],
   "implementation_revision": "409c71f65db53873183c6ffd8d059561c05185d2",
   "implementation_published": true,
@@ -132,8 +133,8 @@
     "result": "FAILED at configure, stopped and preserved",
     "completed_at": "2026-10-07T07:18:01Z"
   },
-  "postgresql_check_note": "R4 83 tests/no skips plus actual web LOGIN scenario and six network checks before/after closed restore. Main runtime remains cf6f4cc.",
-  "live_remote_beta_verified": "774b00224a13a96549f96bff9c5eed0286c04de3",
+  "postgresql_check_note": "R4 83 tests/no skips and actual web LOGIN scenario; main fresh backup/full ACL restore comparison, atomic RLS migration, actual web LOGIN/9 SQL denials/9 HTTP checks PASS. Main source409c71f.",
+  "live_remote_beta_verified": "1d3076a0825cf90259d16333e3cc24668fa33e81",
   "isolated_r1": {
     "published_beta": "9e6458ed9d145633e47480e12a8dcbf3be351b3f",
     "source_revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
@@ -391,8 +392,8 @@
     "document": "docs/E2-08_MAIN_ROLLOUT.md",
     "source_revision": "409c71f65db53873183c6ffd8d059561c05185d2",
     "source_published": true,
-    "authorized": false,
-    "executed": false,
+    "authorized": true,
+    "executed": true,
     "checkpoint": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-08-main-20261007-01a1105a",
     "restore": "mw_e208_main_restore_20261007_01a1105a",
     "new_key_file": "/home/adm_user/marketplace-workspace/beta/config/secrets/isolation_signing_key",
@@ -400,7 +401,102 @@
     "web_stop_limit_minutes": 20,
     "total_limit_minutes": 45,
     "existing_secret_process_consumption_requires_separate_approval": true,
-    "local_validation": "JSON, five backup hashes, append-only, exact docs-only scope, diff check, Python AST and bash -n PASS; no main execution"
+    "local_validation": "JSON, five backup hashes, append-only, exact docs-only scope, diff check, Python AST and bash -n PASS; no main execution",
+    "result": "PASS",
+    "existing_secret_process_consumption_authorized": true
   },
-  "backups_r4_result": ".change-backups/E2-08-20261007-r4-result"
+  "backups_r4_result": ".change-backups/E2-08-20261007-r4-result",
+  "main_rollout_result": {
+    "report": "docs/E2-08_MAIN_RESULT.md",
+    "published_beta": "1d3076a0825cf90259d16333e3cc24668fa33e81",
+    "source_revision": "409c71f65db53873183c6ffd8d059561c05185d2",
+    "preflight_started_at": "2026-10-07T09:25:31Z",
+    "web_stopped_at": "2026-10-07T09:36:37Z",
+    "migration_commit_verified_at": "2026-10-07T09:41:23Z",
+    "web_id": "4c30e68d246015c013aa071f4a8dc6af7088abdb9c9329ef22509db9cebadaa2",
+    "web_started_at": "2026-10-07T09:43:33.3431035Z",
+    "ready_verified_at": "2026-10-07T09:44:38Z",
+    "stop_to_verified_ready_seconds": 481,
+    "final_metadata_verified_at": "2026-10-07T09:45:55Z",
+    "checkpoint_readback_at": "2026-10-07T09:47:00Z",
+    "dump": {
+      "bytes": 204905,
+      "mode": "0600",
+      "sha256": "b24f013c801fbd148f9e8f398fde460e7bee5751c6d57d4a517d4e1b641190f9",
+      "exit": 0
+    },
+    "restore": {
+      "database": "mw_e208_main_restore_20261007_01a1105a",
+      "exit": 0,
+      "web_connect": false,
+      "public_tables_compared": 35,
+      "rows_equal": true,
+      "table_column_schema_default_function_acl_owners_equal": true,
+      "three_check_definitions_equivalent": true,
+      "exact_constant_cast_normalizations": 4
+    },
+    "atomic_migration_and_key_acl": "PASS",
+    "rls_tables": 27,
+    "trusted_trigger_functions": 11,
+    "public_trigger_execute_revocations": 11,
+    "old_table_column_database_default_acl_preserved": true,
+    "old_rows_preserved": true,
+    "migration_count": [
+      38,
+      39
+    ],
+    "anonymous_session_count": [
+      7,
+      8
+    ],
+    "domain_entities_created": false,
+    "actual_sql_login": "mw_beta_web",
+    "sql_privilege_denials": 9,
+    "unsigned_read_probes": 23,
+    "forged_context_rollback_cases": 4,
+    "connection_reuse_cleared": true,
+    "network_http_checks": 9,
+    "csrf_denials": 2,
+    "both_postgres_unchanged": true,
+    "all_old_rehearsals_unchanged_stopped": true,
+    "existing_secrets_consumed_only_by_authorized_processes": true,
+    "key_value_or_fingerprint_disclosed": false,
+    "key_insert_server_bound": true,
+    "key_parameter_error_logging_disabled": true,
+    "global_log_settings_changed": false,
+    "safe_metadata_files": [
+      "containers.before.json",
+      "database.before.json",
+      "acl.before.json",
+      "result.json",
+      "migration.after.json",
+      "result.final.json",
+      "containers.after.json"
+    ],
+    "intermediate_assertions": [
+      "Compose network alias versus Docker name; exact normalized match confirmed",
+      "Three CHECK cast definitions; exact constant values/types and normalized full definitions equal",
+      "Function ACL comparator initially missed expected 11 PUBLIC EXECUTE revocations; no additions confirmed",
+      "Docker metadata comparator mixed Name/Ports representations; same-field comparison passed"
+    ],
+    "intermediate_result_preserved": "result.json is temporary stop; authoritative completion is result.final.json plus containers.after.json",
+    "fallback": "stop web only; no pre-RLS runtime/reverse/live restore",
+    "limitations": [
+      "Main empty-domain gate: positive multi-tenant lifecycle proved in R4 on same source, not repeated in main",
+      "Absent business cache/worker/file-storage and working export criteria remain unverified",
+      "No browser/TLS/real staff or next-task implementation"
+    ]
+  },
+  "backups_main_result": ".change-backups/E2-08-20261007-main-result",
+  "main_local_documentation_checks": {
+    "json": "PASS",
+    "backup_hashes": 8,
+    "append_only_plan_changelog": "PASS",
+    "python_fragment_ast": "PASS",
+    "bash_syntax_only": "PASS after MSYS sandbox NamedObjects failure and syntax-only escalation",
+    "expected_tracked_docs": 8,
+    "startup_checks_local_ignored": true,
+    "backend_deploy_changes": false,
+    "git_diff_check": "PASS"
+  }
 }

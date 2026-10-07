@@ -1,7 +1,10 @@
 # E2-08 — локальная изоляция и граница доверия
 
-06.10.2026, Europe/Moscow. **На проверке. PostgreSQL, реальный web LOGIN,
-серверный HTTP и backup/restore этой реализации ещё не выполнены.**
+Исходная модель от 06.10.2026; актуализирована 07.10.2026, Europe/Moscow.
+**На проверке по отсутствующим слоям. R4 и основной rollout PostgreSQL,
+реальный web LOGIN, серверный HTTP и backup/restore выполнены успешно.**
+Текущий результат — [E2-08_MAIN_RESULT.md](E2-08_MAIN_RESULT.md); ранние
+формулировки о невыполненных проверках ниже описывают исходную подготовку.
 E2-06 остаётся «На проверке», E2-07 — «Готово» в своём прежнем объёме.
 
 Исходная чистая локальная beta и live `git ls-remote --heads origin beta`:
@@ -194,3 +197,19 @@ FORCE, ограничения владельца и особые права TRUN
 R4 из опубликованного source409c71f65db53873183c6ffd8d059561c05185d2:83 PostgreSQL tests/0skips, actual web LOGIN/SQL/HTTP, dump/restore/quarantine, итоговая изоляция PASS. Стенд stopped, main beta остаётся cf6f4cc. Полный фактический протокол и пределы restore ACL comparison — [E2-08_ISOLATED_R4_RESULT.md](E2-08_ISOLATED_R4_RESULT.md). Это новые E2-08 результаты, не перенос E2-07 PASS.
 
 E2-08 остаётся «На проверке»: основная beta требует свежего backup/restore с полным table/column ACL comparison, перехода RLS/сохранения данных и runtime-проверок по [отдельному плану](E2-08_MAIN_ROLLOUT.md) после отдельного разрешения. Отсутствующие business cache/storage/worker/интеграции и browser/TLS не объявляются проверенными. Граница доверия подписанта и ограниченный platform_admin не менялись; E2-06 не закрывается.
+
+## Основная beta — 07.10.2026, 12:47 +03:00
+
+После отдельного текущего разрешения main rollout APP_REV409c71f выполнен:
+свежий backup/closed restore, полное сравнение строк/table/column/schema/default
+ACL, атомарная RLS-миграция, 27 FORCE tables, actual web LOGIN/9 SQL-отказов,
+9 network HTTP/CSRF checks PASS. Все старые строки сохранены, соседние
+PostgreSQL и стенды неизменны. Точные CHECK cast equivalence и сужение
+PUBLIC trigger EXECUTE доказаны; прежний абзац описывает состояние до rollout.
+Источник и пределы — [E2-08_MAIN_RESULT.md](E2-08_MAIN_RESULT.md).
+
+E2-08 «На проверке» только по непокрытым критериям отсутствующих business
+cache-hit, worker и реального файлового/готового экспорта. Существующие
+потребители проверены; main больше не ожидает внедрения. Не добавлять эти
+слои в текущую задачу и не считать synthetic link рабочим экспортом E5-07.
+E2-06 без изменения. Безопасный fallback — остановленный web, без pre-RLS кода.

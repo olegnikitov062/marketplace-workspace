@@ -1,6 +1,6 @@
-# Запуск beta — E2-07 и история технической основы
+# Запуск beta — E2-08 и история технической основы
 
-Актуально после отдельно разрешённого E2-07 main rollout (05.10.2026): основной web/БД beta обновлены, read-only Git source cf6f4ccd48106d9a44a64703bcfd79e49513ec3e, прежний MFA dependency image и штатные secret mounts. Текущие команды — в последнем разделе E2-07. Исторические E2-03/E2-05/E2-06 обычные запуски ниже не выполнять: base-only/accounts overlay обходят MFA, а E2-06 не проверяет Grant. Безопасный отказ после новой схемы — остановка web; откат схемы/кода требует отдельного плана.
+Актуально после отдельно разрешённого E2-08 main rollout (07.10.2026): основной web/БД beta обновлены, read-only Git source409c71f65db53873183c6ffd8d059561c05185d2, 27 FORCE RLS tables, прежний MFA dependency image и отдельный isolation key. Текущие команды — в последнем разделе E2-08. Исторические обычные запуски ниже не выполнять: base-only/accounts overlay обходят MFA, E2-06 не проверяет Grant, E2-07 не включает новую изоляцию. Безопасный fallback — остановка web; downgrade/reverse/live restore запрещены.
 
 30.09.2026, Europe/Moscow (UTC+3). D1 сохранено. После отдельного разрешения Олега установлены зависимости нового проекта и запущена изолированная beta. E2-04 и следующие задачи не начинались.
 
@@ -153,3 +153,26 @@ dc -f "$release/beta/deploy/compose.security-web.json" up -d --no-deps web </dev
 Свежий checkpoint `/home/adm_user/marketplace-workspace/beta/backups/database/e2-07-main-20261005-01a10b2d`: новые private metadata/ACL и before.dump0600, SHA256 `267dcecac7a3434870f09915deee1b6950a43df672c1eedad6dea2086e006529`. Restore `mw_e207_main_restore_20261005_01a10b2d` закрыт от web и сохранён; 30 таблиц/11 sequences сравнили, две текстовые формы CHECK доказаны эквивалентными. Не повторять CREATE/provision/restore по занятым именам. Основные аккаунты/организации/Grant пусты; anonymous sessions6→7 от GET входа.
 
 Безопасный отказ после новой схемы — остановка только web указанным dc/security overlay. Обычный E2-06 runtime14d9f48 возвращать нельзя: он обходил Grant. Не делать reverse/zero/live restore, не удалять checkpoint/restore/старые стенды без отдельного плана/разрешения. Подробности — SYSTEM_GRANT_CHECKS.json/main_rollout_result; SYSTEM_STARTUP_CHECKS.json/latest_runtime_e207. Исторические разделы выше сохранены как доказательства прежних этапов, а не актуальные команды отката. E2-06 остаётся «На проверке», рабочий экспорт/K3 этим этапом не закрываются.
+
+
+## Текущая beta E2-08 — 2026-10-07T12:47:04+03:00
+
+Основной runtime409c71f65db53873183c6ffd8d059561c05185d2, серверный repository1d3076a0825cf90259d16333e3cc24668fa33e81. Web ID4c30e68d246015c013aa071f4a8dc6af7088abdb9c9329ef22509db9cebadaa2, StartedAt2026-10-07T09:43:33.3431035Z. Прежний dependency image, UID10001:10001,384MiB/0.25CPU, read-only source, internal network/no host ports; добавлен только отдельный isolation key mount к прежним web secrets. 27 ENABLE/FORCE RLS tables, реальный mw_beta_web, Grant/MFA/изоляция включены, synthetic export probe выключен. Rehearsal/offline flags запрещены.
+
+Команды воспроизведения только после отдельного разрешения нового запуска/перезапуска; текущий web уже работает:
+
+```sh
+set -eu
+base=/home/adm_user/marketplace-workspace/beta
+release="$base/app/releases/409c71f65db53873183c6ffd8d059561c05185d2"
+export BACKEND_IMAGE=marketplace-workspace/backend:e2-03-0210f27a7ab1
+export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72
+export SECURITY_SOURCE="$release/backend"
+dc() { timeout 120 docker compose --project-name marketplace-beta --env-file /dev/null --project-directory "$base/deploy" -f "$base/deploy/compose.json" -f "$release/beta/deploy/compose.security-web.json" "$@"; }
+dc config --quiet </dev/null
+dc up -d --no-deps web </dev/null
+```
+
+Fallback при разрешённом задании — `dc stop web` с теми же base/release/env/security overlay. Не запускать cf6f4cc или другой pre-RLS код, не выполнять base-only/accounts overlay, reverse/live restore, не отключать RLS/MFA/Grant. Изолированный verifier имеет guard другого cluster и для main не вызывается.
+
+Свежие checkpoint beta/backups/database/e2-08-main-20261007-01a1105a и restore mw_e208_main_restore_20261007_01a1105a сохранены закрытыми; все имена заняты. Dump204905bytes0600 SHA256b24f013c801fbd148f9e8f398fde460e7bee5751c6d57d4a517d4e1b641190f9. Текущий итог result.final.json, промежуточный result.json сохранён исторически. Полное сравнение данных/ACL, реальный SQL/9 отказов и9 network HTTP/2 CSRF PASS; оба PostgreSQL и все прежние стенды неизменны. Окно stop→проверенный ready8мин01с. Протокол — [E2-08_MAIN_RESULT.md](docs/E2-08_MAIN_RESULT.md), SYSTEM_STARTUP_CHECKS.json/latest_runtime_e208. E2-08 «На проверке» по отсутствующим cache/job/file-export критериям; E2-06 без изменения.
