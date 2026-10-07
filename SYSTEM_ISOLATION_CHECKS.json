@@ -1,8 +1,8 @@
 {
   "task": "E2-08",
-  "recorded_at": "2026-10-07T10:58:55+03:00",
+  "recorded_at": "2026-10-07T11:30:45+03:00",
   "status": "На проверке",
-  "scope": "R3 install/ACL passed, suite FAIL after 5 tests, stopped/preserved. Local R4 test-key provisioning prepared; not executed.",
+  "scope": "R4 isolated PostgreSQL/actual SQL web LOGIN/HTTP/backup-restore PASS; main beta not deployed, separate plan pending",
   "baseline": {
     "branch": "beta",
     "head": "1b765629badd6fe70f605fd9f6d504954e44d618",
@@ -11,12 +11,12 @@
     "method": "git ls-remote --heads origin beta; initial sandbox DNS failure then successful read-only escalation",
     "last_confirmed_runtime_from_user_and_docs": "cf6f4ccd48106d9a44a64703bcfd79e49513ec3e",
     "runtime_verified_this_task": true,
-    "runtime_metadata_verified_at": "2026-10-07T07:52:04Z"
+    "runtime_metadata_verified_at": "2026-10-07T08:21:17Z"
   },
   "server_contacted": true,
-  "postgresql_checked": false,
-  "real_web_login_checked": false,
-  "backup_restore_checked": false,
+  "postgresql_checked": true,
+  "real_web_login_checked": true,
+  "backup_restore_checked": true,
   "push_performed": false,
   "dependencies_installed": false,
   "real_key_or_password_files_read": false,
@@ -84,21 +84,16 @@
     "tables": 27,
     "mechanism": "Exact statement HMAC capability bound to transaction/backend/database/role/expiry; URL organization bounds; live row-level scope/action/session/Grant predicate for SyntheticRecord",
     "control_plane_trust": "Existing reviewed Python authentication and access-management services plus signer remain trusted. SQL control queries are attested exactly; password/TOTP/delegation are not reimplemented independently in SQL. Full Python/key or operator compromise excluded.",
-    "key": "Separate synthetic R1/R2/R3 keys retained in stopped resources, no values displayed",
+    "key": "Separate new synthetic R1-R4 keys retained; R4 test DB key provisioned with signed claims probe. No key values/fingerprints printed.",
     "trusted_trigger_functions": 11,
     "operator_policies": true,
-    "real_sql_behavior": "27-table installation/ACL contract PASS; R3 HTTP suite FAIL; actual web LOGIN SQL probes not run"
+    "real_sql_behavior": "PASS on isolated R4 actual web LOGIN: unsigned/forged/null claims, SQL/key/role/DDL denials, scope/actions, rollback/reuse/concurrency, current Grant revoke"
   },
   "pending": [
-    "Publish local R4 test-key provisioning/profile and verify live full revision ancestry",
-    "Separate authorization for fresh R4; preserve stopped R1/R2/R3",
-    "PostgreSQL migration/actual ClientCursor current_query/signature interoperability",
-    "Real web LOGIN positive and negative SELECT/UPDATE, GUC forgery and key/role/DDL denials",
-    "SQL rollback/savepoint/reused and concurrent connections",
-    "Full current grant/session/MFA/support/revocation regression on PostgreSQL",
-    "Concurrent grants/membership/last-owner/archive checks",
-    "New dump/restore, policies/key preservation and restored session/link quarantine",
-    "Separate main-beta plan and authorization after successful isolated run"
+    "Oleg publication and separate authorization of docs/E2-08_MAIN_ROLLOUT.md; live APP_REV ancestry",
+    "Main-beta preflight, domain-empty gate, fresh main backup/closed restore including full table/column ACL comparison",
+    "Main-beta RLS migration/key/ACL transition and data preservation",
+    "Main-beta real SQL web LOGIN/runtime/HTTP/CSRF checks and unchanged adjacent services"
   ],
   "absent_layers": [
     "Business result cache/cache-hit consumer",
@@ -115,7 +110,7 @@
     "docs/E2-08_ISOLATION.md",
     "docs/E2-08_SERVER_PLAN.md"
   ],
-  "implementation_revision": "149414466473053a5eff7ad2edab4415a216c6b4",
+  "implementation_revision": "409c71f65db53873183c6ffd8d059561c05185d2",
   "implementation_published": true,
   "server_plan": {
     "document": "docs/E2-08_ISOLATED_R1_RESULT.md",
@@ -137,8 +132,8 @@
     "result": "FAILED at configure, stopped and preserved",
     "completed_at": "2026-10-07T07:18:01Z"
   },
-  "postgresql_check_note": "R3 installation and metadata contract PASS; behavioral suite FAIL. No actual web LOGIN/network HTTP/restore proof.",
-  "live_remote_beta_verified": "971600e8fca04b23d0de41f06bca950b09116883",
+  "postgresql_check_note": "R4 83 tests/no skips plus actual web LOGIN scenario and six network checks before/after closed restore. Main runtime remains cf6f4cc.",
+  "live_remote_beta_verified": "774b00224a13a96549f96bff9c5eed0286c04de3",
   "isolated_r1": {
     "published_beta": "9e6458ed9d145633e47480e12a8dcbf3be351b3f",
     "source_revision": "a1eeff72d72369c492c078fb5bd5ce91268f19cd",
@@ -302,15 +297,16 @@
     "diagnosis": "Code proves no signing-key provisioning in test_mw_beta; export_cabinet requires claims. Exact link to failed assertion unconfirmed because location was not retained."
   },
   "r4_plan": {
-    "document": "docs/E2-08_SERVER_PLAN.md",
+    "document": "docs/E2-08_ISOLATED_R4_RESULT.md",
     "revision": "409c71f65db53873183c6ffd8d059561c05185d2",
     "project": "marketplace-e208-20261007-01a1105a-r4",
-    "published": false,
-    "authorized": false,
-    "executed": false,
+    "published": true,
+    "authorized": true,
+    "executed": true,
     "restore": "mw_e208_01a1105a_r4_restore",
     "test_database_provisioning": "Guarded test_mw_beta only, fresh key, actual signed claims probe before suite; no ACL/policy changes",
-    "pinned_at": "2026-10-07T10:58:55+03:00"
+    "pinned_at": "2026-10-07T10:58:55+03:00",
+    "result": "PASS, stopped/preserved"
   },
   "local_r4_checks": {
     "passed": 13,
@@ -325,5 +321,86 @@
     "diff_check": "PASS",
     "shell_syntax_only": "PASS"
   },
-  "backups_r3_result": ".change-backups/E2-08-20261007-r3-result"
+  "backups_r3_result": ".change-backups/E2-08-20261007-r3-result",
+  "isolated_r4": {
+    "published_beta": "774b00224a13a96549f96bff9c5eed0286c04de3",
+    "source_revision": "409c71f65db53873183c6ffd8d059561c05185d2",
+    "started_at": "2026-10-07T08:02:03Z",
+    "stopped_at": "2026-10-07T08:21:17Z",
+    "postgres_version": "17.11 (Debian 17.11-1.pgdg12+2)",
+    "prepare_exit": 0,
+    "bootstrap_exit": 0,
+    "configure_exit": 0,
+    "test_database_exit": 0,
+    "rls_metadata_tables": 27,
+    "test_db_signed_claims_probe": "PASS",
+    "suite": {
+      "tests": 83,
+      "seconds": 815.835,
+      "skipped": 0,
+      "exit": 0,
+      "complete": true,
+      "runner_seconds": 828
+    },
+    "suite_evidence": {
+      "path": "state/suite-events.jsonl",
+      "mode": "0600",
+      "sha256": "c58e35c4218310b7fc32dd04732c4f465943acfe2f1b77299a63a62465f15f9c",
+      "readback": true
+    },
+    "actual_web_identity": "session_user=current_user=mw_beta_web",
+    "actual_web_scenario": "PASS",
+    "base_sql_denials": 10,
+    "isolation_sql_probe": "PASS",
+    "old_link_stays_revoked": true,
+    "network_http_before_backup": 6,
+    "network_http_after_restore": 6,
+    "static_no_network_no_secrets": {
+      "tests": 10,
+      "seconds": 1.998,
+      "pass": true,
+      "postgresql": false
+    },
+    "dump": {
+      "path": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-08-20261007-01a1105a-r4/backups/isolation-after.dump",
+      "bytes": 292050,
+      "mode": "0600",
+      "sha256": "d32338679b5ba31e3b5db3ab560605a10d5a398f53c714e73471939911b9b4b4",
+      "exit": 0
+    },
+    "restore": {
+      "database": "mw_e208_01a1105a_r4_restore",
+      "exit": 0,
+      "web_connect": false,
+      "public_rows_and_private_key_equal_in_memory": true,
+      "policies_private_functions_acl_equal": true,
+      "irreversible_grant_and_quarantine": "PASS",
+      "limitation": "Helper does not independently compare all table/column ACL to source; required explicitly in separate main plan"
+    },
+    "final_isolation_verifier": "PASS",
+    "main_and_all_old_rehearsal_metadata_unchanged": true,
+    "all_new_services_stopped": true,
+    "oom": false,
+    "postgres_id": "c23d15b21bb1d83d31174681d69f7828bddec9c45b6a5a70bb4ecfaf0c4ecb1d",
+    "controller_id": "e06dc494fff289f73e75c4d3ed984b2c3650880faf2141f70f3a174dc059f679",
+    "web_id": "b507d8a843d73f3e0e1063b6edcc42a94893ebbdecaa4b2f9a5f57d0477097c5",
+    "network_id": "7edf5b78b6258aa0c2beb98282ed6c77f3892fe82b396fbdc65c7e5e3daa3f2c",
+    "report": "docs/E2-08_ISOLATED_R4_RESULT.md"
+  },
+  "main_rollout_plan": {
+    "document": "docs/E2-08_MAIN_ROLLOUT.md",
+    "source_revision": "409c71f65db53873183c6ffd8d059561c05185d2",
+    "source_published": true,
+    "authorized": false,
+    "executed": false,
+    "checkpoint": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-08-main-20261007-01a1105a",
+    "restore": "mw_e208_main_restore_20261007_01a1105a",
+    "new_key_file": "/home/adm_user/marketplace-workspace/beta/config/secrets/isolation_signing_key",
+    "empty_domain_only": true,
+    "web_stop_limit_minutes": 20,
+    "total_limit_minutes": 45,
+    "existing_secret_process_consumption_requires_separate_approval": true,
+    "local_validation": "JSON, five backup hashes, append-only, exact docs-only scope, diff check, Python AST and bash -n PASS; no main execution"
+  },
+  "backups_r4_result": ".change-backups/E2-08-20261007-r4-result"
 }

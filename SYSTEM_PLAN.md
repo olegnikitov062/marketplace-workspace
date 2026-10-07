@@ -684,3 +684,10 @@ E2-08 «На проверке»: нужны публикация Олегом, �
 ### 2026-10-07T10:58:55+03:00 — E2-08: закреплена локальная ревизия R4
 
 Полный source REV `409c71f65db53873183c6ffd8d059561c05185d2` закреплён в docs/E2-08_SERVER_PLAN.md. Требуются push Олега, live ancestry и отдельный допуск R4. R1/R2/R3 сохранены stopped, main beta без внедрения, E2-08/E2-06 «На проверке».
+
+
+### 2026-10-07T11:30:45+03:00 — E2-08: изолированный R4 пройден, основная beta ожидает отдельного допуска
+
+R4 выполнен по текущему разрешению из опубликованного source409c71f65db53873183c6ffd8d059561c05185d2 (live beta774b00224a13a96549f96bff9c5eed0286c04de3). 83 PostgreSQL tests/815.835с/0skips PASS; actual SQL LOGIN mw_beta_web, scope/actions/default deny/подделки/отзыв/SQL rollback-reuse-concurrency, HTTP и старая export-link PASS; 6 network checks до/после restore,10 static checks PASS. Новый dump292050bytes0600 и closed restore с rows/key/policies/private function ACL comparison, irreversible Grant/quarantine PASS. Полное table/column ACL comparison restore отдельным helper не выполнялось; явно требуется main-планом. Итоговая изоляция/сохранность main и всех прежних стендов PASS, R4 stopped к2026-10-07T08:21:17Z. Точные ID/SHA/пределы — docs/E2-08_ISOLATED_R4_RESULT.md и SYSTEM_ISOLATION_CHECKS.json.
+
+Подготовлен docs/E2-08_MAIN_ROLLOUT.md: проверенный опубликованный APP_REV409c71f, только domain-empty main beta, новые checkpoint/restore/key, fresh backup/полный ACL comparison, одна RLS-миграция с сохранением данных, штатный security overlay,20мин stop/45мин окно, безопасный fallback — закрытый web. Нужны push документа Олегом и отдельный допуск включая штатное потребление существующих secret mounts. Main runtime cf6f4cc не менялся. E2-08 остаётся «На проверке» до main-проверок; E2-06 без изменения. Отсутствующие cache/storage/worker/интеграции, рабочий экспорт E5-07/финансовые E2-09/D3 не закрываются.

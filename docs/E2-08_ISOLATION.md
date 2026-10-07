@@ -163,7 +163,7 @@ fallback — остановка web. Возврат обычного E2-07 runti
 работоспособности запрещены. Штатный security overlay обязателен; старые
 base-only/accounts overlay не становятся допустимыми.
 
-## Доказательства и оставшееся
+## Доказательства и оставшееся (состояние локальной подготовки 06.10.2026)
 
 Команды/числа записаны в `SYSTEM_ISOLATION_CHECKS.json`. Первый локальный
 HTTP/regression запуск: 91 тест, PASS, SQLite; последующие изменения контекста
@@ -173,8 +173,8 @@ assertions — регрессия E2-05/06/07, а не самостоятель�
 Подготовлены новый именованный rehearsal, настоящий web LOGIN HTTP/SQL probe,
 отказы подделки/прямого доступа к key/DDL/SET ROLE, scoped SELECT/UPDATE без WHERE,
 rollback/savepoint/reuse, два конкурентных соединения, SQL после отзыва Grant,
-reverse/refusal/forward и restore/quarantine helper. **Ни один из этих
-PostgreSQL-прогонов ещё не выполнен.** Старые E2-07 результаты к ним не относятся.
+reverse/refusal/forward и restore/quarantine helper. **На 06.10.2026 эти
+PostgreSQL-прогоны ещё не выполнялись.** Старые E2-07 результаты к ним не относятся.
 Browser/TLS-проверки, рабочие файлы, cache-hit и worker не заявляются.
 
 До закрытия E2-08 нужны фактические PostgreSQL/limited-role результаты всех
@@ -187,3 +187,10 @@ restore; гонки отзыва, последнего владельца и а�
 [встроенные bytea/SHA256 функции](https://www.postgresql.org/docs/17/functions-binarystring.html).
 FORCE, ограничения владельца и особые права TRUNCATE/REFERENCES учтены отдельно
 от политики строк; существующий минимальный column ACL не заменён GRANT ALL.
+
+
+## Проверенный изолированный результат 07.10.2026
+
+R4 из опубликованного source409c71f65db53873183c6ffd8d059561c05185d2:83 PostgreSQL tests/0skips, actual web LOGIN/SQL/HTTP, dump/restore/quarantine, итоговая изоляция PASS. Стенд stopped, main beta остаётся cf6f4cc. Полный фактический протокол и пределы restore ACL comparison — [E2-08_ISOLATED_R4_RESULT.md](E2-08_ISOLATED_R4_RESULT.md). Это новые E2-08 результаты, не перенос E2-07 PASS.
+
+E2-08 остаётся «На проверке»: основная beta требует свежего backup/restore с полным table/column ACL comparison, перехода RLS/сохранения данных и runtime-проверок по [отдельному плану](E2-08_MAIN_ROLLOUT.md) после отдельного разрешения. Отсутствующие business cache/storage/worker/интеграции и browser/TLS не объявляются проверенными. Граница доверия подписанта и ограниченный platform_admin не менялись; E2-06 не закрывается.
