@@ -1,6 +1,6 @@
 {
   "task": "E2-09",
-  "recorded_at": "2026-10-07T15:22:20+03:00",
+  "recorded_at": "2026-10-07T16:13:53+03:00",
   "status": "На проверке",
   "scope": "Локальная реализация финансового блока логической синтетической таблицы; UI E5-13 отдельно",
   "baseline": {
@@ -11,18 +11,18 @@
     "method": "git ls-remote --heads origin beta: sandbox DNS failure, read-only escalation success",
     "last_confirmed_runtime_from_user_and_docs": "409c71f65db53873183c6ffd8d059561c05185d2",
     "runtime_verified_this_task": true,
-    "runtime_metadata_verified_at": "2026-10-07T12:14:46Z",
+    "runtime_metadata_verified_at": "2026-10-07T13:05:10Z",
     "runtime_verification_scope": "Container IDs/images/StartedAt/mounts/networks/ports only; no main DB or main HTTP regression"
   },
   "server_contacted": true,
   "postgresql_checked": true,
-  "real_web_login_checked": false,
+  "real_web_login_checked": true,
   "backup_restore_checked": false,
   "push_performed": false,
   "dependencies_installed": false,
   "real_key_or_password_files_read": false,
   "k3_rechecked": false,
-  "source_commit_pin": "docs/E2-09_SERVER_PLAN.md",
+  "source_commit_pin": "docs/E2-09_R2_SERVER_PLAN.md",
   "local_tools": {
     "python": "3.14.7, existing backend/.venv",
     "Django": "5.2.17",
@@ -85,6 +85,15 @@
       "seconds": 0.795,
       "skipped": 0,
       "scope": "R2 inert plan + limits validator; not server R2"
+    },
+    {
+      "command": "manage.py test access_control.tests.test_financial_preparation data_isolation.tests.test_preparation --settings=config.isolation_local_checks --verbosity=1",
+      "result": "PASS",
+      "tests": 11,
+      "seconds": 0.424,
+      "skipped": 0,
+      "scope": "R3 preparation + redaction/fresh evidence, not PostgreSQL R3",
+      "initial_attempt": "Windows sandbox TemporaryDirectory PermissionError (2 errors); same local suite outside sandbox passed"
     }
   ],
   "failed_attempts": [
@@ -111,11 +120,8 @@
     "tools.verify_financial_web_runtime: actual web ACL and 6 network status probes"
   ],
   "unverified_required": [
-    "Complete PostgreSQL E2-09 suite",
-    "Populated E2-08 upgrade/retention tests and PostgreSQL financial concurrency",
-    "Actual web LOGIN financial SQL/RLS/HTTP consumers and connection/rollback/reuse",
-    "Gunicorn readiness/network checks",
-    "Backup/restore exact comparison and quarantine",
+    "Strict restore rows/schema/ACL/functions/guards/sequences comparison and quarantine: R2 helper exit1, exact phase/cause unknown",
+    "Post-restore web recheck not reached",
     "Main beta rollout preservation and checks under compose.security-web.json with SECURITY_SOURCE and SECURITY_IMAGE"
   ],
   "absent_layers_not_covered": [
@@ -133,13 +139,13 @@
   },
   "rollback": "Compare current tree with .change-backups/E2-09-20261007-01a115d9-implementation and later changes; reverse only this patch. Never downgrade populated finance/RLS or restore over a live source; isolated failure stops only new containers and retains resources.",
   "authorization_required": [
-    "Oleg publishes new R2 source/pin in beta",
-    "Separate approval for exact new E2-09_R2_SERVER_PLAN; R1 approval consumed",
+    "Oleg publishes new R3 source/pin in beta",
+    "Separate approval for docs/E2-09_R3_SERVER_PLAN.md; R2 stopped, no rerun or resource reuse",
     "Separate main-beta rollout plan and approval after isolated success"
   ],
-  "source_commit": "faed9681ff4540cb49bc46f147c738e516b6dc2e",
+  "source_commit": "b7e0d66c6ad632544a0db73d7e38d59e0d54a511",
   "source_pin_recorded_at": "2026-10-07T14:58:31+03:00",
-  "postgresql_full_suite_passed": false,
+  "postgresql_full_suite_passed": true,
   "new_synthetic_secret_mounts_used": true,
   "isolated_r1_result": {
     "status": "STOPPED; not passed",
@@ -193,22 +199,89 @@
     "sanitized_evidence": "state/suite-events.jsonl; read-only sudo used due UID10001/0600; no permission changes or secret reads"
   },
   "next_isolated_attempt": {
-    "project": "marketplace-e209-20261007-01a115d9-r2",
-    "plan": "docs/E2-09_R2_SERVER_PLAN.md",
-    "source_commit": "b7e0d66c6ad632544a0db73d7e38d59e0d54a511",
+    "project": "marketplace-e209-20261007-01a115d9-r3",
+    "plan": "docs/E2-09_R3_SERVER_PLAN.md",
+    "source_commit": "SOURCE_COMMIT_PENDING",
     "server_authorized": false,
     "server_started": false,
-    "preserve_r1": true,
-    "limit_check": "before suite; positive values at or below ceilings; 5s/2s accepted; no Django timeout changes",
-    "stop_order": "web/controller, then postgres",
+    "preserve_r1_r2": true,
+    "purpose": "Localize unknown restore verification failure; no cause fix claimed",
+    "restore_evidence": "O_EXCL/0600/fsync, fixed event/stage/index only; no exception text or data",
+    "financial_code_acl_comparisons_unchanged": true,
     "local_validation": {
-      "preparation_tests": 9,
-      "seconds": 0.795,
-      "backup_hashes": 10,
-      "AST_JSON_diff": "PASS",
-      "shell_blocks_syntax_only": 2,
-      "business_financial_and_Django_limits_unchanged": true
+      "preparation_tests": 11,
+      "seconds": 0.424,
+      "database": "none"
+    }
+  },
+  "isolated_r2_result": {
+    "status": "STOPPED at restore verification; overall not passed",
+    "authorization": "Explicit user approval after publication; isolated R2 only",
+    "source_commit": "b7e0d66c6ad632544a0db73d7e38d59e0d54a511",
+    "published_beta": "0e0bd7d786ba8cdb4fb22d5cfdfc45559931e0b5",
+    "project": "marketplace-e209-20261007-01a115d9-r2",
+    "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-09-20261007-01a115d9-r2",
+    "postgres_version": "17.11 (Debian 17.11-1.pgdg12+2)",
+    "preflight_utc": "2026-10-07T12:35:43Z",
+    "disk_free_bytes": 5901258752,
+    "mem_available_kib": 4757036,
+    "fresh_configure": {
+      "exit": 0,
+      "at": "2026-10-07T12:37:22Z"
     },
-    "source_pin_recorded_at": "2026-10-07T15:26:52+03:00"
+    "limits": {
+      "at": "2026-10-07T12:37:32Z",
+      "max_connections": 20,
+      "statement_timeout_ms": 5000,
+      "lock_timeout_ms": 2000,
+      "idle_transaction_timeout_ms": 20000,
+      "client_connections": 1,
+      "continuous_client_count_monitoring": false
+    },
+    "suite": {
+      "result": "PASS",
+      "tests": 134,
+      "seconds": 1325.015,
+      "skipped": 0,
+      "runner_seconds": 1338,
+      "exit": 0,
+      "start": "2026-10-07T12:37:56Z",
+      "end": "2026-10-07T13:00:21Z"
+    },
+    "actual_web_login_scenario": {
+      "result": "PASS",
+      "at": "2026-10-07T13:01:26Z",
+      "base_sql_denials": 10,
+      "financial_and_isolation_sql_probes": "PASS",
+      "old_link_stays_revoked": true
+    },
+    "network_checks": {
+      "result": "PASS",
+      "count": 6,
+      "at": "2026-10-07T13:02:04Z"
+    },
+    "dump_restore": {
+      "import_exit": 0,
+      "at": "2026-10-07T13:02:47Z",
+      "target": "mw_e209_01a115d9_r2_restore",
+      "web_connect": false,
+      "dump_bytes": 623353,
+      "dump_mode": "0600",
+      "dump_sha256": "eea747cc7161b475ca2ee4cb0aac33bffa5e6f55695fe20d4664579695ea600c",
+      "verification_exit": 1,
+      "verification_at": "2026-10-07T13:03:19Z",
+      "failed_phase": "unknown",
+      "root_cause": "unknown",
+      "comparison_confirmed": false,
+      "quarantine_confirmed": false
+    },
+    "stop_order": "web/controller, then postgres",
+    "controller_stopped_at": "2026-10-07T13:03:55.326140364Z",
+    "postgres_stopped_at": "2026-10-07T13:03:55.709516382Z",
+    "oom": false,
+    "repeated": false,
+    "all_resources_retained": true,
+    "main_and_preserved_unchanged_at": "2026-10-07T13:05:10Z",
+    "report": "docs/E2-09_ISOLATED_R2_RESULT.md"
   }
 }

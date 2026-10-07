@@ -11,9 +11,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-PROJECT = "marketplace-e209-20261007-01a115d9-r2"
+PROJECT = "marketplace-e209-20261007-01a115d9-r3"
 BETA = Path("/home/adm_user/marketplace-workspace/beta")
-PROFILES = {PROJECT: "e2-09-20261007-01a115d9-r2"}
+PROFILES = {PROJECT: "e2-09-20261007-01a115d9-r3"}
 ROOT = BETA / "rehearsals" / PROFILES[PROJECT]
 LOCK_SHA256 = "35cba592050150a0e5b1f68adc36d3f1c0871ceec79efc6c7f8e4a925fb34e60"
 IMAGE = "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72"
@@ -64,6 +64,15 @@ def protected_rehearsal():
     # R1 stopped during its suite. Preserve both containers; no web was created.
     project = 'marketplace-e209-20261007-01a115d9-r1'
     for service in ('postgres', 'controller'):
+        row = json.loads(command('docker','inspect',project+'-'+service))[0]
+        if row['State']['Running'] or row['Config']['Labels'].get('com.docker.compose.project') != project:
+            raise RuntimeError()
+        result.append({'id':row['Id'],'image':row['Image'],'started':row['State']['StartedAt'],
+            'mounts':sorted(row['Mounts'],key=lambda m:m['Destination']),
+            'networks':sorted(row['NetworkSettings']['Networks']),'ports':row['NetworkSettings']['Ports']})
+    # R2 stopped after restore verification failed; preserve all three containers.
+    project = 'marketplace-e209-20261007-01a115d9-r2'
+    for service in ('postgres', 'web', 'controller'):
         row = json.loads(command('docker','inspect',project+'-'+service))[0]
         if row['State']['Running'] or row['Config']['Labels'].get('com.docker.compose.project') != project:
             raise RuntimeError()

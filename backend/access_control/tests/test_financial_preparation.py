@@ -6,6 +6,44 @@ from django.test import SimpleTestCase
 
 
 class FinancialPreparationTests(SimpleTestCase):
+    def test_restore_evidence_redacts_exception_and_retains_failed_stage(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+        from tempfile import TemporaryDirectory
+        from tools.financial_restore_evidence import RestoreEvidence
+        with TemporaryDirectory() as directory, redirect_stdout(StringIO()) as output:
+            path = Path(directory) / 'restore-events.jsonl'
+            with self.assertRaisesRegex(RuntimeError, 'synthetic-secret'):
+                with RestoreEvidence(path) as evidence:
+                    evidence.checkpoint('metadata', 2)
+                    raise RuntimeError('synthetic-secret SELECT cost; Cookie: hidden')
+            events = [json.loads(line) for line in path.read_text().splitlines()]
+            self.assertEqual(events[-1], {'event':'restore_failed','stage':'metadata','index':2})
+            self.assertEqual(len(events), 2)
+            self.assertNotIn('synthetic-secret', path.read_text() + output.getvalue())
+            before = path.read_bytes()
+            with self.assertRaises(FileExistsError):
+                with RestoreEvidence(path):
+                    self.fail('Existing evidence was overwritten')
+            self.assertEqual(path.read_bytes(), before)
+
+    def test_restore_evidence_rejects_untrusted_stage_or_index(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+        from tempfile import TemporaryDirectory
+        from tools.financial_restore_evidence import RestoreEvidence
+        with TemporaryDirectory() as directory, redirect_stdout(StringIO()):
+            path = Path(directory) / 'restore-events.jsonl'
+            with RestoreEvidence(path) as evidence:
+                for stage, index in (('Cookie: hidden', 0), ('rows', 'hidden'),
+                                     ('rows', -1), ('rows', 1001), ('rows', True)):
+                    with self.assertRaises(ValueError):
+                        evidence.checkpoint(stage, index)
+                evidence.checkpoint('quarantine_verify')
+            events = [json.loads(line) for line in path.read_text().splitlines()]
+            self.assertEqual(events[-1]['event'], 'restore_passed')
+            self.assertNotIn('hidden', path.read_text())
+
     def test_limits_accept_stricter_django_session_options(self):
         from tools.financial_runtime_limits import validate
         for values in ((20,5000,2000,20000,1),(20,15000,5000,20000,8)):

@@ -1556,3 +1556,35 @@ Staged-проверка выявила CRLF в новом SYSTEM_FINANCIAL_CHECK
 До изменений сохранены четыре файла в .change-backups/E2-09-20261007-01a115d9-r2-pin/<тот же путь>; новый manifest.json содержит SHA256/время. Backup-артефакты ignored. Проверяются четыре hashes, полный source pin, JSON, append-only журнал/план, неизменные статусы, отсутствие backend/deploy diff и git diff --check. Программные тесты повторно не нужны для документальной привязки;9 локальных preparation PASS не являются PostgreSQL R2.
 
 Откат: сравнить текущие документы с backup/поздней работой и отменять только ошибочную привязку обратным патчем, журнал дополнять; не стирать R1-результат/исходники/чужую работу. Backup/manifest удалять только после проверки поздних зависимостей и сохранения доказательств. Основная beta и stopped R1 не трогаются. Push выполняет Олег; отдельное разрешение R2 необходимо по согласованному правилу остановки и запрету повторного использования частичного запуска.
+
+
+## 2026-10-07T16:14:41+03:00 (Europe/Moscow) — Зафиксирован изолированный E2-09 R2 и подготовлена диагностика R3
+
+Причина: выполнить отдельно разрешённый Олегом R2 после публикации0e0bd7d и честно зафиксировать остановку restore. Серверный immutable source b7e0d66c6ad632544a0db73d7e38d59e0d54a511 получен Git fetch/worktree. Только новый marketplace-e209-20261007-01a115d9-r2: создан root/release, postgres/controller/web, private network/data volume, mw_beta/test_mw_beta/restore и три роли/7synthetic secrets/state/dump. Точные пути/IDs/images/UTC-времена в docs/E2-09_ISOLATED_R2_RESULT.md. Внутри нового кластера применены2 финансовые миграции/минимальный ACL, синтетические fixtures, suite/SQL/HTTP, dump+restore.134 PG tests PASS0 skipped1325.015с, real web LOGIN и6 network checks PASS. Dump623353bytes0600 SHA256eea747cc7161b475ca2ee4cb0aac33bffa5e6f55695fe20d4664579695ea600c. Restore verification exit1 в13:03:19Z; этап/причина неизвестны, сравнение/quarantine не подтверждены. При первой ошибке остановлены web/controller, затем postgres13:03:55Z; повторов не было. Финальная metadata13:05:10Z — main409c71f… и все прежние стенды неизменны. Все ресурсы R2 сохранены, старые БД/ключи не читались.
+
+Изменены существующие файлы:
+
+- SYSTEM_FINANCIAL_CHECKS.json
+- SYSTEM_PLAN.md
+- CHANGELOG.md
+- docs/E2-09_FINANCIAL_VISIBILITY.md
+- backend/tools/financial_restore_check.py
+- backend/tools/financial_rehearsal.py
+- backend/data_isolation/apps.py
+- beta/deploy/prepare_financial_rehearsal.py
+- beta/deploy/compose.financial-rehearsal.json
+- backend/access_control/tests/test_financial_preparation.py
+
+Новые файлы:
+
+- docs/E2-09_ISOLATED_R2_RESULT.md
+- docs/E2-09_R3_SERVER_PLAN.md
+- backend/tools/financial_restore_evidence.py
+
+Локально: новый R3 profile с уникальными ресурсами/restore, protected metadata R2, безопасные checkpoints restore (фиксированные event/stage/index; O_EXCL0600/fsync; никаких SQL/значений/исключений). Строгие metadata/data/ACL сравнения и финансовые права/миграции не менялись. Причина R2 не установлена и не объявлена исправленной. Все10 исходных файлов до изменений сохранены в .change-backups/E2-09-20261007-01a115d9-isolated-r2-result/<тот же путь>, SHA256 в новом manifest.json; backup ignored, не коммитится.
+
+Проверки:11 preparation-тестов PASS0.424с без skipped, без БД/сети. Первоначальная локальная попытка дала2 Windows sandbox TemporaryDirectory PermissionError; тот же набор вне sandbox прошёл. AST/JSON, неизменность METADATA SQL, backup hashes, append-only журнала/плана, сохранение E2-06/E2-08 статусов, git diff --check и bash -n двух R3-блоков проверяются до коммита. Это не PostgreSQL R3; E2-09 «На проверке». Нужны restore equivalence/quarantine и отдельный main rollout; отсутствующие cache/worker/storage/готовый экспорт не закрываются.
+
+Безопасный откат сервера уже выполнен остановкой только R2. Сохранить его БД/roles/keys/dump/restore/release/volume/network/evidence и все прежние ресурсы; не restart/reuse/delete/down-v/prune/DROP. Локально сравнить текущие файлы с backup и поздней работой, отменять только R3-подготовку обратным патчем. Фактический отчёт R2/журнал не стирать. Новый helper/план удалять только при отсутствии поздних потребителей/публикаций; новые backup/manifest сохранять до отдельного решения. Не downgrade populated finance/RLS, не отключать Grant/MFA/guards. Для R3 нужны новый source pin, публикация Олегом и отдельное разрешение; для основной beta — собственный план и разрешение. Push/установки/main/Caddy/FBS/WB API/Finkos/K3 не выполнялись.
+
+Завершены локальные проверки R3:11 preparation tests PASS0.424с;10 backup SHA256, Python AST/JSON, неизменный METADATA SQL, append-only журнал/план и прежние статусы PASS. Два shell-блока R3 прошли bash -n (синтаксис без исполнения); git diff --check PASS. Состав изменений проверен, финансовый business/SQL/migration код не изменён.

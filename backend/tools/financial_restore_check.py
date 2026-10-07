@@ -1,7 +1,7 @@
 """NEW isolated restore only; comparisons stay in memory, output is pass/fail."""
 from tools.financial_rehearsal import guard, expect, PROJECT
 
-TARGET = 'mw_e209_01a115d9_r2_restore'
+TARGET = 'mw_e209_01a115d9_r3_restore'
 METADATA = (
     "SELECT schemaname,tablename FROM pg_tables WHERE schemaname IN ('public','mw_isolation') ORDER BY 1,2",
     "SELECT n.nspname,c.relname,c.relkind,r.rolname,c.relrowsecurity,c.relforcerowsecurity,c.relacl::text "
@@ -33,7 +33,8 @@ METADATA = (
 )
 
 
-def main():
+def main(evidence):
+    evidence.checkpoint('guard')
     guard()
     import psycopg
     from psycopg import sql
@@ -44,32 +45,40 @@ def main():
     params.pop('cursor_factory', None)
     params.pop('context', None)
     params['dbname'] = TARGET
+    evidence.checkpoint('source_acl')
     with connection.cursor() as cursor:
         verify(cursor)  # Source ACL; restore deliberately denies web CONNECT.
+    evidence.checkpoint('restore_connect')
     with psycopg.connect(**params) as restored, connection.cursor() as cursor:
+        evidence.checkpoint('restore_identity')
         expect(restored.execute("SELECT current_database(),current_setting('cluster_name'),session_user").fetchone()
                == (TARGET, PROJECT, 'mw_beta_migrator'))
         expect(restored.execute("SELECT has_database_privilege('mw_beta_web',current_database(),'CONNECT')").fetchone() == (False,))
-        for statement in METADATA:
+        for index, statement in enumerate(METADATA, 1):
+            evidence.checkpoint('metadata', index)
             cursor.execute(statement)
             expect(cursor.fetchall() == restored.execute(statement).fetchall())
         cursor.execute(METADATA[0])
-        for schema, table in cursor.fetchall():
+        for index, (schema, table) in enumerate(cursor.fetchall(), 1):
+            evidence.checkpoint('rows', index)
             # Includes the new synthetic signing key. No values/hashes are emitted.
             query = sql.SQL('SELECT row_to_json(t)::text FROM {} t ORDER BY row_to_json(t)::text').format(sql.Identifier(schema,table))
             cursor.execute(query.as_string(connection.connection))
             expect(cursor.fetchall() == restored.execute(query).fetchall())
         cursor.execute("SELECT schemaname,sequencename FROM pg_sequences WHERE schemaname='public' ORDER BY 1,2")
-        for schema, name in cursor.fetchall():
+        for index, (schema, name) in enumerate(cursor.fetchall(), 1):
+            evidence.checkpoint('sequences', index)
             query = sql.SQL('SELECT last_value,is_called FROM {}').format(sql.Identifier(schema,name))
             cursor.execute(query.as_string(connection.connection))
             expect(cursor.fetchall() == restored.execute(query).fetchall())
+        evidence.checkpoint('revoked_fixture')
         expect(restored.execute("SELECT count(*) FROM access_control_grant WHERE resource='synthetic_finance' AND revoked_at IS NOT NULL").fetchone()[0] > 0)
-        for statement in (
+        for index, statement in enumerate((
             "UPDATE access_control_grant SET revoked_at=NULL WHERE resource='synthetic_finance' AND revoked_at IS NOT NULL",
             "UPDATE account_security_exportpermit SET revoked_at=NULL WHERE revoked_at IS NOT NULL",
             "UPDATE access_control_exportbinding SET finance_grant_id=NULL WHERE finance_grant_id IS NOT NULL",
-        ):
+        ), 1):
+            evidence.checkpoint('immutable_guard', index)
             refused = False
             try:
                 with restored.transaction():
@@ -78,9 +87,11 @@ def main():
             except psycopg.errors.CheckViolation:
                 refused = True
             expect(refused)
+    evidence.checkpoint('quarantine')
     connection.close()
     connection.settings_dict['NAME'] = TARGET
     quarantine_restored_access()
+    evidence.checkpoint('quarantine_verify')
     with connection.cursor() as cursor:
         for table in ('account_security_accountsession','account_security_exportpermit'):
             cursor.execute(f'SELECT count(*) FROM {table} WHERE revoked_at IS NULL')
@@ -97,6 +108,10 @@ def main():
 
 if __name__ == '__main__':
     try:
-        main()
+        from tools.financial_rehearsal import marker, ROOT
+        from tools.financial_restore_evidence import RestoreEvidence
+        marker()
+        with RestoreEvidence(ROOT / 'restore-events.jsonl') as evidence:
+            main(evidence)
     except Exception:
         raise SystemExit('E2-09 restore verification failed; preserve resources; no details disclosed') from None
