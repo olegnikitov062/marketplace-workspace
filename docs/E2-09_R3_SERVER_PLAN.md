@@ -6,7 +6,7 @@
 
 ## Исходники и неизменяемые границы
 
-Source commit: `SOURCE_COMMIT_PENDING`. Этот SHA должен присутствовать
+Source commit: `88347474f2e8ac6064e893127280dbb3371480d6`. Этот SHA должен присутствовать
 в опубликованной beta; точный release checkout — именно он, даже если HEAD beta
 позже содержит документ с закреплённым SHA. Git live remote проверяется заново.
 Нельзя передавать исходники SCP/архивом или изменять серверный checkout.
@@ -96,7 +96,7 @@ bootstrap. SQL-пароль dump-процесс получает внутри н
 ```sh
 set -eu
 base=/home/adm_user/marketplace-workspace/beta
-REV=SOURCE_COMMIT_PENDING
+REV=88347474f2e8ac6064e893127280dbb3371480d6
 release="$base/app/releases/$REV"
 export SECURITY_SOURCE="$release/backend"
 export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72
