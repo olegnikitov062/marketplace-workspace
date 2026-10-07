@@ -1,6 +1,6 @@
 {
   "task": "E2-09",
-  "recorded_at": "2026-10-07T16:56:57+03:00",
+  "recorded_at": "2026-10-07T16:59:55+03:00",
   "status": "На проверке",
   "scope": "Локальная реализация финансового блока логической синтетической таблицы; UI E5-13 отдельно",
   "baseline": {
@@ -236,7 +236,7 @@
   "next_isolated_attempt": {
     "project": "marketplace-e209-20261007-01a115d9-r4",
     "plan": "docs/E2-09_R4_SERVER_PLAN.md",
-    "source_commit": "SOURCE_COMMIT_PENDING",
+    "source_commit": "453d04139be185f04d6db779c6a40b10a21fc5bb",
     "server_authorized": false,
     "server_started": false,
     "preserve_r1_r2_r3": true,
@@ -253,7 +253,8 @@
       "preparation_tests": 13,
       "preparation_seconds": 0.446,
       "postgresql": false
-    }
+    },
+    "source_pin_recorded_at": "2026-10-07T16:59:55+03:00"
   },
   "isolated_r2_result": {
     "status": "STOPPED at restore verification; overall not passed",
