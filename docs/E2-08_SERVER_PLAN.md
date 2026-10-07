@@ -1,20 +1,20 @@
-# E2-08 — повторный изолированный стенд R3, план для отдельного разрешения
+# E2-08 — повторный изолированный стенд R4, план для отдельного разрешения
 
-07.10.2026, Europe/Moscow. **R2 разрешён и остановлен после потери SSH-соединения во время suite.
-Этот новый план R3 не исполнен и отдельно не разрешён. Основная beta не входит.**
+07.10.2026, Europe/Moscow. **R3 разрешён и остановлен после первого подтверждённого FAIL suite.
+Этот новый план R4 не исполнен и отдельно не разрешён. Основная beta не входит.**
 
-Результат R2: [E2-08_ISOLATED_R2_RESULT.md](E2-08_ISOLATED_R2_RESULT.md).
-Сохранённые ресурсы R1 и R2 не использовать повторно. Исправление пока локальное;
+Результат R3: [E2-08_ISOLATED_R3_RESULT.md](E2-08_ISOLATED_R3_RESULT.md).
+Сохранённые ресурсы R1/R2/R3 не использовать повторно. Исправление пока локальное;
 ниже закреплён новый полный REV, затем требуется push Олега,
-live-проверка публикации и отдельное разрешение R3.
+live-проверка публикации и отдельное разрешение R4.
 
 ## Точные исходники и условие публикации
 
 - Последняя **live-проверенная опубликованная** beta:
-  `e8f857d0fa07d1f419bf1364eb98b25239c77613` (проверено 07.10.2026).
-  Миграции и ACL R2 прошли; итог suite не получен из-за обрыва SSH.
+  `971600e8fca04b23d0de41f06bca950b09116883` (проверено 07.10.2026).
+  Миграции и ACL R3 прошли; suite остановлен на первом FAIL, 5 tests/42.991с.
 - Точный подготовленный код E2-08, `REV`:
-  **`149414466473053a5eff7ad2edab4415a216c6b4`**.
+  **`R4_REV_PENDING_LOCAL_COMMIT`**.
   На момент составления плана это локальный неопубликованный коммит Oleg.
 - Актуальная редакция этого документа публикуется следующим отдельным локальным коммитом без
   изменения backend/deploy. Олег проверяет и выполняет push самостоятельно.
@@ -40,12 +40,12 @@ source/image основного web и сохраняет сравнимые met
 
 | Ресурс | Точное значение |
 | --- | --- |
-| Compose project / cluster_name | `marketplace-e208-20261007-01a1105a-r3` |
-| Корень | `/home/adm_user/marketplace-workspace/beta/rehearsals/e2-08-20261007-01a1105a-r3` |
-| Network | `marketplace-e208-20261007-01a1105a-r3-private`, internal |
-| Volume | `marketplace-e208-20261007-01a1105a-r3-data` |
+| Compose project / cluster_name | `marketplace-e208-20261007-01a1105a-r4` |
+| Корень | `/home/adm_user/marketplace-workspace/beta/rehearsals/e2-08-20261007-01a1105a-r4` |
+| Network | `marketplace-e208-20261007-01a1105a-r4-private`, internal |
+| Volume | `marketplace-e208-20261007-01a1105a-r4-data` |
 | Контейнеры | project + `-postgres`, `-web`, `-controller` |
-| БД только нового кластера | `mw_beta`, `test_mw_beta`, новая `mw_e208_01a1105a_r3_restore` |
+| БД только нового кластера | `mw_beta`, `test_mw_beta`, новая `mw_e208_01a1105a_r4_restore` |
 | SQL-роли только нового кластера | `mw_beta_bootstrap`, `mw_beta_migrator`, `mw_beta_web` |
 | Схема | новая пустая `mw_isolation`, owner migrator |
 | Новый dump | `<корень>/backups/isolation-after.dump` |
@@ -70,7 +70,9 @@ mw_beta. Helper проверяет cluster_name при каждом админи
 не осталось постоянных web/controller — configure запускался в --rm контейнере.
 Также сохраняются stopped postgres/controller R2
 `marketplace-e208-20261007-01a1105a-r2`; их metadata сравниваются до/после.
-R2 web не создавался; его БД/роли/том/ключи не использовать в R3.
+R2 web не создавался; его БД/роли/том/ключи не использовать в R4.
+Так же защищены stopped postgres/controller R3
+`marketplace-e208-20261007-01a1105a-r3` и его state/suite-events.jsonl (0600).
 
 ## Ресурсы, секреты и SQL-права
 
@@ -114,7 +116,18 @@ SSH запускать с `-o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveI
 runner выводит только JSON-события и heartbeat не реже 30 секунд ожидания,
 синхронно сохраняет их (0600, O_EXCL, fsync) в новом
 `<root>/state/suite-events.jsonl`. Сырые stdout/stderr дочернего теста, SQL,
-traceback, причины исключений и токены не записываются/не выводятся.
+текст traceback, причины исключений и токены не записываются/не выводятся.
+Разрешены только статические file/line/function кадров из трёх repository
+test-пакетов; строки исходников, значения assert и locals отбрасываются.
+После создания test_mw_beta опубликованный IsolationDiscoverRunner проверяет
+точные database/cluster/session_user/current_user и пустую mw_isolation.key;
+только в свежую test_mw_beta записывает тот же новый синтетический ключ проекта.
+ACL/RLS не меняются. Затем реальный StatementSigner должен получить
+`SELECT mw_isolation.claims() IS NOT NULL = true`; иначе suite не начинается.
+Так исправляется отсутствие test-key provisioning, найденное после R3.
+Совпадение с причиной конкретного assert R3 ещё не подтверждено.
+Нельзя применять runner к mw_beta, старым БД или повторять при существующем ключе.
+
 Фиксированный набор запускается с --failfast; deadline1750с, пропуски или
 отсутствие полной сводки не считаются PASS даже при exit0. При обрыве SSH
 остановить только новый стенд, сохранить и прочитать лишь этот sanitized
@@ -126,11 +139,11 @@ traceback, причины исключений и токены не записы
 ```sh
 set -eu
 base=/home/adm_user/marketplace-workspace/beta
-REV=149414466473053a5eff7ad2edab4415a216c6b4
+REV=R4_REV_PENDING_LOCAL_COMMIT
 release="$base/app/releases/$REV"
 export SECURITY_SOURCE="$release/backend"
 export SECURITY_IMAGE=sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72
-dc() { timeout 1800 docker compose --project-name marketplace-e208-20261007-01a1105a-r3 --env-file /dev/null -f "$release/beta/deploy/compose.isolation-rehearsal.json" "$@"; }
+dc() { timeout 1800 docker compose --project-name marketplace-e208-20261007-01a1105a-r4 --env-file /dev/null -f "$release/beta/deploy/compose.isolation-rehearsal.json" "$@"; }
 python3 "$release/beta/deploy/prepare_isolation_rehearsal.py" --apply --revision "$REV"
 dc config --quiet </dev/null
 dc up -d --wait postgres </dev/null
@@ -149,7 +162,7 @@ dc exec -T web python -m tools.verify_isolation_web_runtime </dev/null
 не должен протоколировать SQL с параметрами; logging none не отменяет запрета
 сохранять собственные request/response/cookie dumps.
 
-В R3 controller создаётся один раз через `up -d`, а команды выполняются через
+В R4 controller создаётся один раз через `up -d`, а команды выполняются через
 `exec -T`: итоговый metadata-verifier проверяет три постоянных контейнера.
 Прежний `run --rm controller` не создавал проверяемый named controller.
 
@@ -193,7 +206,7 @@ Static `data_isolation.tests.test_preparation` требует полного д�
 После успешного fixture остановить только новый web, убедиться в отсутствии
 активных writers нового кластера. Не останавливать основные PostgreSQL.
 Проверить отсутствие `<корень>/backups/isolation-after.dump` и
-`mw_e208_01a1105a_r3_restore`; при наличии — стоп. Под новым bootstrap внутри
+`mw_e208_01a1105a_r4_restore`; при наличии — стоп. Под новым bootstrap внутри
 нового postgres, без shell tracing, создать custom pg_dump mw_beta в этот
 новый файл, mode0600, timeout600. Проверить exit, ненулевой размер и SHA256.
 

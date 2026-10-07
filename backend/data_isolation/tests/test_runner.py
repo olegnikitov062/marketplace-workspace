@@ -20,6 +20,28 @@ class EvidenceTests(SimpleTestCase):
         self.assertEqual(safe_line('ERROR: test_x (suite.C.test_x)'),
                          {'event': 'test_failure', 'kind': 'ERROR', 'test': 'suite.C.test_x'})
 
+    def test_only_static_test_locations_are_recorded(self):
+        self.assertEqual(safe_line('  File "/workspace/access_control/tests/test_http.py", line 77, in test_export'),
+                         {'event': 'test_location', 'file': 'access_control/tests/test_http.py', 'line': 77, 'function': 'test_export'})
+        self.assertIsNone(safe_line('  File "/workspace/private/synthetic-secret.py", line 77, in test_export'))
+        self.assertIsNone(safe_line('  File "/workspace/access_control/tests/test_http.py", line 77, in test_export synthetic-secret'))
+
+    def test_test_key_provisioning_refuses_main_database_before_key_access(self):
+        from unittest.mock import Mock, patch
+        from tools.isolation_django_runner import prepare_test_signing_key
+        cursor = Mock()
+        cursor.fetchone.return_value = ('mw_beta', 'mw_beta_migrator', 'mw_beta_migrator', 'synthetic')
+        fake = Mock(vendor='postgresql')
+        fake.cursor.return_value.__enter__ = Mock(return_value=cursor)
+        fake.cursor.return_value.__exit__ = Mock(return_value=False)
+        with patch('tools.isolation_django_runner.marker'), patch('tools.isolation_django_runner.connection', fake), patch('tools.isolation_django_runner.transaction.atomic') as atomic, patch('tools.isolation_django_runner.signing_key') as key:
+            atomic.return_value.__enter__.return_value = None
+            atomic.return_value.__exit__.return_value = False
+            with self.assertRaises(RuntimeError):
+                prepare_test_signing_key()
+            key.assert_not_called()
+            self.assertEqual(cursor.execute.call_count, 1)
+
     def test_durable_evidence_excludes_raw_child_output(self):
         import contextlib
         import io

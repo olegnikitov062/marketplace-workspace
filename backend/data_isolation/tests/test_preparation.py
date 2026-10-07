@@ -26,7 +26,7 @@ class IsolationPreparationTests(SimpleTestCase):
     def test_new_rehearsal_is_inert_and_has_only_new_secret_mounts(self):
         root=Path(__file__).resolve().parents[3]
         compose=json.loads((root/'beta/deploy/compose.isolation-rehearsal.json').read_text())
-        project='marketplace-e208-20261007-01a1105a-r3'
+        project='marketplace-e208-20261007-01a1105a-r4'
         self.assertEqual(compose['name'],project)
         for service in compose['services'].values():
             self.assertNotIn('ports',service)
@@ -34,7 +34,7 @@ class IsolationPreparationTests(SimpleTestCase):
         self.assertEqual(set(compose['services']['web']['secrets']),
             {'db_web_password','django_secret_key','mfa_encryption_key','isolation_signing_key'})
         for source in compose['secrets'].values():
-            self.assertIn('/rehearsals/e2-08-20261007-01a1105a-r3/secrets/',source['file'])
+            self.assertIn('/rehearsals/e2-08-20261007-01a1105a-r4/secrets/',source['file'])
         script=root/'beta/deploy/prepare_isolation_rehearsal.py'
         ast.parse(script.read_text())
         result=subprocess.run([sys.executable,str(script)],capture_output=True,text=True,timeout=10)

@@ -36,6 +36,10 @@ def safe_line(line):
     match = re.fullmatch(r'(ERROR|FAIL): (test_[a-zA-Z0-9_]+) \(([a-zA-Z0-9_.]+)\)', line)
     if match:
         return {'event': 'test_failure', 'kind': match[1], 'test': match[3]}
+    # Static repository test locations only, never the source line or locals.
+    match = re.fullmatch(r'File "/workspace/((?:data_isolation|access_control|account_security)/tests/test_[a-z_]+\.py)", line (\d+), in ([a-zA-Z0-9_]+)', line)
+    if match:
+        return {'event': 'test_location', 'file': match[1], 'line': int(match[2]), 'function': match[3]}
     return None
 
 
@@ -51,7 +55,7 @@ def run(evidence):
     emit({'event': 'suite_started', 'limit_seconds': 1750, 'failfast': True})
     process = subprocess.Popen(
         [sys.executable, 'manage.py', 'test', *LABELS, '--keepdb', '--noinput',
-         '--failfast', '--verbosity=1'],
+         '--failfast', '--verbosity=1', '--testrunner=tools.isolation_django_runner.IsolationDiscoverRunner'],
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
     )
     events = queue.Queue(maxsize=100)

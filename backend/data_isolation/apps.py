@@ -11,7 +11,7 @@ class DataIsolationConfig(AppConfig):
             from django.conf import settings
             from django.db import connection
             from django.core.exceptions import ImproperlyConfigured
-            if profile != 'marketplace-e208-20261007-01a1105a-r3' or settings.EFFECTIVE['environment'] != 'beta':
+            if profile != 'marketplace-e208-20261007-01a1105a-r4' or settings.EFFECTIVE['environment'] != 'beta':
                 raise ImproperlyConfigured('Unrecognized isolation rehearsal')
             with connection.cursor() as cursor:
                 cursor.execute("SELECT current_setting('cluster_name')")
