@@ -1,6 +1,6 @@
 {
   "task": "E2-09",
-  "recorded_at": "2026-10-07T16:59:55+03:00",
+  "recorded_at": "2026-10-08T10:09:28+03:00",
   "status": "На проверке",
   "scope": "Локальная реализация финансового блока логической синтетической таблицы; UI E5-13 отдельно",
   "baseline": {
@@ -174,8 +174,7 @@
   },
   "rollback": "Compare current tree with .change-backups/E2-09-20261007-01a115d9-implementation and later changes; reverse only this patch. Never downgrade populated finance/RLS or restore over a live source; isolated failure stops only new containers and retains resources.",
   "authorization_required": [
-    "Oleg publishes new R4 source/pin in beta",
-    "Separate approval for docs/E2-09_R4_SERVER_PLAN.md; no R3 rerun or reuse",
+    "Renewed approval to attempt the existing docs/E2-09_R4_SERVER_PLAN.md after SSH connectivity is available; exact source already published",
     "Separate main-beta rollout plan and approval after isolated success"
   ],
   "source_commit": "88347474f2e8ac6064e893127280dbb3371480d6",
@@ -254,7 +253,8 @@
       "preparation_seconds": 0.446,
       "postgresql": false
     },
-    "source_pin_recorded_at": "2026-10-07T16:59:55+03:00"
+    "source_pin_recorded_at": "2026-10-07T16:59:55+03:00",
+    "authorization_note": "2026-10-08 approval ended at first SSH timeout before remote command; another attempt requires renewed approval. Same plan/source, fresh collision checks required; no partial R4 resources created by this attempt."
   },
   "isolated_r2_result": {
     "status": "STOPPED at restore verification; overall not passed",
@@ -376,5 +376,19 @@
     "all_resources_retained": true,
     "main_and_preserved_unchanged_at": "2026-10-07T13:48:09Z",
     "report": "docs/E2-09_ISOLATED_R3_RESULT.md"
+  },
+  "r4_connection_attempt": {
+    "recorded_at": "2026-10-08T10:09:28+03:00",
+    "authorization": "Explicit current user approval after publication",
+    "live_beta": "7cc45f4730b07b01c0f47904ed488f97e12eb31b",
+    "source_commit": "453d04139be185f04d6db779c6a40b10a21fc5bb",
+    "result": "SSH connection timed out during banner exchange; exit1",
+    "remote_command_started": false,
+    "remote_preflight_completed": false,
+    "new_resources_created_by_this_attempt": false,
+    "tests_run": 0,
+    "repeated": false,
+    "main_runtime_reverified": false,
+    "report": "docs/E2-09_R4_CONNECTION_RESULT.md"
   }
 }

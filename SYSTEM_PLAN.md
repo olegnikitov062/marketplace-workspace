@@ -765,3 +765,8 @@ E2-09 остаётся «На проверке»: нужны полный restor
 ### 2026-10-07T16:59:55+03:00 — E2-09 R4: закреплён source commit
 
 Новый source 453d04139be185f04d6db779c6a40b10a21fc5bb закреплён в docs/E2-09_R4_SERVER_PLAN.md и SYSTEM_FINANCIAL_CHECKS.json. Олег публикует source/pin и отдельно разрешает R4. R3 остановлен, сохранён и не повторялся; main409c71f… неизменён. Локальный lock-scope фикс и safe diagnostics ещё требуют PostgreSQL; причина restore R2 не установлена. E2-09/E2-06/E2-08 остаются «На проверке».
+
+
+### 2026-10-08T10:09:28+03:00 — E2-09 R4: SSH timeout до серверного исполнения
+
+Live beta7cc45f4730b07b01c0f47904ed488f97e12eb31b и опубликованный source453d04139be185f04d6db779c6a40b10a21fc5bb подтверждены локальным ls-remote. После текущего разрешения единственная SSH-попытка завершилась timeout during banner exchange,exit1, до запуска remote preflight. Git fetch/worktree/resources/миграции/тесты на сервере не выполнялись этой попыткой; повторов нет. Текущее состояние сервера не подтверждено, прежние metadata не выдаются за новую проверку. Отчёт docs/E2-09_R4_CONNECTION_RESULT.md. E2-09/E2-06/E2-08 без изменения статусов. Для следующей попытки того же R4 нужны доступность SSH и новый допуск, затем fresh live/collision preflight. Main rollout отдельно.
