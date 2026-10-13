@@ -77,6 +77,7 @@ window.AppearancePresets = (() => {
 
   function visible(preset) {
     return preset && preset.tableId === context.tableId
+      && (preset.organizationId || 'primary') === (context.organizationId || 'primary')
       && ['owner', 'manager'].includes(preset.author)
       && typeof preset.id === 'string' && typeof preset.name === 'string'
       && (preset.scope === 'team' || (preset.scope === 'personal' && preset.author === context.profile));
@@ -168,15 +169,15 @@ window.AppearancePresets = (() => {
       </section>
       <section class="appearance-section" aria-labelledby="appearance-team-title">
         <h3 id="appearance-team-title">Общие пресеты <span>${team.length}</span></h3>
-        <p class="appearance-hint">Доступны всей команде. Каждый применяет пресет сам; обновление не меняет оформление коллег.</p>
-        <div class="appearance-list">${team.map(card).join('') || '<p class="appearance-empty">Общих пресетов пока нет. Выберите «Для команды» при сохранении.</p>'}</div>
+        <p class="appearance-hint">${context.organizationId === 'combined' ? 'В общем срезе нескольких организаций доступны только личные пресеты.' : 'Доступны команде этой организации. Каждый применяет пресет сам; обновление не меняет оформление коллег.'}</p>
+        <div class="appearance-list">${team.map(card).join('') || (context.organizationId === 'combined' ? '' : '<p class="appearance-empty">Общих пресетов пока нет. Выберите «Для команды» при сохранении.</p>')}</div>
       </section>
       <form class="appearance-save" data-appearance-form="create">
         <h3>Сохранить текущее оформление</h3>
         <label for="appearance-name">Название</label>
         <input id="appearance-name" name="name" maxlength="60" required autocomplete="off" placeholder="Например, Утренний контроль">
         <label for="appearance-scope">Кому доступен</label>
-        <select id="appearance-scope" name="scope"><option value="personal">Только мне</option><option value="team">Для команды</option></select>
+        <select id="appearance-scope" name="scope"><option value="personal">Только мне</option>${context.organizationId === 'combined' ? '' : '<option value="team">Для команды</option>'}</select>
         <p class="appearance-hint">Личные поля и правила по ним не включаются в общий пресет.</p>
         <button class="btn primary" type="submit">Сохранить пресет</button>
       </form>`;
@@ -242,13 +243,13 @@ window.AppearancePresets = (() => {
   function create(form) {
     const name = validateName(form.elements.name.value);
     if (!name || !readState()) return;
-    const scope = form.elements.scope.value === 'team' ? 'team' : 'personal';
+    const scope = form.elements.scope.value === 'team' && context.organizationId !== 'combined' ? 'team' : 'personal';
     let config;
     try { config = appearance(context.capture(), scope); }
     catch (error) { notice(error.message || 'Не удалось прочитать оформление.', true); return; }
     const id = typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID()
       : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
-    const preset = { id, tableId: context.tableId, scope, author: context.profile, name, config, updatedAt: new Date().toISOString() };
+    const preset = { id, tableId: context.tableId, organizationId: context.organizationId || 'primary', scope, author: context.profile, name, config, updatedAt: new Date().toISOString() };
     if (writeState({ schema: 1, presets: [...state.presets, preset] }, 'Пресет сохранён.')) {
       dialog.querySelector('#appearance-name').value = '';
       dialog.querySelector('#appearance-name').focus();
