@@ -1,0 +1,5 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>{{ title }}</title><main><h1>{{ title }}</h1>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">{{ button }}</button></form>
+<p><a href="/auth/mfa/login/">Вход Marketplace и настройка MFA</a></p>
+<p><a href="/basework/profile">Вернуться к профилю</a></p></main></html>

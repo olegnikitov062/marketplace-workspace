@@ -1,0 +1,1450 @@
+{
+  "checked_at": "2026-10-02T16:22:32+03:00",
+  "task": "E2-06",
+  "status": "На проверке",
+  "environment": "Historical S1 PostgreSQL suite and S2 main migration; current main source 14d9f48 unchanged. New isolated PostgreSQL 17.11 R2 on published 2c2f8f7: full real Chromium 10 PASS / exit 0 / pageerrors 0, actual operator CLI and readonly terminal SQL PASS; all R2 stopped and preserved.",
+  "source": {
+    "branch": "beta",
+    "preparation_commit": "5eb4b42",
+    "published_beta_verified": "b3c50f7034bd454ea8066c6f194010d91ca9068a",
+    "implementation_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
+    "push_performed": false,
+    "server_contacted": true,
+    "owner_rehearsal_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "main_runtime_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "server_repository_revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+    "browser_r2_revision": "2c2f8f737262267d29d06ab40d7bef3571693745"
+  },
+  "accepted_policy": {
+    "mandatory_mfa": "active organization owners; optional enrollment for others",
+    "session_absolute_seconds": 86400,
+    "session_idle_seconds": 3600,
+    "challenge_seconds": 300,
+    "reauth_seconds": 300,
+    "trusted_device_seconds": 2592000,
+    "recovery_codes": 10,
+    "operator": "explicit Oleg request plus separate owner-bound emergency secret; enrollment-only permit",
+    "key_backup": "Only Oleg restores. Explicit 2026-10-02 update: encrypted envelope and a separate password file both in his Telegram; same-account compromise risk explained and accepted. New local password file created privately; no matching new envelope or Telegram transfer yet."
+  },
+  "dependencies": {
+    "explicitly_approved": {
+      "django-two-factor-auth": "1.18.1",
+      "django-otp": "1.7.3",
+      "cryptography": "50.0.2",
+      "django-formtools": "2.7",
+      "django-phonenumber-field": "8.5.0",
+      "qrcode": "8.2",
+      "cffi": "2.1.1",
+      "pycparser": "3.0",
+      "colorama": "0.4.6"
+    },
+    "existing_pins_preserved": true,
+    "wheel_hashes_checked": true,
+    "licenses_reviewed": true,
+    "pip_check": "pass",
+    "linux_build": "PASS for published 3db1c0c, immutable image below; same exact lock",
+    "requirements_lock_sha256": "35cba592050150a0e5b1f68adc36d3f1c0871ceec79efc6c7f8e4a925fb34e60"
+  },
+  "checks": [
+    {
+      "name": "E2-06 and selected ownership/guard regressions",
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test account_security.tests tests.test_ownership tests.test_ownership_migrations tests.test_guard --settings=config.security_local_checks --verbosity=1",
+      "discovered": 61,
+      "passed": 52,
+      "failed": 0,
+      "skipped": 9,
+      "seconds": 81.695,
+      "skip_reason": "6 E2-06 concurrency tests and 3 ownership PostgreSQL tests require PostgreSQL"
+    },
+    {
+      "name": "legacy E2-05 offline regressions, separate settings (not new MFA acceptance)",
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test tests --settings=config.accounts_local_checks --verbosity=1",
+      "discovered": 68,
+      "passed": 55,
+      "failed": 0,
+      "skipped": 13,
+      "seconds": 16.151
+    },
+    {
+      "name": "focused encrypted pending wizard/QR and operator checks",
+      "discovered": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "note": "included in final 61, do not add counts"
+    },
+    {
+      "name": "Django check / makemigrations --check --dry-run",
+      "result": "pass / no changes"
+    },
+    {
+      "name": "Python AST / overlay JSON / model-column ACL correspondence / unchanged 101 task rows",
+      "result": "pass",
+      "limitation": "static checks do not validate PostgreSQL SQL or Docker Compose merge"
+    },
+    {
+      "name": "crypto backup and maintenance WSGI",
+      "result": "local tests pass",
+      "limitation": "no private-file/key transport restoration or running Gunicorn/Compose fallback was tested"
+    }
+  ],
+  "covered_locally": [
+    "confirmed-only enrollment and pending-secret encryption",
+    "TOTP valid/invalid/expired/replay and library throttle",
+    "password-only endpoint cannot bypass MFA; owner promotion immediate",
+    "one-time recovery code and owner enrollment-only recovery",
+    "operator proof binding, missing/wrong proof and blocked process",
+    "current/selected/all session and trusted-device revocation",
+    "password change/reset/block revoke; password reset retains MFA",
+    "live membership demotion denies actual invitation in existing session",
+    "real synthetic CSV download then permanent denial after revocation",
+    "two synthetic organizations and foreign session/organization denial",
+    "CSRF, no-store, same-origin Referrer-Policy, locmem only",
+    "encrypted database sessions, wrong/missing key fail closed",
+    "SQLite forward/reverse migration behavior; restore quarantine without membership change"
+  ],
+  "not_verified": [
+    "K3 returned-copy byte comparison and in-memory decryption not performed: owner reports download complete and explicitly declined additional verification; no technical K3 PASS claimed",
+    "Real owner emergency proof is not provisioned; synthetic operator recovery verified separately",
+    "Full export/RBAC/RLS remain adjacent-task dependencies"
+  ],
+  "adjacent_task_dependencies": {
+    "full_permissions": "E2-07",
+    "RLS_isolation": "E2-08",
+    "working_export": "E5-07; full E2-06 export criterion remains unaccepted",
+    "general_backup": "E2-15/D4; E2-12 reference corrected explicitly in preparation"
+  },
+  "server_plan": "docs/E2-06_SESSIONS_MFA.md",
+  "authorization_required": [
+    "Oleg reviews and pushes local result commits; no server deployment or restart is required for these documentation results",
+    "Owner declined further K3 copy checks; do not request paths or inspect key/password copies again without a new instruction. No Telegram sending by agent.",
+    "New server operations, real owner emergency proof provisioning, cleanup or another rehearsal require a concrete separately approved scope; do not repeat used handoff/rehearsal resources"
+  ],
+  "secret_outputs": "No real accounts or external messages. Main beta TOTP key and encrypted envelope created privately outside Git/DB, independent file restore checked. No key values/fingerprints, passwords, recovery codes, tokens, cookies or personal data in reports/commits; Telegram transfer and owner custody not performed.",
+  "s0_s1": {
+    "authorized": "explicit S0/S1 approval in current chat; S2 not authorized",
+    "status": "Historical initial S1 suite had one failure; corrected PostgreSQL retest PASS below; browser and complete operator CLI remain open",
+    "tested_revision": "3db1c0c64880985489b86b52aa725e0c839ca001",
+    "server_repository": "/home/adm_user/marketplace-workspace/beta/app/repository",
+    "read_only_source": "/home/adm_user/marketplace-workspace/beta/app/releases/3db1c0c64880985489b86b52aa725e0c839ca001/backend",
+    "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+    "image_tag": "marketplace-workspace/backend:e2-06-3db1c0c64880985489b86b52aa725e0c839ca001",
+    "image_lock_equal_to_git": true,
+    "pip_check": "passed",
+    "postgresql": "17.11",
+    "compose": "5.1.3; merged isolation/secret mounts/resources verified",
+    "suite": {
+      "discovered": 61,
+      "passed": 60,
+      "errors": 1,
+      "skipped": 0,
+      "seconds": 493.226,
+      "error_test": "test_same_recovery_code_has_one_successful_consumer",
+      "error": "OperationalError / lock_timeout=2000ms while locking ownership_user; password/code PBKDF2 held user row lock on 0.25 CPU",
+      "database": "mw_beta_test_e2_06_suite",
+      "database_after_run": "removed by standard Django disposable test runner"
+    },
+    "limited_login": {
+      "result": "PASS",
+      "role": "mw_beta_test_e2_06_web",
+      "database": "mw_beta_test_e2_06_web",
+      "exact_column_acl": true,
+      "grant_revoke_reapply": true,
+      "http_mfa_csrf": true,
+      "sql_denials": 17,
+      "role_after": {
+        "login": false,
+        "password_is_null": true
+      },
+      "resources_preserved": true
+    },
+    "recovery": {
+      "result": "PASS",
+      "source_database": "mw_beta_test_e2_06_recovery",
+      "restored_database": "mw_beta_test_e2_06_restore",
+      "dump": "/home/adm_user/marketplace-workspace/beta/backups/test/e2-06-synthetic-20261001T135847Z.dump",
+      "dump_bytes": 222907,
+      "dump_mode": "0600",
+      "row_migration_equality": true,
+      "independently_restored_key_used": true,
+      "wrong_key_and_replay_denied": true,
+      "quarantine_preserves_memberships": true,
+      "verification_rolled_back": true,
+      "restored_schema_acl": "apply/revoke/reapply verified with NOLOGIN role; temporary CONNECT/ACL fully rolled back; equality to baseline checked",
+      "acl_snapshots": [
+        "/home/adm_user/marketplace-workspace/beta/backups/test/e2-06-synthetic-20261001T135847Z.mw_beta_test_e2_06_recovery.acl.json",
+        "/home/adm_user/marketplace-workspace/beta/backups/test/e2-06-synthetic-20261001T135847Z.mw_beta_test_e2_06_restore.acl.json"
+      ]
+    },
+    "synthetic_key": {
+      "runtime_file": "/home/adm_user/marketplace-workspace/beta/config/secrets/e2_06_test_encryption_key",
+      "mode": "0600",
+      "uid": 10001,
+      "gid": 10001,
+      "envelope": "/home/adm_user/marketplace-workspace/beta/backups/test/e2-06-key-envelope/envelope.json",
+      "separate_passphrase_file": "/home/adm_user/marketplace-workspace/beta/config/e2-06-test-key-recovery/backup-passphrase",
+      "restored_file": "/home/adm_user/marketplace-workspace/beta/config/e2-06-test-key-restored/key",
+      "restore_without_original_mount": true,
+      "equality_checked_without_values_or_fingerprints": true,
+      "real_owner_key_or_telegram_transfer": false,
+      "file_and_parent_permissions_readback": true
+    },
+    "maintenance": {
+      "result": "PASS",
+      "real_gunicorn": true,
+      "old_image": "sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b",
+      "network": "none",
+      "db_or_key_mounted": false,
+      "liveness": 200,
+      "auth_business_readiness": 503,
+      "oneoff_container_removed": true
+    },
+    "main_preservation": {
+      "containers_exactly_equal_before_after": true,
+      "fields": [
+        "id",
+        "image",
+        "started",
+        "mounts",
+        "networks",
+        "ports"
+      ],
+      "main_web_source_still": "82b200465e15b447a43ed3d36d4522f11742bee1",
+      "main_web_readonly_e205_runtime_smoke": "PASS; not E2-06 deployment",
+      "main_counts_before": [
+        0,
+        0,
+        0
+      ],
+      "new_main_migrations_or_grants": false,
+      "main_key_created": false,
+      "main_restart": false
+    },
+    "local_fix": {
+      "revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
+      "files": [
+        "backend/account_security/services.py",
+        "backend/account_security/tests/test_transactions.py"
+      ],
+      "description": "PBKDF2 verification before row lock, then atomic recheck active user/password hash, unchanged verifier and unused code before consume; no weaker hashing, no timeout/resource increase",
+      "tests": {
+        "command": "backend/.venv/Scripts/python.exe backend/manage.py test account_security.tests.test_transactions.RecoveryLockScopeTests account_security.tests.test_http --settings=config.security_local_checks --verbosity=1",
+        "passed": 34,
+        "failed": 0,
+        "skipped": 0,
+        "seconds": 73.747
+      },
+      "django_check": "PASS",
+      "makemigrations_check": "no changes",
+      "postgresql_retest": "PASS: published revision, 63 tests, zero errors/failures/skips; see s1_retest"
+    }
+  },
+  "s1_retest": {
+    "checked_at": "2026-10-01T17:31:37+03:00",
+    "published_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
+    "postgresql": "17.11",
+    "read_only_source": "/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e/backend",
+    "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+    "existing_image_reused": true,
+    "lock_schema_acl_tools_compose_unchanged_from": "3db1c0c64880985489b86b52aa725e0c839ca001",
+    "suite": {
+      "discovered": 63,
+      "passed": 63,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 493.704,
+      "exit_code": 0,
+      "database": "mw_beta_test_e2_06_suite",
+      "database_absent_after": true
+    },
+    "concurrent_recovery_code_single_consumer": "PASS",
+    "password_change_between_proof_and_lock": "PASS",
+    "limits_unchanged": {
+      "cpu": "0.25",
+      "memory": "256MiB",
+      "lock_timeout_ms": 2000
+    },
+    "occupied_role_or_seed_probes_repeated": false,
+    "preserved_e206_databases": 3,
+    "role_nologin_password_null": true,
+    "main_preservation": {
+      "container_ids_images_started_mounts_networks_ports_unchanged": true,
+      "mount_order_normalized_for_comparison": true,
+      "main_source": "82b200465e15b447a43ed3d36d4522f11742bee1",
+      "e205_readonly_sql_runtime_smoke": "PASS",
+      "main_migrations_grants_keys_restarts": false
+    },
+    "git_clean": true,
+    "oneoff_containers_remaining": false,
+    "s2_executed": false,
+    "limits": "Prior limited LOGIN/17 SQL denials and restore evidence stays pinned to 3db1c0c; no claim of rerunning those probes or completing browser/operator CLI/S2/business export."
+  },
+  "s2": {
+    "checked_at": "2026-10-01T17:58:26+03:00",
+    "authorized": "Explicit current-chat S2 approval after published f4f6059 protocol; real owner emergency-secret provisioning excluded",
+    "result": "S2 deployment/runtime PASS; E2-06 remains under review",
+    "repository_head": "f4f6059a14ebeed5c8341174d510812d838f5f49",
+    "runtime_code_revision": "19a6d6a9bbdd06c683f68f438215dd99cba6204e",
+    "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+    "new_image_built": false,
+    "source_delivery": "published beta Git only; immutable detached worktree read-only",
+    "backup_restore": {
+      "result": "PASS",
+      "dump": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump",
+      "bytes": 75491,
+      "mode": "0o600",
+      "tables": 18,
+      "counts": [
+        0,
+        0,
+        0
+      ],
+      "migrations": {
+        "accounts": 2,
+        "ownership": 2,
+        "auth": 12,
+        "sessions": 1,
+        "contenttypes": 2
+      },
+      "restore": "mw_beta_test_e2_06_main_before",
+      "rows_equal": true,
+      "main_acl_unchanged": true
+    },
+    "key_recovery": {
+      "result": "PASS",
+      "runtime": "/home/adm_user/marketplace-workspace/beta/config/secrets/mfa_encryption_key",
+      "envelope": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-main-key-envelope/envelope.json",
+      "passphrase": "/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-recovery/backup-passphrase",
+      "restored": "/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-restored/key",
+      "mode": "0600",
+      "uid": 10001,
+      "gid": 10001,
+      "independent_restore": true,
+      "telegram_transfer": false,
+      "owner_custody_verified": false
+    },
+    "preapply": {
+      "compose_isolation": true,
+      "requirements_lock_equal": true,
+      "django_check": true,
+      "migration_plan_reviewed": true,
+      "account_security_forward_sql_and_runpython_source_reviewed": true,
+      "column_grant_delta_reviewed": true
+    },
+    "apply": {
+      "maintenance_before_migration": "PASS: live 200, auth/business/ready 503, no-store",
+      "new_migration_operations": 9,
+      "new_migration_records": 17,
+      "total_migration_records": 36,
+      "two_factor_squash_explanation": "8 replaced records plus the squashed record; 9 records represent one applied no-op migration",
+      "grant_delta_committed_and_verified": true,
+      "runtime_smoke": "PASS: actual mw_beta_web identity, exact SQL ACL/guards, live/ready 200, anonymous session 401, legacy login GET 405, MFA login GET 200",
+      "web_recreated_only": true,
+      "postgres_containers_unchanged": true
+    },
+    "browser": {
+      "tool": "existing Playwright CLI 0.1.18 / installed Chromium",
+      "new_components_installed": false,
+      "scope": "anonymous main-beta pages over temporary localhost SSH tunnel; not full MFA lifecycle or public TLS",
+      "login_page_and_recovery_navigation": "PASS",
+      "required_recovery_fields": 3,
+      "empty_form_rejected": true,
+      "anonymous_session_status": 401,
+      "csrf_missing_status": 403,
+      "login_and_operator_form_status": 200,
+      "no_store": true,
+      "only_expected_console_errors": "401 and 403",
+      "browser_closed": true,
+      "tunnel_closed": true,
+      "full_mfa_lifecycle": false
+    },
+    "operator_commands": {
+      "web_role_denied_prepare_and_issue": true,
+      "successful_full_cli_recovery_tested": false,
+      "real_owner_proof_or_permit_issued": false
+    },
+    "final_readback": {
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "migrations": {
+        "two_factor": 9,
+        "accounts": 2,
+        "otp_static": 3,
+        "ownership": 2,
+        "auth": 12,
+        "otp_totp": 3,
+        "sessions": 1,
+        "contenttypes": 2,
+        "account_security": 2
+      },
+      "sessions_encrypted": true,
+      "anonymous_sessions": 2,
+      "locmem_only": true,
+      "external_flags_disabled": true,
+      "plaintext_otp_tables_empty": true,
+      "public_export_probe_disabled": true,
+      "backup_files": [
+        {
+          "path": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump",
+          "mode": "0o600",
+          "bytes": 75491,
+          "sha256": "043b4590f21707493f8de1c5e87955fe47dbc2aa261b41f762199408e8906138"
+        },
+        {
+          "path": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump.acl.json",
+          "mode": "0o600",
+          "bytes": 22202,
+          "sha256": "2e616398c144516963a16f5a4d6d0a3848e10113cfe939787faa5403363a6987"
+        },
+        {
+          "path": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump.snapshot.json",
+          "mode": "0o600",
+          "bytes": 1498,
+          "sha256": "384b9bc14649b3a37de34ecc2b3993a17999cb3d26b8a718841a517bfb92c4f5"
+        }
+      ],
+      "web": {
+        "id": "42ea5c212f1fc3062df51214ca97428e4613741adb8fac7897e494faaeb8e106",
+        "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+        "started": "2026-10-01T14:48:24.953976075Z",
+        "source": "/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e/backend",
+        "source_readonly": true,
+        "key_readonly": true
+      },
+      "oneoffs_absent": true,
+      "git_clean": true,
+      "local_tunnel_closed": true
+    },
+    "container_metadata": [
+      {
+        "service": "web",
+        "id": "42ea5c212f1fc3062df51214ca97428e4613741adb8fac7897e494faaeb8e106",
+        "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+        "started": "2026-10-01T14:48:24.953976075Z",
+        "networks": [
+          "marketplace-beta-private"
+        ],
+        "ports": {
+          "8000/tcp": null
+        },
+        "mounts": [
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/db_web_password",
+            "target": "/run/secrets/db_web_password",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/django_secret_key",
+            "target": "/run/secrets/django_secret_key",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/mfa_encryption_key",
+            "target": "/run/secrets/mfa_encryption_key",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e/backend",
+            "target": "/workspace",
+            "rw": false
+          }
+        ]
+      },
+      {
+        "service": "postgres",
+        "id": "91be5743052654c70d705931cef4836010ab8ccfb6ec762ee6c64b65fe7ba1aa",
+        "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+        "started": "2026-09-30T12:54:18.474323573Z",
+        "networks": [
+          "marketplace-beta-private"
+        ],
+        "ports": {
+          "5432/tcp": null
+        },
+        "mounts": [
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/backups/database",
+            "target": "/backups",
+            "rw": true
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/db_bootstrap_password",
+            "target": "/run/secrets/db_bootstrap_password",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/data/postgres",
+            "target": "/var/lib/postgresql/data",
+            "rw": true
+          }
+        ]
+      },
+      {
+        "service": "postgres-test",
+        "id": "3ff21600f2cf72f786937471ced078d98d2467ac37160d81946386f129aed444",
+        "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+        "started": "2026-09-30T12:54:18.485908353Z",
+        "networks": [
+          "marketplace-beta-test-private"
+        ],
+        "ports": {
+          "5432/tcp": null
+        },
+        "mounts": [
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/backups/test",
+            "target": "/backups",
+            "rw": true
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/config/secrets/db_test_bootstrap_password",
+            "target": "/run/secrets/db_test_bootstrap_password",
+            "rw": false
+          },
+          {
+            "source": "/home/adm_user/marketplace-workspace/beta/data/postgres-test",
+            "target": "/var/lib/postgresql/data",
+            "rw": true
+          }
+        ]
+      }
+    ],
+    "rollback": "Only reviewed deny-auth maintenance on old dependency image with E2-06 source, or stop beta web; no E2-05/base-only fallback or live DB restore",
+    "remaining": [
+      "Full browser enrollment/TOTP/recovery/device/session lifecycle",
+      "Successful operator CLI with actual separate operator identity and private proof; real owner provisioning requires explicit separate request",
+      "Owner custody of independently retained encrypted key backup and separate passphrase; Telegram not used",
+      "Full export/RBAC/RLS remain adjacent-task dependencies"
+    ]
+  },
+  "owner_rehearsal_preparation": {
+    "checked_at": "2026-10-02T11:32:42+03:00",
+    "status": "prepared locally; not executed or authorized on server",
+    "published_baseline_verified": "e3e538370b7dcebd590528bb62c3a9d035cab6c6",
+    "plan": "docs/E2-06_OWNER_REHEARSAL.md",
+    "project": "marketplace-e206-owner-check",
+    "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-20261002",
+    "new_containers": [
+      "postgres",
+      "web",
+      "controller",
+      "issuer"
+    ],
+    "database": "mw_beta in a NEW isolated cluster with cluster_name=marketplace-e206-owner-check",
+    "synthetic_accounts": 4,
+    "organizations": 2,
+    "real_operator_guard_unchanged": true,
+    "runtime_mfa_code_unchanged": true,
+    "local_checks": {
+      "checked_at": "2026-10-02T11:30:29+03:00",
+      "scope": "local preparation only; no SSH/containers/DB/browser lifecycle",
+      "python_ast": 3,
+      "compose_json_and_secret_boundaries": true,
+      "process_checks": [
+        {
+          "command": [
+            "beta/deploy/prepare_owner_rehearsal.py"
+          ],
+          "expected_exit": 0,
+          "actual_exit": 0
+        },
+        {
+          "command": [
+            "beta/deploy/prepare_owner_rehearsal.py",
+            "--apply",
+            "--revision",
+            "0000000000000000000000000000000000000000"
+          ],
+          "expected_exit": 1,
+          "actual_exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal",
+            "credentials",
+            "--private-pipe"
+          ],
+          "expected_exit": 1,
+          "actual_exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal_bootstrap"
+          ],
+          "expected_exit": 1,
+          "actual_exit": 1
+        },
+        {
+          "command": [
+            "--check",
+            "scripts/e2_06_owner_browser.cjs"
+          ],
+          "expected_exit": 0,
+          "actual_exit": 0
+        },
+        {
+          "command": [
+            "scripts/e2_06_owner_browser.cjs"
+          ],
+          "expected_exit": 1,
+          "actual_exit": 1
+        }
+      ],
+      "existing_playwright_and_chromium_available": true,
+      "new_dependencies_installed": false,
+      "runtime_auth_code_unchanged": true,
+      "server_rehearsal_executed": false
+    },
+    "server_ssh_this_step": false,
+    "new_dependencies": false,
+    "full_browser_verified": false,
+    "successful_operator_cli_verified": false,
+    "main_key_or_real_owner_proof_used": false,
+    "publication_by_oleg_required": true,
+    "new_resource_approval_required": true
+  },
+  "known_runtime_blockers": [],
+  "owner_rehearsal_run": {
+    "checked_at": "2026-10-02T12:10:06+03:00",
+    "authorization": "Explicit current approval of docs/E2-06_OWNER_REHEARSAL.md; synthetic isolated resources only",
+    "revision": "6ec715f5a1343ef7cccc5f89beea606433f31d03",
+    "project": "marketplace-e206-owner-check",
+    "result": "PARTIAL: provisioning and prepare-owner CLI PASS; native browser login blocked by Referrer-Policy; stopped and preserved",
+    "postgres": "17.11",
+    "existing_images_only": true,
+    "lock_equal": true,
+    "effective_compose": "PASS",
+    "migrations": {
+      "account_security": 2,
+      "accounts": 2,
+      "auth": 12,
+      "contenttypes": 2,
+      "otp_static": 3,
+      "otp_totp": 3,
+      "ownership": 2,
+      "sessions": 1,
+      "two_factor": 9
+    },
+    "actual_web_login_sql_contract": "PASS",
+    "actual_migrator_identity": "PASS",
+    "isolation": {
+      "private_network": true,
+      "no_host_ports": true,
+      "resource_limits": true,
+      "logging_disabled": true,
+      "private_files_0600": true,
+      "locmem_only": true,
+      "main_container_baseline_unchanged": true,
+      "main_runtime_sql_smoke": "PASS"
+    },
+    "operator_prepare": {
+      "actual_cli": "PASS",
+      "nonowner_denied": true,
+      "private_proof_and_verifier_created": true,
+      "scope_and_passwords_unchanged": true
+    },
+    "operator_issue": "NOT RUN; full browser halted before enrollment",
+    "browser": {
+      "result": "FAIL mandatory-enrollment",
+      "login_get": 200,
+      "native_login_post": 403,
+      "cookie_and_csrf_field_present": true,
+      "origin_null": true,
+      "response_policy": "no-referrer",
+      "passwords_match": true,
+      "diagnostic_header_post_aborted": true,
+      "browser_and_tunnel_closed": true
+    },
+    "preserved_counts": {
+      "users": 4,
+      "organizations": 2,
+      "memberships": 5,
+      "authenticators": 0,
+      "registered_sessions": 0,
+      "recovery_codes": 0,
+      "recovery_permits": 0,
+      "login_challenges": 0,
+      "attempt_buckets": 0
+    },
+    "resources_after_run": {
+      "new_containers_stopped": 4,
+      "volume_network_and_files_preserved": true,
+      "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-20261002",
+      "occupied_names_must_not_reseed": true
+    },
+    "local_fix": {
+      "policy": "same-origin",
+      "csrf_checks_retained": true,
+      "browser_live_server": "PASS 1/1, 3.106 seconds; actual Chromium/Django, SQLite only",
+      "old_policy_control": "same browser regression failed before runtime change, 2.621 seconds",
+      "http_regressions": "PASS 33/33, 0 skips, 62.345 seconds, SQLite only",
+      "syntax_django_check_migrations": "PASS; no model changes",
+      "pre_browser_guard": "local missing-marker refusal PASS; positive Linux path pending",
+      "postgresql_verification_of_fix": "NOT RUN",
+      "server_deployed": false
+    },
+    "continuation": "User pushes fix, then continue same already-authorized saved stand via new Git release; no --apply/bootstrap/configure/init/operator_prepare; pre_browser must pass; full browser and operator_issue remain pending",
+    "separately_authorized_later": [
+      "Update main beta after isolated acceptance",
+      "Real owner proof provisioning/recovery",
+      "Encrypted main-key handoff and independent custody by Oleg"
+    ],
+    "limitations": [
+      "No full MFA browser/operator lifecycle PASS",
+      "No public TLS proof",
+      "No main-key custody/Telegram transfer",
+      "No business export/RBAC/RLS acceptance"
+    ]
+  },
+  "owner_rehearsal_retry": {
+    "checked_at": "2026-10-02T12:35:46+03:00",
+    "revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "authorization": "Continuation of the explicitly authorized isolated owner rehearsal; no main-web update",
+    "project": "marketplace-e206-owner-check",
+    "postgres": "17.11",
+    "saved_fixture_pre_browser": "PASS; no reseed, no bucket/password reset",
+    "lock_compose_sql_runtime_isolation": "PASS",
+    "browser_functional_stages": [
+      "mandatory-enrollment-invalid-expired-valid-one-time-code-display",
+      "totp-login-replay-denial-owner-disable-denial-csrf",
+      "logout-current-selected-session-reauth-trust-and-logout-all",
+      "backup-code-single-use-limited-reenrollment-session-revocation",
+      "operator-proof-role-binding-single-use-permit-limited-recovery",
+      "password-change-revokes-trust-and-retains-mfa",
+      "block-revokes-session-denies-code-and-operator-recovery",
+      "unenrolled-member-password-login"
+    ],
+    "functional_pass_count": 8,
+    "aggregate_runner_exit": 1,
+    "aggregate_failure": "Final helper incorrectly expected next password after E2-05 block_account; block intentionally sets unusable password",
+    "actual_operator_cli": "PASS: getpass with echo disabled, wrong proof/wrong owner/nonowner/blocked refusals, one-use permit, no ownership/password changes by CLI",
+    "correct_final_state_readonly": {
+      "correct_final_state": "PASS",
+      "blocked_owner_password_unusable": true,
+      "old_and_new_passwords_rejected": true,
+      "all_sessions_and_trust_revoked": true,
+      "single_permit_consumed": true,
+      "ownership_unchanged": true,
+      "private_operator_outputs": true,
+      "denied_operator_outputs_absent": true,
+      "sessions_and_totp_encrypted": true,
+      "codes_hashed": true,
+      "plaintext_otp_tables_empty": true,
+      "locmem": true,
+      "users": 4,
+      "organizations": 2,
+      "memberships": 5
+    },
+    "global_browser_pageerror_count": "Not reached after failing final RPC; do not claim zero",
+    "test_script_fix": "Local only: finish expects unusable password after block; report pageerror check before final RPC and identify final-state phase",
+    "runtime_auth_code_changed_this_turn": false,
+    "new_fixture_or_repeated_browser_run": false,
+    "containers_stopped": 4,
+    "private_volume_and_files_preserved": true,
+    "main_beta_metadata_unchanged": true,
+    "main_beta_runtime_sql_smoke": "PASS; main remains 19a6d6a with no-referrer defect",
+    "main_rollout_plan": "docs/E2-06_WEB_FIX_ROLLOUT.md",
+    "main_rollout_authorized": false,
+    "owner_key_custody_or_real_proof": "Not performed",
+    "business_export_rbac_rls": "Adjacent tasks, not accepted here",
+    "main_final_counts": {
+      "main_business_and_security_counts_zero": true,
+      "anonymous_django_sessions": 4,
+      "all_django_sessions_encrypted": true,
+      "scope": "read-only SQL; earlier anonymous login GET smoke may create wizard sessions, not account sessions"
+    }
+  },
+  "main_web_referrer_rollout": {
+    "checked_at": "2026-10-02T13:41:10+03:00",
+    "authorization": "Explicit user approval of docs/E2-06_WEB_FIX_ROLLOUT.md; main beta web only",
+    "result": "PASS for bounded main-web rollout; E2-06 remains under review",
+    "published_beta_verified": "91b079a30569b6fc38997b47fe18d6af723b9321",
+    "server_repository": "91b079a30569b6fc38997b47fe18d6af723b9321",
+    "runtime_revision": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "git_only_sources": true,
+    "application_diff": "Referrer-Policy no-referrer to same-origin only; other backend differences are tests/tools",
+    "requirements_lock_equal": true,
+    "effective_compose_only_source_changed": true,
+    "metadata_checkpoint": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-referrer-before-20261002T102702Z.metadata.json",
+    "metadata_mode": "0600",
+    "metadata_no_overwrite_and_readback_equal": true,
+    "previous_s2_backup_and_key_files_modes": "Existing regular files 0600 checked; contents not printed; no new dump/restore",
+    "web": {
+      "id": "53dd81f2850521138b9596d1aa5f910f7889785d8836329efbbfb0f7b57654c5",
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "started": "2026-10-02T10:28:21.386899228Z",
+      "source": "/home/adm_user/marketplace-workspace/beta/app/releases/14d9f48cee6eb2a9d7eca9f029770af51c45b6d9/backend",
+      "source_readonly": true,
+      "key_readonly": true,
+      "user": "10001:10001",
+      "memory_bytes": 402653184,
+      "cpu_limit": 0.25,
+      "networks": [
+        "marketplace-beta-private"
+      ],
+      "host_ports": false
+    },
+    "postgres_containers": [
+      {
+        "name": "marketplace-beta-postgres-1",
+        "unchanged": true,
+        "id": "91be5743052654c70d705931cef4836010ab8ccfb6ec762ee6c64b65fe7ba1aa",
+        "started": "2026-09-30T12:54:18.474323573Z"
+      },
+      {
+        "name": "marketplace-beta-postgres-test-1",
+        "unchanged": true,
+        "id": "3ff21600f2cf72f786937471ced078d98d2467ac37160d81946386f129aed444",
+        "started": "2026-09-30T12:54:18.485908353Z"
+      }
+    ],
+    "postgres_metadata_unchanged": true,
+    "migrations": {
+      "accounts": 2,
+      "account_security": 2,
+      "auth": 12,
+      "contenttypes": 2,
+      "otp_static": 3,
+      "otp_totp": 3,
+      "ownership": 2,
+      "sessions": 1,
+      "two_factor": 9
+    },
+    "migration_or_acl_changes": false,
+    "actual_restricted_web_sql_contract": "PASS; mw_beta / mw_beta_web / mw_beta_web; exact column privileges and guards",
+    "runtime_smoke": "PASS; live/ready 200, session 401, legacy login GET 405, MFA login GET 200",
+    "browser": {
+      "browser": "PASS",
+      "login_get": 200,
+      "referrer_policy": "same-origin",
+      "no_store": true,
+      "secure_session_and_csrf_cookies": true,
+      "origin_same": true,
+      "origin_not_null": true,
+      "cookie_present": true,
+      "csrf_field_present": true,
+      "post_aborted_before_server": true,
+      "credentials_sent_to_server": false,
+      "page_errors": 0,
+      "scope": "anonymous header/native Origin only; no main account login and no public TLS proof"
+    },
+    "final_state": [
+      {
+        "final_counts": {
+          "User": 0,
+          "Organization": 0,
+          "Membership": 0,
+          "Authenticator": 0,
+          "RecoveryCode": 0,
+          "RecoveryPermit": 0,
+          "AccountSession": 0,
+          "AttemptBucket": 0,
+          "AuthDenial": 0
+        },
+        "anonymous_encrypted_sessions": 6,
+        "migrations_unchanged": true,
+        "runtime_key_file_mode_uid_correct": true,
+        "no_password_attempt_reached_main": true
+      },
+      {
+        "postgres_metadata_unchanged": true,
+        "web_running_new_id": true,
+        "rehearsal_stopped": true,
+        "server_git_clean": true
+      }
+    ],
+    "anonymous_encrypted_django_sessions_before": 4,
+    "anonymous_encrypted_django_sessions_after": 6,
+    "anonymous_session_change_reason": "GET login smoke creates encrypted anonymous wizard sessions; account sessions remain zero",
+    "new_keys_or_roles_or_databases": false,
+    "locmem_only": true,
+    "external_flags_disabled": true,
+    "synthetic_download_probe_disabled": true,
+    "rehearsal_containers_remain_stopped": true,
+    "rehearsal_baseline_note": "Saved rehearsal baseline predates this authorized main-web replacement; retain it as historical evidence, do not rewrite or blindly rerun pre_browser on terminal fixture",
+    "browser_and_tunnel_closed": true,
+    "public_tls_verified": false,
+    "new_dependency_install_or_build": false,
+    "full_postgresql_suite_repeated": false,
+    "full_browser_lifecycle_repeated": false,
+    "fallback_used": false,
+    "safe_fallback": "Reviewed MFA deny-auth maintenance or stop only beta web; no base-only/accounts fallback or live DB restore",
+    "real_owner_proof_or_key_handoff": false,
+    "local_evidence": ".change-backups/2026-10-02/E2-06-main-web-fix/"
+  },
+  "owner_rehearsal_finish_readonly": {
+    "checked_at": "2026-10-02T13:58:37+03:00",
+    "authorization": "Explicit current user approval of isolated readonly finish step; no full browser replay",
+    "revision": "dd9803597941e9516676e8f03aa0cb6f48f1eb92",
+    "server_repository": "dd9803597941e9516676e8f03aa0cb6f48f1eb92",
+    "result": "PASS",
+    "postgres": "17.11 on preserved isolated rehearsal cluster",
+    "project": "marketplace-e206-owner-check",
+    "git_only_release": true,
+    "runtime_auth_code_unchanged": true,
+    "compose_lock_equal": true,
+    "existing_image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+    "controller_before": {
+      "id": "84f1a954e2090ea31299d0ecf0a81425bc8052930f23164c7232393534e7ff1d",
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "started": "2026-10-02T09:17:10.952928746Z"
+    },
+    "controller_after": {
+      "id": "6a6602e6b86644bae7614e8f7bb2194c578984883c8d8c8482143d79f3feaf1b",
+      "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+      "started": "2026-10-02T10:54:52.361712667Z"
+    },
+    "controller_source_readonly": "/home/adm_user/marketplace-workspace/beta/app/releases/dd9803597941e9516676e8f03aa0cb6f48f1eb92/backend",
+    "preserved_postgres_id": "3bd4dae16b095ffa63fe40bc7b384e2c27efb1bae8cc2afc5bcc91d035a38ea7",
+    "sql_default_and_transaction_readonly": "on; explicitly checked before and after helper",
+    "real_database_identity": "mw_beta / mw_beta_migrator / mw_beta_migrator",
+    "finish": {
+      "finish": "PASS",
+      "sql_readonly_confirmed": true,
+      "actual_migrator_identity": true,
+      "private_files_unchanged": true,
+      "state": {
+        "ownership_unchanged": true,
+        "active": false,
+        "recovery_required": false,
+        "factors": 1,
+        "sessions": 0,
+        "trusted": 0,
+        "used_permits": 1,
+        "invitations": 0
+      }
+    },
+    "blocked_password_unusable_assertion": "PASS in published helper",
+    "all_rehearsal_containers_stopped": true,
+    "main_metadata_unchanged": true,
+    "saved_web_issuer_unchanged": true,
+    "volume_and_private_files_preserved": true,
+    "original_baseline_preserved": true,
+    "new_databases_roles_keys": false,
+    "migrations_acl_dump_restore": false,
+    "full_browser_repeated": false,
+    "public_tls_or_main_key_custody": false,
+    "local_evidence": ".change-backups/2026-10-02/E2-06-finish-readonly/server-result.json",
+    "limitation": "Separate final-state check; previous aggregate browser exit and global pageerror counter remain unverified"
+  },
+  "browser_r2_preparation": {
+    "checked_at": "2026-10-02T14:31:59+03:00",
+    "status": "prepared locally; not published or executed on server",
+    "scope_confirmation": "Explicit user clarification: full browser rehearsal plus preparation of key handoff; R2 execution awaits publication by Oleg",
+    "plan": "docs/E2-06_BROWSER_R2.md",
+    "project": "marketplace-e206-owner-check-r2",
+    "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002",
+    "new_compose": "beta/deploy/compose.owner-rehearsal-r2.json",
+    "protected_projects": [
+      "marketplace-beta",
+      "marketplace-e206-owner-check"
+    ],
+    "new_resources": [
+      "4 containers: postgres/web/controller/issuer",
+      "isolated PostgreSQL volume and internal network",
+      "closed synthetic secrets/fixture/operator output",
+      "one-off UID lookup/secret generation/bootstrap only"
+    ],
+    "real_operator_guard_unchanged": true,
+    "runtime_auth_code_unchanged": true,
+    "existing_images_and_local_browser_only": true,
+    "local_checks": {
+      "checked_at": "2026-10-02T14:27:06+03:00",
+      "python_ast": 3,
+      "node_syntax": "PASS",
+      "legacy_profile_default_preserved": true,
+      "r2_plan_paths_names": "PASS",
+      "unknown_project_and_windows_apply_denied": true,
+      "helpers_without_marker_denied": true,
+      "r2_compose_only_resource_identifiers_changed": true,
+      "isolated_mounts_secrets_and_limits": "PASS static",
+      "runtime_auth_ownership_config_lock_unchanged": true,
+      "commands": [
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\beta\\deploy\\prepare_owner_rehearsal.py"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\beta\\deploy\\prepare_owner_rehearsal.py",
+            "--project",
+            "marketplace-e206-owner-check-r2"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\beta\\deploy\\prepare_owner_rehearsal.py",
+            "--project",
+            "marketplace-beta"
+          ],
+          "exit": 2
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\beta\\deploy\\prepare_owner_rehearsal.py",
+            "--project",
+            "marketplace-e206-owner-check-r2",
+            "--apply",
+            "--revision",
+            "0000000000000000000000000000000000000000"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal",
+            "finish"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal_bootstrap"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\scripts\\e2_06_owner_browser.cjs"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal",
+            "finish"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal_bootstrap"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\scripts\\e2_06_owner_browser.cjs"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal",
+            "finish"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "-m",
+            "tools.owner_rehearsal_bootstrap"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\scripts\\e2_06_owner_browser.cjs"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "--check",
+            "C:\\Users\\krolo\\Documents\\marketplace-workspace\\scripts\\e2_06_owner_browser.cjs"
+          ],
+          "exit": 0
+        }
+      ],
+      "server_ssh": false,
+      "browser_executed": false,
+      "effective_compose": "NOT CHECKED; Docker unavailable locally",
+      "new_dependencies": false
+    },
+    "full_browser_verified": false,
+    "server_ssh_this_step": false,
+    "new_dependencies": false,
+    "publication_by_oleg_required": true,
+    "owner_key_handoff_or_real_proof_included": false,
+    "server_scope_authorized": true,
+    "execution_result": "Historical preparation record; completed execution is recorded separately in browser_r2_run"
+  },
+  "key_handoff_preparation": {
+    "checked_at": "2026-10-02T14:49:58+03:00",
+    "scope": "preparation plus explicitly requested new local passphrase file; no main key read or server handoff",
+    "plan": "docs/E2-06_KEY_HANDOFF.md",
+    "local_passphrase_file": {
+      "created_at": "2026-10-02T14:46:01.7528102+03:00",
+      "file": "C:\\Users\\krolo\\Documents\\marketplace-recovery\\beta\\e2-06-backup-passphrase-20261002.txt",
+      "created_new": true,
+      "private_acl_owner_and_system_only": true,
+      "directory_inheritance_disabled": true,
+      "readback_equal": true,
+      "password_displayed": false,
+      "envelope_created": false,
+      "server_contacted": false,
+      "telegram_used": false
+    },
+    "encrypted_copy_created": false,
+    "main_key_read": false,
+    "server_ssh": false,
+    "telegram_used": false,
+    "owner_choice": "both files in Telegram, explicitly accepted after same-account compromise explanation",
+    "new_password_matches_existing_s2_envelope": false,
+    "proposed_new_envelope": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-owner-key-envelope-20261002/envelope.json",
+    "proposed_local_envelope": "C:/Users/krolo/Documents/marketplace-recovery/beta/e2-06-key-envelope-20261002.json",
+    "new_verifier": "backend/tools/check_mfa_key_envelope.py",
+    "verification_tests": {
+      "command": "backend/.venv/Scripts/python.exe backend/manage.py test account_security.tests.test_key_envelope_check --settings=config.security_local_checks --verbosity=1",
+      "passed": 3,
+      "skipped": 0,
+      "seconds": 1.084,
+      "database_or_real_secrets": false,
+      "limitations": "Synthetic in-memory encryption and mocked TTY refusals; real owner terminal and actual envelope handoff untested"
+    },
+    "new_dependencies": false,
+    "existing_windows_plaintext_restore_guard_preserved": true
+  },
+  "browser_r2_run": {
+    "checked_at": "2026-10-02T15:23:05+03:00",
+    "status": "PASS",
+    "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+    "project": "marketplace-e206-owner-check-r2",
+    "plan": "docs/E2-06_BROWSER_R2.md",
+    "root": "/home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002",
+    "authorization": "Explicit full isolated browser rehearsal plus preparation of key handoff; published revision verified after Oleg reported push",
+    "git_source_only": true,
+    "runtime_auth_code_unchanged_from_main": true,
+    "requirements_lock_equal_to_existing_image": true,
+    "effective_compose_actual_mounts_limits_isolation": "PASS",
+    "new_dependencies_or_image_build": false,
+    "setup": {
+      "exit": 0,
+      "records": [
+        {
+          "phase": "preflight",
+          "result": "PASS",
+          "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+          "main_unchanged": true,
+          "old_stand_stopped": true,
+          "runtime_auth_unchanged": true,
+          "lock_equal": true
+        },
+        {
+          "phase": "migrations-and-web-grants",
+          "result": "PASS"
+        },
+        {
+          "phase": "ready-for-browser",
+          "result": "PASS",
+          "ip": "172.24.0.4",
+          "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+          "main_unchanged": true,
+          "old_stand_unchanged": true,
+          "operator_prepared": true,
+          "restricted_web_runtime": true
+        }
+      ]
+    },
+    "browser": {
+      "exit": 0,
+      "result": "PASS",
+      "checks": 10,
+      "fullBrowser": true,
+      "actualOperatorCli": true,
+      "limits": "synthetic isolated cluster; no real-owner proof or main-key custody; no public TLS or business export",
+      "passed_phases": [
+        "mandatory-enrollment-invalid-expired-valid-one-time-code-display",
+        "totp-login-replay-denial-owner-disable-denial-csrf",
+        "logout-current-selected-session-reauth-trust-and-logout-all",
+        "backup-code-single-use-limited-reenrollment-session-revocation",
+        "operator-proof-role-binding-single-use-permit-limited-recovery",
+        "password-change-revokes-trust-and-retains-mfa",
+        "block-revokes-session-denies-code-and-operator-recovery",
+        "unenrolled-member-password-login",
+        "no-browser-script-errors",
+        "unchanged-organizations-memberships-and-blocked-password"
+      ],
+      "pageerrors": 0
+    },
+    "initial_supplemental_audit": {
+      "exit": 1,
+      "records": [
+        {
+          "phase": "finalize",
+          "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+          "failure_phase": "readonly-terminal-state",
+          "all_r2_stopped": true,
+          "containers": [
+            {
+              "name": "/marketplace-e206-owner-check-r2-postgres",
+              "id": "5a7d72c7f4cff7c74ff6c3443222d2a7be6a3ed0dd07a8ba12de26a5163574fd",
+              "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+              "started": "2026-10-02T12:13:14.164034994Z",
+              "finished": "2026-10-02T12:21:11.565004381Z"
+            },
+            {
+              "name": "/marketplace-e206-owner-check-r2-web",
+              "id": "e37f7c1d464cfa1114c628f9507951793f1296802566b2fd1c72aab20f928b8c",
+              "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+              "started": "2026-10-02T12:14:02.851530251Z",
+              "finished": "2026-10-02T12:21:12.488815035Z"
+            },
+            {
+              "name": "/marketplace-e206-owner-check-r2-controller",
+              "id": "da1663aa36beadf0feefa280fa495c46effc89fb542648117dc0865ac6492024",
+              "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+              "started": "2026-10-02T12:13:24.598903584Z",
+              "finished": "2026-10-02T12:21:26.478773528Z"
+            },
+            {
+              "name": "/marketplace-e206-owner-check-r2-issuer",
+              "id": "af12d208282c9512bbb2bf853119e018b02913c146231202457682f140785f95",
+              "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+              "started": "2026-10-02T12:14:02.844200134Z",
+              "finished": "2026-10-02T12:21:26.477329859Z"
+            }
+          ],
+          "main_metadata_unchanged": true,
+          "old_stand_stopped_unchanged": true,
+          "volume_preserved": true,
+          "private_files_preserved": true,
+          "server_repository": "2c2f8f737262267d29d06ab40d7bef3571693745",
+          "result": "FAIL"
+        }
+      ]
+    },
+    "final": {
+      "phase": "finalize",
+      "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "browser_repeated": false,
+      "only_saved_pg_controller_started": true,
+      "terminal": {
+        "finish": "PASS",
+        "sql_readonly": true,
+        "actual_migrator_login": true,
+        "private_files_unchanged": true,
+        "private_file_modes_0600": true,
+        "postgres_version": "17.11 (Debian 17.11-1.pgdg12+2)",
+        "migrations": 36,
+        "users": 4,
+        "organizations": 2,
+        "memberships": 5,
+        "locmem_only": true,
+        "state": {
+          "ownership_unchanged": true,
+          "active": false,
+          "recovery_required": false,
+          "factors": 1,
+          "sessions": 0,
+          "trusted": 0,
+          "used_permits": 1,
+          "invitations": 0
+        }
+      },
+      "restricted_web_runtime_after": "not repeated; web remains stopped",
+      "all_r2_stopped": true,
+      "containers": [
+        {
+          "name": "/marketplace-e206-owner-check-r2-postgres",
+          "id": "5a7d72c7f4cff7c74ff6c3443222d2a7be6a3ed0dd07a8ba12de26a5163574fd",
+          "image": "sha256:248efd5e58cd743f2a0e0daec8ea4649e5580145ec2a12e2345bc710d4a77201",
+          "started": "2026-10-02T12:22:05.775855914Z",
+          "finished": "2026-10-02T12:22:18.909298547Z"
+        },
+        {
+          "name": "/marketplace-e206-owner-check-r2-web",
+          "id": "e37f7c1d464cfa1114c628f9507951793f1296802566b2fd1c72aab20f928b8c",
+          "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+          "started": "2026-10-02T12:14:02.851530251Z",
+          "finished": "2026-10-02T12:21:12.488815035Z"
+        },
+        {
+          "name": "/marketplace-e206-owner-check-r2-controller",
+          "id": "da1663aa36beadf0feefa280fa495c46effc89fb542648117dc0865ac6492024",
+          "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+          "started": "2026-10-02T12:22:10.034917739Z",
+          "finished": "2026-10-02T12:22:33.760659204Z"
+        },
+        {
+          "name": "/marketplace-e206-owner-check-r2-issuer",
+          "id": "af12d208282c9512bbb2bf853119e018b02913c146231202457682f140785f95",
+          "image": "sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72",
+          "started": "2026-10-02T12:14:02.844200134Z",
+          "finished": "2026-10-02T12:21:26.477329859Z"
+        }
+      ],
+      "main_metadata_unchanged": true,
+      "old_stand_stopped_unchanged": true,
+      "volume_preserved": true,
+      "private_files_preserved": true,
+      "server_repository": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "result": "PASS"
+    },
+    "audit_correction": "Supplemental contact-domain check used User.email instead of AccountContact.email; original browser exit 0 unchanged. Only saved postgres/controller were briefly started for corrected SQL readonly audit, then stopped; no full browser retry or fixture reset.",
+    "tunnel_closed": true,
+    "main_source": "14d9f48cee6eb2a9d7eca9f029770af51c45b6d9",
+    "main_key_read_or_handoff": false,
+    "old_fixture_reused_or_reset": false,
+    "clock_throttle_or_last_t_modified": false,
+    "raw_secret_trace_screenshot_outputs": false,
+    "dump_restore_or_s1_matrix_repeated": false,
+    "limitations": [
+      "Synthetic isolated cluster only; real owner account or emergency proof not provisioned",
+      "Main-key K1/K2/K3 remain pending separate approval and owner verification",
+      "Business export/RBAC/RLS are adjacent tasks; synthetic revocation remains separate S1 evidence"
+    ],
+    "safe_rollback": "All four R2 containers already stopped; retain volume, network, closed files and Git release; no replay, delete, reset or live restore",
+    "evidence_directory": ".change-backups/2026-10-02/E2-06-browser-r2-run/"
+  },
+  "key_handoff_k1_k2": {
+    "checked_at": "2026-10-02T16:13:47+03:00",
+    "authorization": "Explicit approval after concrete K1/K2 plan; owner enters passphrase interactively",
+    "status": "K1/K2 PASS via explicitly authorized private-file passphrase input; K3 pending",
+    "published_beta": "b3c50f7034bd454ea8066c6f194010d91ca9068a",
+    "source_revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+    "plan": "docs/E2-06_KEY_HANDOFF.md",
+    "server_preparation": {
+      "result": "PASS",
+      "phase": "prepared",
+      "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "new_directory": "/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-owner-key-envelope-20261002",
+      "new_directory_mode": 448,
+      "new_directory_uid": 10001,
+      "envelope_created": false,
+      "protected_containers_unchanged": true,
+      "existing_secret_metadata_unchanged": true,
+      "runtime_key_read": false
+    },
+    "existing_secret_metadata_verified_without_content": true,
+    "local_private_acl_and_empty_destination": "PASS; passphrase not read",
+    "interactive_launcher": ".change-backups/2026-10-02/E2-06-key-handoff-k1-k2/owner-key-handoff.ps1",
+    "local_checks": [
+      "PowerShell syntax",
+      "Python local/remote AST",
+      "Windows argv roundtrip",
+      "Non-interactive console rejected before SSH",
+      "Transfer --check made no network/write/secret read"
+    ],
+    "wrap_completed": true,
+    "ciphertext_downloaded": true,
+    "owner_decryption_verified": false,
+    "runtime_key_read": true,
+    "telegram_used": false,
+    "new_dependencies": false,
+    "required_next": [
+      "No additional K3 copy checks: owner explicitly declined them after reporting downloads complete",
+      "Keep E2-06 On review for the working-export criterion dependent on E2-07/E2-08/E5-07"
+    ],
+    "preparation_must_not_repeat": true,
+    "safe_rollback": "Preserve new server/local envelopes, now-used passphrase file and old S2 backups; runtime unchanged. No replay, overwrite or regeneration. Any deletion needs explicit owner decision after recoverability/path checks.",
+    "first_owner_attempt": {
+      "checked_at": "2026-10-02T15:50:17.0879930+03:00",
+      "stage": "K1",
+      "exit": 1,
+      "interactive_owner_terminal": true,
+      "password_captured": false
+    },
+    "failed_wrap_output_check": {
+      "exit": 0,
+      "directory_empty": true,
+      "envelope_exists": false
+    },
+    "first_early_metadata_verify": {
+      "exit": 1,
+      "records": [
+        {
+          "result": "FAIL",
+          "phase": "verify",
+          "preserve_partial_output": true
+        }
+      ]
+    },
+    "owner_password_read_by_agent": true,
+    "metadata_followup_requires_owner_success": true,
+    "blind_retry_blocked": true,
+    "input_change_authorization": "User said stopped interactive input and explicitly approved automatic reading of the existing private passphrase file after proposal",
+    "private_file_decryption_verified": true,
+    "manual_owner_terminal_verification": false,
+    "password_value_disclosed_to_model_or_output": false,
+    "first_retry_preflight": "PASS; empty output/no active writer/protected metadata equal",
+    "owner_retry_attempt": {
+      "checked_at": "2026-10-02T16:01:47.4088532+03:00",
+      "stage": "K1",
+      "exit": 130,
+      "interactive_owner_terminal": true,
+      "password_captured": false
+    },
+    "automatic_precheck": {
+      "active_output_writers": 0,
+      "safe_to_preflight": true
+    },
+    "first_automatic_attempt": {
+      "checked_at": "2026-10-02T16:05:23+03:00",
+      "result": "FAIL",
+      "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "scope": "authorized private-file K1/K2; no terminal secret input or capture",
+      "wrap_completed": false,
+      "download_completed": false,
+      "decrypt_verified": false,
+      "failure_phase": "local-preconditions",
+      "preserve_partial_output": true,
+      "do_not_repeat_wrap": true
+    },
+    "local_acl_issue": "Child Windows PowerShell 5 lacked Get-Acl in this environment; existing PowerShell 7.6.5 used successfully; no installation/policy change",
+    "automatic_result": {
+      "checked_at": "2026-10-02T16:08:59+03:00",
+      "result": "PASS",
+      "revision": "2c2f8f737262267d29d06ab40d7bef3571693745",
+      "scope": "authorized private-file K1/K2; no terminal secret input or capture",
+      "wrap_completed": true,
+      "download_completed": true,
+      "decrypt_verified": true,
+      "preflight": "PASS",
+      "server_local_bytes_equal": true,
+      "private_acl_owner_system_only": true,
+      "server_output_mode_0600": true,
+      "protected_containers_unchanged": true,
+      "old_key_envelope_passphrase_metadata_unchanged": true,
+      "local_password_file_unchanged": true,
+      "plaintext_key_downloaded": false,
+      "plaintext_key_written": false,
+      "secret_output_or_fingerprint": false,
+      "telegram_used": false,
+      "owner_proof_created": false,
+      "destination": "C:\\Users\\krolo\\Documents\\marketplace-recovery\\beta\\e2-06-key-envelope-20261002.json"
+    }
+  },
+  "key_handoff_k3": {
+    "recorded_at": "2026-10-02T16:22:32+03:00",
+    "owner_download_report": "Все скачал, все нормально",
+    "owner_instruction": "Не надо проверять",
+    "status": "owner-reported download; additional K3 verification declined",
+    "returned_copy_paths_identified": false,
+    "downloaded_file_contents_read": false,
+    "byte_comparison_performed": false,
+    "decryption_performed": false,
+    "secret_fingerprint_recorded": false,
+    "server_contacted": false,
+    "telegram_accessed_by_agent": false,
+    "further_copy_verification_requested": false,
+    "previous_k1_k2_result": "PASS unchanged"
+  }
+}

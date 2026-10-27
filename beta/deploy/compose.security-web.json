@@ -1,0 +1,50 @@
+{
+  "services": {
+    "web": {
+      "image": "${SECURITY_IMAGE:?reviewed E2-06 dependency image required}",
+      "environment": {
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key",
+        "ISOLATION_KEY_FILE": "/run/secrets/isolation_signing_key"
+      },
+      "secrets": [
+        "mfa_encryption_key",
+        "isolation_signing_key"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${SECURITY_SOURCE:?verified detached beta Git worktree backend required}",
+          "target": "/workspace",
+          "read_only": true
+        }
+      ]
+    },
+    "migrate": {
+      "image": "${SECURITY_IMAGE:?reviewed E2-06 dependency image required}",
+      "environment": {
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key",
+        "ISOLATION_KEY_FILE": "/run/secrets/isolation_signing_key"
+      },
+      "secrets": [
+        "mfa_encryption_key",
+        "isolation_signing_key"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${SECURITY_SOURCE:?verified detached beta Git worktree backend required}",
+          "target": "/workspace",
+          "read_only": true
+        }
+      ]
+    }
+  },
+  "secrets": {
+    "mfa_encryption_key": {
+      "file": "../config/secrets/mfa_encryption_key"
+    },
+    "isolation_signing_key": {
+      "file": "../config/secrets/isolation_signing_key"
+    }
+  }
+}

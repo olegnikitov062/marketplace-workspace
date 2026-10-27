@@ -1,0 +1,14 @@
+{
+  "services": {
+    "web": {
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${ACCOUNTS_SOURCE:?verified detached beta Git worktree backend required}",
+          "target": "/workspace",
+          "read_only": true
+        }
+      ]
+    }
+  }
+}

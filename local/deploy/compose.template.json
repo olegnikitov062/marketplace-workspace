@@ -1,0 +1,254 @@
+{
+  "name": "marketplace-local",
+  "services": {
+    "postgres": {
+      "profiles": [
+        "design-only"
+      ],
+      "restart": "no",
+      "mem_limit": "1g",
+      "cpus": "1.0",
+      "pids_limit": 128,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "image": "${POSTGRES_IMAGE:?immutable PostgreSQL 17 digest required}",
+      "environment": {
+        "POSTGRES_DB": "mw_local",
+        "POSTGRES_USER": "mw_local_bootstrap",
+        "POSTGRES_PASSWORD_FILE": "/run/secrets/db_bootstrap_password"
+      },
+      "secrets": [
+        "db_bootstrap_password"
+      ],
+      "networks": [
+        "private"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "../data/postgres",
+          "target": "/var/lib/postgresql/data"
+        }
+      ],
+      "ports": [
+        "127.0.0.1:55440:5432"
+      ]
+    },
+    "web": {
+      "profiles": [
+        "design-only"
+      ],
+      "restart": "no",
+      "mem_limit": "384m",
+      "cpus": "0.50",
+      "pids_limit": 64,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "image": "${BACKEND_IMAGE:?immutable checked backend digest required}",
+      "read_only": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "user": "10001:10001",
+      "tmpfs": [
+        "/tmp:size=64m,mode=1777"
+      ],
+      "env_file": [
+        "../config/runtime.env"
+      ],
+      "environment": {
+        "ENVIRONMENT": "local",
+        "DB_HOST": "postgres",
+        "DB_NAME": "mw_local",
+        "DB_USER": "mw_local_web",
+        "DB_PASSWORD_FILE": "/run/secrets/db_web_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false"
+      },
+      "secrets": [
+        "db_web_password",
+        "django_secret_key"
+      ],
+      "networks": [
+        "private"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "../data/exports",
+          "target": "/workspace/exports"
+        },
+        {
+          "type": "bind",
+          "source": "../data/mail",
+          "target": "/workspace/mail"
+        },
+        {
+          "type": "bind",
+          "source": "../logs/web",
+          "target": "/workspace/logs"
+        }
+      ],
+      "expose": [
+        "8000"
+      ],
+      "ports": [
+        "127.0.0.1:8100:8000"
+      ]
+    },
+    "worker": {
+      "profiles": [
+        "design-only"
+      ],
+      "restart": "no",
+      "mem_limit": "256m",
+      "cpus": "0.50",
+      "pids_limit": 64,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "image": "${BACKEND_IMAGE:?immutable checked backend digest required}",
+      "read_only": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "user": "10001:10001",
+      "tmpfs": [
+        "/tmp:size=64m,mode=1777"
+      ],
+      "env_file": [
+        "../config/runtime.env"
+      ],
+      "environment": {
+        "ENVIRONMENT": "local",
+        "DB_HOST": "postgres",
+        "DB_NAME": "mw_local",
+        "DB_USER": "mw_local_worker",
+        "DB_PASSWORD_FILE": "/run/secrets/db_worker_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false"
+      },
+      "secrets": [
+        "db_worker_password",
+        "django_secret_key"
+      ],
+      "networks": [
+        "private"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "../data/exports",
+          "target": "/workspace/exports"
+        },
+        {
+          "type": "bind",
+          "source": "../data/mail",
+          "target": "/workspace/mail"
+        },
+        {
+          "type": "bind",
+          "source": "../logs/worker",
+          "target": "/workspace/logs"
+        }
+      ]
+    },
+    "postgres-test": {
+      "profiles": [
+        "design-only"
+      ],
+      "restart": "no",
+      "mem_limit": "1g",
+      "cpus": "1.0",
+      "pids_limit": 128,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "image": "${POSTGRES_IMAGE:?immutable PostgreSQL 17 digest required}",
+      "environment": {
+        "POSTGRES_DB": "mw_local_test",
+        "POSTGRES_USER": "mw_local_test_bootstrap",
+        "POSTGRES_PASSWORD_FILE": "/run/secrets/db_test_bootstrap_password"
+      },
+      "secrets": [
+        "db_test_bootstrap_password"
+      ],
+      "networks": [
+        "test_private"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "../data/postgres-test",
+          "target": "/var/lib/postgresql/data"
+        }
+      ],
+      "ports": [
+        "127.0.0.1:55441:5432"
+      ]
+    }
+  },
+  "networks": {
+    "private": {
+      "name": "marketplace-local-private",
+      "internal": true
+    },
+    "test_private": {
+      "name": "marketplace-local-test-private",
+      "internal": true
+    }
+  },
+  "secrets": {
+    "db_bootstrap_password": {
+      "file": "../config/secrets/db_bootstrap_password"
+    },
+    "db_web_password": {
+      "file": "../config/secrets/db_web_password"
+    },
+    "db_worker_password": {
+      "file": "../config/secrets/db_worker_password"
+    },
+    "django_secret_key": {
+      "file": "../config/secrets/django_secret_key"
+    },
+    "db_test_bootstrap_password": {
+      "file": "../config/secrets/db_test_bootstrap_password"
+    }
+  }
+}

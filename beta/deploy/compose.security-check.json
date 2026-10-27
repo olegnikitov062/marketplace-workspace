@@ -1,0 +1,154 @@
+{
+  "services": {
+    "security-role-check": {
+      "restart": "no",
+      "mem_limit": "256m",
+      "cpus": "0.25",
+      "pids_limit": 128,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "image": "${SECURITY_IMAGE:?reviewed E2-06 dependency image required}",
+      "read_only": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "user": "10001:10001",
+      "tmpfs": [
+        "/tmp:size=64m,mode=1777"
+      ],
+      "networks": [
+        "test-private"
+      ],
+      "depends_on": {
+        "postgres-test": {
+          "condition": "service_healthy"
+        }
+      },
+      "environment": {
+        "ENVIRONMENT": "beta",
+        "PROCESS_MODE": "test",
+        "DB_HOST": "postgres-test",
+        "DB_PORT": "5432",
+        "DB_NAME": "mw_beta_test",
+        "DB_USER": "mw_beta_test_runner",
+        "DB_PASSWORD_FILE": "/run/secrets/db_test_runner_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false",
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key"
+      },
+      "secrets": [
+        "db_test_runner_password",
+        "django_secret_key",
+        "db_test_bootstrap_password",
+        {
+          "source": "mfa_test_encryption_key",
+          "target": "mfa_encryption_key"
+        }
+      ],
+      "command": [
+        "python",
+        "-m",
+        "tools.verify_security_web_role"
+      ],
+      "profiles": [
+        "maintenance"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${SECURITY_SOURCE:?verified detached beta Git worktree backend required}",
+          "target": "/workspace",
+          "read_only": true
+        }
+      ]
+    },
+    "security-suite": {
+      "restart": "no",
+      "mem_limit": "256m",
+      "cpus": "0.25",
+      "pids_limit": 128,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "image": "${SECURITY_IMAGE:?reviewed E2-06 dependency image required}",
+      "read_only": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "user": "10001:10001",
+      "tmpfs": [
+        "/tmp:size=64m,mode=1777"
+      ],
+      "networks": [
+        "test-private"
+      ],
+      "depends_on": {
+        "postgres-test": {
+          "condition": "service_healthy"
+        }
+      },
+      "environment": {
+        "ENVIRONMENT": "beta",
+        "PROCESS_MODE": "test",
+        "DB_HOST": "postgres-test",
+        "DB_PORT": "5432",
+        "DB_NAME": "mw_beta_test",
+        "DB_USER": "mw_beta_test_runner",
+        "DB_PASSWORD_FILE": "/run/secrets/db_test_runner_password",
+        "DJANGO_SECRET_KEY_FILE": "/run/secrets/django_secret_key",
+        "EXTERNAL_READS_ENABLED": "false",
+        "EXTERNAL_WRITES_ENABLED": "false",
+        "REAL_MESSAGES_ENABLED": "false",
+        "SCHEDULES_ENABLED": "false",
+        "MFA_ENCRYPTION_KEY_FILE": "/run/secrets/mfa_encryption_key"
+      },
+      "secrets": [
+        "db_test_runner_password",
+        "django_secret_key",
+        {
+          "source": "mfa_test_encryption_key",
+          "target": "mfa_encryption_key"
+        }
+      ],
+      "command": [
+        "python",
+        "-m",
+        "tools.check_security_postgresql"
+      ],
+      "profiles": [
+        "maintenance"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${SECURITY_SOURCE:?verified detached beta Git worktree backend required}",
+          "target": "/workspace",
+          "read_only": true
+        }
+      ]
+    }
+  },
+  "secrets": {
+    "mfa_test_encryption_key": {
+      "file": "../config/secrets/e2_06_test_encryption_key"
+    }
+  }
+}

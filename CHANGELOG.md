@@ -1,0 +1,2340 @@
+# Журнал изменений и отката
+
+Обязательный журнал проекта по требованию Олега от 30.09.2026. Каждое изменение: дата/время и зона, причина, точный состав, проверка, порядок отката. Записи добавляются; секреты и персональные данные не включаются. Время старых действий, не зафиксированное надёжно, не выдумывается.
+
+## 2026-09-30 — E1: первоначальное обследование
+
+Время: точное время отдельных правок не фиксировалось; локальный/Sheets срез отчёта — до 11:20 МСК (UTC+3). Запись внесена ретроспективно 30.09.2026 после требования журнала.
+
+Что сделано: прочитаны инструкции и план, проверены текущие рабочие копии/Git, доступные материалы WB и ограниченные диапазоны Sheets. Создан `SYSTEM_DISCOVERY.md`; в существующем `SYSTEM_PLAN.md` обновлены статусы E1-01–E1-03, блокировки оставшихся задач и журнал проверок. Недоступные книги не объявлены обследованными. Код приложений не менялся.
+
+Проверка: конкретные источники/измерения — разделы 1–11 отчёта; критерии и зависимости 101 задачи сохранены, этапы 2–8 и D1–D8 не изменены.
+
+Откат: исходный план сохранён в `.change-backups/2026-09-30/SYSTEM_PLAN.before-E1.md`. Чтобы отменить всё обследование, сначала сравнить текущий план с результатом E1 и сохранить последующие правки; затем восстановить только затронутые записи/статусы из этой копии. Если последующих изменений нет, можно восстановить файл целиком. Новый `SYSTEM_DISCOVERY.md` удалять только после проверки отсутствия последующей полезной работы; нынешний файл уже включает продолжение ниже. Исходный `.codebase-memory/` и другие существовавшие файлы не затрагивать.
+
+## 2026-09-30 — E1: завершение после разрешения на чтение
+
+Время: live срезы 11:42–11:56 МСК; последнее сохранение плана 12:05:05 МСК, отчёта 12:10:42 МСК по метаданным файлов, прочитанным перед введением журнала. Это времена снимков/сохранения, а не точное время каждого действия. Запись ретроспективная.
+
+Основание: разрешение Олега «если только на чтение я даю разрешение». Выполнены только SELECT/GET и чтение текущих файлов/состояний. Что сделано: проверены рабочая БД, Airflow и прямой WB API, измерены качество/история/поздние изменения; выбран WB-02 за 29.09.2026; завершены E1-04–E1-10. Обновлены `SYSTEM_PLAN.md`, `SYSTEM_DISCOVERY.md`, добавлен документ запросов `SYSTEM_DISCOVERY_READONLY_CHECKS.sql` и следующие обезличенные артефакты:
+
+- `SYSTEM_DISCOVERY_AIRFLOW.json`
+- `SYSTEM_DISCOVERY_DB_ADDITIONAL.jsonseq`
+- `SYSTEM_DISCOVERY_DB_CHECKS.jsonseq`
+- `SYSTEM_DISCOVERY_DB_METADATA.json`
+- `SYSTEM_DISCOVERY_DB_PERIOD_QUALITY.jsonseq`
+- `SYSTEM_DISCOVERY_DB_QUALITY.jsonseq`
+- `SYSTEM_DISCOVERY_DEPLOYED_CODE.jsonseq`
+- `SYSTEM_DISCOVERY_DOMAIN_DETAILS.json`
+- `SYSTEM_DISCOVERY_FINANCE_PERIODS.jsonseq`
+- `SYSTEM_DISCOVERY_PILOT_CHECK.json`
+- `SYSTEM_DISCOVERY_PILOT_REPEAT.json`
+- `SYSTEM_DISCOVERY_VARIANTS.json`
+
+Проверка: раздел 15 отчёта и названные агрегаты; JSON-артефакты прочитаны обратно; 101 задача и прежние критерии/зависимости проверены сравнением; этапы 2–8 и D1–D8 сохранены. wbToPostgre/wb-reports остались без местных изменений. Рабочая БД, загрузчики, расписания и приложения не менялись; commit/push, деплой, перезапуск, отправки и этап 2 не выполнялись.
+
+Откат только продолжения: использовать `.change-backups/2026-09-30/SYSTEM_PLAN.before-readonly.md` и `SYSTEM_DISCOVERY.before-readonly.md`, сохраняя любые более поздние изменения. При отсутствии последующих правок восстановить эти два файла из копий; удалить только перечисленные 12 созданных артефактов и новый SQL-документ, если они больше не нужны. Отмена всего E1 описана выше. Серверный откат не требуется: на сервере изменение состояния не выполнялось.
+
+## 2026-09-30, 12:15 МСК (UTC+3) — введён обязательный журнал
+
+Что и зачем: по прямому требованию Олега создан этот `CHANGELOG.md`; в `AGENTS.md` закреплена обязательная запись каждого изменения с проверкой и откатом. `CLAUDE.md` уже ссылается на `AGENTS.md` и не изменён. В `.gitignore` добавлено исключение `/.change-backups/`. Пять исходных снимков перенесены/скопированы в постоянный локальный каталог `.change-backups/2026-09-30/`; добавлен `manifest.json` с SHA-256. Временные оригиналы сохранены. Исходная следующая работа/код не затронуты.
+
+Проверка: пять копий совпали с источниками побайтно; контрольные SHA-256 в manifest. Правило читается через AGENTS/CLAUDE; исключение резервных копий проверено через git check-ignore. В журнал включён весь известный состав уже выполненных изменений обследования; неизвестное точное время явно отмечено.
+
+Откат: исходные `AGENTS.md` и `.gitignore` находятся в `.change-backups/2026-09-30/AGENTS.before-journal.md` и `gitignore.before-journal`. После сравнения и сохранения более поздних правок убрать только добавленные правило/исключение; при отсутствии последующих правок восстановить файлы из этих копий. Сам журнал не стирать: добавить запись об отмене. Резервные копии оставить до завершения всех необходимых откатов. Отмена правила требует явного изменения требования Олегом.
+
+## 2026-09-30, 12:29 МСК (UTC+3) — E2-01: предложение D1
+
+Что и зачем: подготовлено самостоятельное техническое решение для операционного пилота WB-02/29.09.2026 и постепенной замены Sheets. Создан `C:/Users/krolo/Documents/finkos-analytics/SYSTEM_ARCHITECTURE.md`: отдельный будущий репозиторий, Django/PostgreSQL, вход/MFA, среды, организации/юрлица/кабинеты/права, чтение источников, provenance/версии, корректировка −162,24 ₽, ограничения истории, зависимости, бюджет, альтернативы и список решений. В `C:/Users/krolo/Documents/finkos-analytics/SYSTEM_PLAN.md` E2-01 переведена в «На проверке», обновлены текущий/следующий шаг, добавлены запись выполнения и история плана. Уточнено: ранее названный «Т1 достигнут» означал обследование, формальный Т1 раздела 7 ещё требует технической версии. D1 не принято, E2-02 и далее не выполнялись. Этот `C:/Users/krolo/Documents/finkos-analytics/CHANGELOG.md` дополнен данной записью.
+
+Копии до изменения: `.change-backups/2026-09-30/E2-01-20260930-122222/SYSTEM_PLAN.before-D1.md` (SHA-256 FD726C2913646A4FD92A8C686213B741E6B58639A8739D2AE357FD58A3D965CC) и `CHANGELOG.before-D1.md` (SHA-256 F3D710274D1EAE777DC9C1D592D81AD2B0519C5517170EF9479773435EE5B8C4). Созданы только эти два резервных файла и новый SYSTEM_ARCHITECTURE.md; каталог резервов проверен git check-ignore, не коммитится.
+
+Проверка: актуальные инструкции/план/обследование/журнал прочитаны; исходный Git main/HEAD fadbd979ec4862232d264dd53f83ed7973b3398a и местная работа сохранены. Сравнение с копией: ровно 101 строка задач, все критерии/зависимости неизменны; только статус E2-01 изменён, остальные строки задач и D1–D8 совпадают. Цифры пилота и поздняя коррекция сверены по PILOT_CHECK/PILOT_REPEAT. Документы прочитаны обратно, ссылки на локальные материалы и добавление без перезаписи прежнего журнала проверены. Публичные официальные документы Django/PostgreSQL/Docker использованы для актуальности LTS/RLS/лицензии без передачи проектных данных. Запуск/совместимость/скорость/тариф конкретного провайдера не проверялись: это предложение, не реализация. Новых запросов на прод, установок, изменений приложений/БД/загрузчиков/расписаний, commit/push, деплоя, перезапусков и внешних отправок не было.
+
+Откат: сначала сравнить нынешние SYSTEM_PLAN.md/SYSTEM_ARCHITECTURE.md/CHANGELOG.md с данной версией и сохранить поздние/посторонние правки. В плане вернуть только заменённые текущий/следующий шаг и статус E2-01 по SYSTEM_PLAN.before-D1.md; убрать только добавленные строки E2-01 из журналов. Целый план восстанавливать из копии лишь при отсутствии поздних правок. Новый `C:/Users/krolo/Documents/finkos-analytics/SYSTEM_ARCHITECTURE.md` удалять только если он всё ещё является исключительно этим предложением и последующей работы/принятого D1 нет. Журнал не восстанавливать поверх более поздних записей и не стирать данную историю: добавить запись об отмене; CHANGELOG.before-D1.md служит контрольным исходным содержимым. Две копии оставить до завершения отката; их удаление допустимо лишь после проверки, что они больше не нужны и исходные документы сохранены. Откат будущего marketplace-workspace/сервера не нужен: они не создавались/не менялись. Общие git reset/clean не применять.
+
+## 2026-09-30 12:49:45 +03:00 — D1: размещение по схеме FBS
+
+Основание: уточнение Олега о размещении на имеющемся облачном сервере и временном домене по аналогии с FBS. Обновлены только SYSTEM_ARCHITECTURE.md (состав инфраструктуры/рабочая среда/расходы/вопросы, добавлен раздел 2.1) и SYSTEM_PLAN.md (добавлены записи выполнения и истории); CHANGELOG.md дополнен этой записью. Новый VPS/покупка домена больше не обязательны: предложены отдельный Compose project/БД, имя analytics.158-160-30-90.sslip.io как непроверенный кандидат и существующий Caddy с отдельным маршрутом. Учтены занятые host-порты 80/443 и влияние общего proxy на FBS. Дополнительные расходы условны, свободные ресурсы не подтверждены.
+
+До правок сохранены три исходных файла: .change-backups/2026-09-30/D1-hosting-20260930-124653/SYSTEM_ARCHITECTURE.md, .change-backups/2026-09-30/D1-hosting-20260930-124653/SYSTEM_PLAN.md, .change-backups/2026-09-30/D1-hosting-20260930-124653/CHANGELOG.md. Это единственные новые файлы этой правки; каталог исключён Git. Новых конфигураций/приложений не создавалось.
+
+Проверка: схема FBS прочитана в локальных deploy/compose.yml, deploy/Caddyfile и docs/deploy.md, файлы FBS не изменены. Возможность имён sslip.io и HTTPS Caddy уточнена по публичным официальным материалам; конкретный DNS/сертификат/сервер не проверены. Сравнение плана с копией: все 101 строки задач и D1–D8 полностью совпадают; E2-01 на проверке, D1 в целом не принято. Документ прочитан обратно: отдельный VPS оставлен альтернативой, расходы обновлены, доступ/деплой требуют отдельного разрешения. История журнала сохранена. Никаких обращений к серверу, установок, изменений источников/расписаний, commit/push, перезапусков или отправок не выполнялось.
+
+Откат: сравнить текущие документы с тремя копиями .change-backups/2026-09-30/D1-hosting-20260930-124653 и сохранить более поздние изменения. Вернуть только заменённые фрагменты SYSTEM_ARCHITECTURE.md и убрать раздел 2.1; в SYSTEM_PLAN.md убрать только две добавленные записи этого уточнения. Целые файлы восстанавливать из копий лишь при отсутствии последующих правок. CHANGELOG.md не перезаписывать/не удалять историю: добавить запись об отмене; его копия предназначена для сравнения. Копии удалять лишь после завершения необходимого отката и проверки сохранности документов. Серверный откат не требуется: сервер не менялся.
+
+## 2026-09-30 13:00:06 +03:00 — D1: одна папка системы на сервере
+
+По требованию Олега в SYSTEM_ARCHITECTURE.md, раздел 2.1, закреплён единый верхний каталог /home/adm_user/marketplace-workspace/ с app/deploy/config/data/logs/backups внутри. Данные собственной БД предлагаются bind mount внутри этой папки; описано сохранение данных при обновлении кода. Объяснены исключения: системные файлы Docker, существующий общий Caddy и внешние резервные копии. SYSTEM_PLAN.md дополнен записью истории; CHANGELOG.md дополнен этой записью. Существующие папки FBS не затрагиваются.
+
+До изменения сохранены .change-backups/2026-09-30/D1-single-folder-20260930-130006/SYSTEM_ARCHITECTURE.md, .change-backups/2026-09-30/D1-single-folder-20260930-130006/SYSTEM_PLAN.md, .change-backups/2026-09-30/D1-single-folder-20260930-130006/CHANGELOG.md — единственные новые файлы этого уточнения; каталог исключён Git. Проверка: прочитан уточнённый фрагмент, сравнение с копией подтверждает сохранность всех 101 строки задач и D1–D8, история CHANGELOG сохранена добавлением. E2-01 на проверке, D1 в целом не принято. На сервер обращений/записей нет, установок/реализации E2-02/commit/push/деплоя/перезапусков/отправок нет.
+
+Откат: сравнить текущие документы с копиями .change-backups/2026-09-30/D1-single-folder-20260930-130006 и сохранить поздние изменения; убрать только добавленные абзацы структуры/исключений в SYSTEM_ARCHITECTURE.md и последнюю запись этого уточнения в SYSTEM_PLAN.md. Целые файлы восстановить из копий лишь если поздних изменений нет. CHANGELOG не перезаписывать: добавить запись об отмене. Копии оставить до завершения отката; удалить их можно только когда они больше не нужны и документы сохранены. Серверный откат не требуется.
+
+## 2026-09-30 13:10:31 +03:00 — D1: основа для множества сложных сценариев
+
+Основание: Олег подтвердил ожидаемые сложные сценарии и множество будущих правок. В SYSTEM_ARCHITECTURE.md пересмотрена рекомендация: React/TypeScript/Vite frontend + Django/DRF API + PostgreSQL/worker; серверные страницы оставлены альтернативой и допускаются для стандартного входа/MFA. Добавлен раздел 2.2 о модулях, OpenAPI/типах, server/UI state, области кэша, деньгах/ID, optimistic concurrency, массовых командах и проверках. Уточнены runtime/dev-зависимости, единая серверная папка, статическая сборка без Node-сервера, оценка сопровождения 6–12 ч/месяц. SYSTEM_PLAN.md дополнен записью истории, CHANGELOG.md — этой записью. Множество сценариев не означает реализацию будущих редакторов в E2-01.
+
+Копии до правки: .change-backups/2026-09-30/D1-ui-20260930-130725/SYSTEM_ARCHITECTURE.md, .change-backups/2026-09-30/D1-ui-20260930-130725/SYSTEM_PLAN.md, .change-backups/2026-09-30/D1-ui-20260930-130725/CHANGELOG.md — единственные созданные файлы; каталог исключён Git. Проверка: локальное чтение инструкций/Git и обратное чтение изменённого решения, сохранность всех 101 строки задач/критериев/зависимостей и D1–D8 сравнением с копией, история CHANGELOG сохранена. Публичные официальные React/DRF материалы проверены без передачи проектных данных. Совместимость пакетов/запуск/производительность не проверены; зависимости не установлены. E2-01 на проверке, D1 не принято, сервер/приложения/источники/E2-02 не менялись; commit/push/деплой/перезапуски/отправки не выполнялись.
+
+Откат: сначала сравнить текущие документы с .change-backups/2026-09-30/D1-ui-20260930-130725 и сохранить поздние правки; вернуть только заменённые рекомендации/строки зависимостей/оценку/пункт решения и убрать раздел 2.2 из SYSTEM_ARCHITECTURE.md; убрать только последнюю запись этой правки из SYSTEM_PLAN.md. Если последующих изменений нет, эти два файла можно восстановить полностью из копий. CHANGELOG не перезаписывать, добавить запись об отмене; его копия — контроль исходной истории. Копии сохранять до завершения отката, удалять лишь если больше не нужны и документы сохранены. Серверный откат не нужен.
+
+## 2026-09-30 13:31:21 +03:00 — D1 принято, включена beta
+
+Основание: Олег согласился с общей архитектурой и после предложения отдельной beta ответил «да, меня устраивает». В SYSTEM_ARCHITECTURE.md зафиксировано принятие D1, добавлен раздел 3.1: production/beta внутри одной серверной папки, независимые контейнеры/БД/ключи/данные, кандидаты адресов, синтетические/разрешённые обезличенные данные, отключённые внешние операции, порядок локально → beta → отдельно разрешённый production, лимиты общего сервера. Уточнены структура папки, среды и оставшиеся конкретные разрешения. В SYSTEM_PLAN.md D1 принято, E2-01 готова как подготовка/принятие решения; обновлены текущий/следующий шаг и журналы. CHANGELOG дополнен этой записью. Принятие архитектуры не является разрешением установок, новых серверных обращений/изменений или начала E2-02.
+
+Копии до изменений: .change-backups/2026-09-30/D1-accepted-20260930-132838/SYSTEM_ARCHITECTURE.md, .change-backups/2026-09-30/D1-accepted-20260930-132838/SYSTEM_PLAN.md, .change-backups/2026-09-30/D1-accepted-20260930-132838/CHANGELOG.md. Это единственные новые файлы, каталог исключён Git. Проверка: 101 задача сохранена, критерии/зависимости совпадают с копией, изменён только статус E2-01; D2–D8 неизменны. D1 принят со ссылкой на документ и сообщение Олега; beta-структура и границы проверены обратным чтением, прежняя история журнала сохранена. Каталоги сервера/окружения не созданы; приложения/БД/загрузчики/расписания не менялись, установки/commit/push/деплой/перезапуски/отправки не выполнялись. Фактическая изоляция/ресурсы/запуск будут проверены в следующих разрешённых задачах.
+
+Откат документов: сравнить с копиями .change-backups/2026-09-30/D1-accepted-20260930-132838, сохранить поздние правки; вернуть только изменённые абзацы/таблицу сред/раздел решения, убрать 3.1 в SYSTEM_ARCHITECTURE.md; вернуть текущий/следующий шаг и статусы E2-01/D1, убрать только добавленные строки журналов этого шага в SYSTEM_PLAN.md. Полное восстановление этих двух файлов из копий допустимо лишь без поздних правок. Принятое решение отменять только по новому указанию Олега; технический откат документа сам по себе не отменяет его согласие. CHANGELOG не перезаписывать: добавить запись об отмене. Копии хранить до завершения отката; удалить только если больше не нужны и документы сохранены. Серверный откат не требуется.
+
+## 2026-09-30 13:47:42 +03:00 — E2-02: конфигурация разделения сред
+
+По текущему заданию Олега подготовлены только локальные неактивные конфигурации local/beta/production; D1 не менялось. Перед созданием C:/Users/krolo/Documents/marketplace-workspace проверен абсолютный путь и отсутствие содержимого. Установки/сервер/источники/приложения/расписания/commit/push/деплой/перезапуски/отправки отсутствуют. E2-03 не начата.
+
+Изменён C:/Users/krolo/Documents/finkos-analytics/SYSTEM_PLAN.md: только статус E2-02 на «На проверке», текущие сводные абзацы и две записи журналов. Дополнен C:/Users/krolo/Documents/finkos-analytics/CHANGELOG.md. Созданы C:/Users/krolo/Documents/finkos-analytics/SYSTEM_ENVIRONMENTS.md и SYSTEM_ENVIRONMENTS_CHECKS.json. Артефакты нового проекта (точный состав):
+
+- `C:/Users/krolo/Documents/marketplace-workspace/.gitignore`
+- `C:/Users/krolo/Documents/marketplace-workspace/README.md`
+- `C:/Users/krolo/Documents/marketplace-workspace/local/config/environment.policy.json.example`
+- `C:/Users/krolo/Documents/marketplace-workspace/local/config/runtime.env.example`
+- `C:/Users/krolo/Documents/marketplace-workspace/local/deploy/compose.template.json`
+- `C:/Users/krolo/Documents/marketplace-workspace/beta/config/environment.policy.json.example`
+- `C:/Users/krolo/Documents/marketplace-workspace/beta/config/runtime.env.example`
+- `C:/Users/krolo/Documents/marketplace-workspace/beta/deploy/compose.template.json`
+- `C:/Users/krolo/Documents/marketplace-workspace/beta/deploy/Caddyfile.fragment.example`
+- `C:/Users/krolo/Documents/marketplace-workspace/production/config/environment.policy.json.example`
+- `C:/Users/krolo/Documents/marketplace-workspace/production/config/runtime.env.example`
+- `C:/Users/krolo/Documents/marketplace-workspace/production/deploy/compose.template.json`
+- `C:/Users/krolo/Documents/marketplace-workspace/production/deploy/Caddyfile.fragment.example`
+- `C:/Users/krolo/Documents/marketplace-workspace/docs/ROLE_CONTRACT.md`
+- `C:/Users/krolo/Documents/marketplace-workspace/docs/ISOLATION_ACCEPTANCE.md`
+
+Исходные SYSTEM_PLAN.md и CHANGELOG.md сохранены и побайтно проверены в C:/Users/krolo/Documents/finkos-analytics/.change-backups/2026-09-30/E2-02-20260930-134024/; manifest.json содержит исходные root hashes и 15 новых путей/хешей. Перед уточнением протокола сохранён SYSTEM_ENVIRONMENTS.before-check-detail.md в той же папке. final-manifest.json — хеши подготовленного результата. Полный состав копий/контроля в этой папке: SYSTEM_PLAN.md, CHANGELOG.md, manifest.json, SYSTEM_ENVIRONMENTS.before-check-detail.md, final-manifest.json, CHANGELOG.before-final-detail.md (копия перед уточнением количества проверок и перечня backup-файлов). Папка исключена Git, не коммитить.
+
+Проверка: JSON parsing и 97 статических инвариантов (все успешны); 101 строка задач сохранена, отличается только статус E2-02; критерии/зависимости и D1–D8 неизменны; исходные посторонние root файлы совпадают по SHA-256. Node/npm/Python/Git найдены; Docker/psql/Caddy/WSL не обнаружены в PATH, Django/DRF/psycopg/PyYAML в текущем Python отсутствуют. Get-NetTCPConnection отказал в доступе, netstat LISTENING проверен: 5173/8100/55440/55441 не слушаются. Порты лишь кандидаты; Compose schema, DB grants, guard, firewall, отправки, DNS/TLS/Caddy и ресурсы/изоляция работающих сред НЕ проверены. Подробный протокол — SYSTEM_ENVIRONMENTS_CHECKS.json; E2-02 не объявлена готовой.
+
+Откат: сначала сравнить текущие файлы с копиями/manifest и сохранить позднюю работу. В SYSTEM_PLAN.md вернуть только изменения E2-02 по исходной копии; целиком восстанавливать только без последующих правок. CHANGELOG не перезаписывать, добавить запись об отмене. Два новых SYSTEM_ENVIRONMENTS-файла и 15 файлов нового проекта удалять по final-manifest только если хеши совпадают и нет дальнейшей полезной работы; каталоги удалять лишь пустые, без рекурсивного удаления marketplace-workspace. Backup-файлы сохранить до завершения нужных откатов; удалить лишь если больше не нужны. Серверного отката нет.
+
+## 2026-09-30 14:02:46 +0300 (Europe/Moscow, UTC+3) — E2-02: read-only сервер и проверка схемы
+
+Основание: текущее разрешение Олега «на сервере ничего не меняй но читать можешь» и отдельное разрешение передачи трёх Compose/two Caddy шаблонов через SSH/stdin только для config/adapt. Первичная передача отклонена auto-review (чтение не разрешает отправку файлов); после отдельного согласия проверка прошла. На сервере не создавались/не менялись файлы, сети, контейнеры, правила или данные; нет установки/build/pull/deploy/reload/restart/DB/API/отправок, E2-03 не начата. Чтение metadata и запуск диагностических процессов могут отражаться в штатных SSH/sudo/Docker журналах; это не изменение конфигурации.
+
+Локально изменены C:/Users/krolo/Documents/finkos-analytics/SYSTEM_ENVIRONMENTS.md (исходную проверку обозначили историческим снимком, добавили раздел 10 и актуальную границу разрешений), SYSTEM_PLAN.md (следующий шаг и записи двух журналов, статусы/критерии/зависимости/D1–D8 без изменений), CHANGELOG.md (добавлена эта запись). Создан только один новый артефакт C:/Users/krolo/Documents/finkos-analytics/SYSTEM_ENVIRONMENTS_SERVER_CHECKS.json. 15 артефактов C:/Users/krolo/Documents/marketplace-workspace не менялись, совпали по исходным SHA-256.
+
+Исходные три изменяемых файла сохранены побайтно в C:/Users/krolo/Documents/finkos-analytics/.change-backups/2026-09-30/E2-02-server-readonly-20260930-140246/SYSTEM_ENVIRONMENTS.md, C:/Users/krolo/Documents/finkos-analytics/.change-backups/2026-09-30/E2-02-server-readonly-20260930-140246/SYSTEM_PLAN.md, C:/Users/krolo/Documents/finkos-analytics/.change-backups/2026-09-30/E2-02-server-readonly-20260930-140246/CHANGELOG.md. В этой же исключённой Git папке создан manifest.json с хешами исходных копий и конечных четырёх файлов; это четвёртый новый файл каталога копий. SYSTEM_ENVIRONMENTS_CHECKS.json и SYSTEM_ARCHITECTURE.md не менялись.
+
+Проверка: SSH дал реальные результаты (13:53:37–13:58:01 +03:00); 4 CPU/7940 MiB RAM/около 10 GiB диска, сети и Caddy mounts/ports проверены, DOCKER-USER пустая, marketplace path отсутствует. Три docker compose config прошли (exit 0, env/path resolution отключены), два caddy adapt прошли (exit 0, только предупреждение форматирования). Ни TLS, полный Caddy validate, runtime роли/guard/egress/отправки/изоляция, ни пиковый capacity не подтверждены; E2-02 остаётся «На проверке». JSON протокол прочитан обратно; 101 строка задач и D1–D8 совпадают с копией; исходная локальная работа сохранена по SHA-256.
+
+Безопасный откат: сначала сравнить текущие три документа с исходными копиями и конечными хешами manifest, сохранить поздние правки. Убрать только изменения этой записи из SYSTEM_ENVIRONMENTS.md и два добавленных журнальных фрагмента/следующий шаг SYSTEM_PLAN.md; полное восстановление этих двух файлов допустимо лишь при отсутствии дальнейшей работы. CHANGELOG не перезаписывать, добавить запись об отмене. SYSTEM_ENVIRONMENTS_SERVER_CHECKS.json удалять только если совпадает с конечным хешем и нет последующей полезной работы. Копии/manifest хранить до завершения необходимых откатов, удалять лишь после проверки, что они больше не нужны. Серверного отката нет: серверная конфигурация не менялась.
+
+## 2026-09-30 14:27:25 +0300 (Europe/Moscow, UTC+3) — E2-02: пустая инфраструктура beta
+
+Основание: текущее условное разрешение Олега менять только новый проект, без изменения других проектов на сервере, максимально подконтрольно. Перед записью target path и имена сетей отсутствовали, parent проверен канонически. В 14:24:07 +03:00 созданы 12 пустых каталогов 0700 и две internal beta сети с ownership/change labels; подробные точные пути/ID/метки — новый C:/Users/krolo/Documents/finkos-analytics/SYSTEM_ENVIRONMENTS_BETA_PREPARATION.json. Приложения/БД/секреты/запуск/порты/установки/production/Caddy/FBS/WB/Airflow/commit/push не менялись или не создавались. Docker создал собственные routes/правила для двух новых bridge сетей; вручную firewall не менялся.
+
+Изменены только C:/Users/krolo/Documents/finkos-analytics/SYSTEM_ENVIRONMENTS.md (актуальные границы разрешения и раздел 11), SYSTEM_PLAN.md (следующий шаг и журналы), CHANGELOG.md (добавление этой записи), C:/Users/krolo/Documents/marketplace-workspace/README.md (актуальное состояние серверных каталогов). До изменений четыре копии сохранены побайтно в C:/Users/krolo/Documents/finkos-analytics/.change-backups/2026-09-30/E2-02-beta-preparation-20260930-142725/SYSTEM_ENVIRONMENTS.md, SYSTEM_PLAN.md, CHANGELOG.md и README.md. В этой папке дополнительно создан manifest.json с before/after SHA-256; каталог исключён Git.
+
+Проверка: read-back каталогов/сетей, обе сети internal=true/IPv6=false/endpoints пусты; ID/internal/member lists прежних сетей и ID/names прежних контейнеров совпали до/после. Новых контейнеров 0, опубликованных портов 0, новых серверных файлов 0. Локальный JSON прочитан обратно, все 101 task rows/D1–D8 совпали с копией. Runtime guard/grants/egress/изоляция/отправки не подтверждены; E2-02 на проверке, E2-03 не начата.
+
+Откат сервера: сверить точные ID/ownership/change labels двух сетей с протоколом и убедиться в нулевых endpoints, затем только точечный docker network rm этих сетей. Проверить канонические paths/пустоту и отсутствие поздней работы, удалить 12 каталогов лишь rmdir в обратном порядке, без рекурсивного удаления. Если позже появились файлы/участники, остановить откат и сохранить их. Локальный откат: сравнить копии/хеши, вернуть лишь изменения этой записи в SYSTEM_ENVIRONMENTS.md, SYSTEM_PLAN.md и README.md; целиком восстанавливать только без дальнейших правок. CHANGELOG не перезаписывать, добавить запись об отмене. Новый JSON удалять только при совпадении хеша и отсутствии последующей полезной работы; backups/manifest хранить до завершения нужных откатов.
+
+## 2026-09-30T16:55:51+03:00 (Europe/Moscow) — E2-03: разрешённая техническая основа и завершение проверки E2-02
+
+Основание: Олег отдельно разрешил зависимости нового проекта и запуск изолированной beta после просьбы двигаться дальше. D1 сохранено, E2-04 не начата. Изменены только новый marketplace-workspace и перечисленные документы finkos. Установлены Python venv и frontend node_modules; серверные base images закреплены digest, backend/frontend собраны. Git нового проекта codex/e2-03 без commit/push/remotes. На сервере только marketplace-beta: main/test PostgreSQL, web, отдельные internal сети и машинные секреты; значения секретов не сохранены в документах/копиях/манифесте. Нет внешних запросов к источникам, production, Caddy, worker, расписаний, бизнес-моделей.
+
+Новые исходники, отчёты и архивы (точные пути):
+- C:\Users\krolo\Documents\finkos-analytics\SYSTEM_STARTUP.md
+- C:\Users\krolo\Documents\finkos-analytics\SYSTEM_STARTUP_CHECKS.json
+- C:\Users\krolo\Documents\marketplace-workspace\artifacts\e2-03-0210f27a7ab1.tar
+- C:\Users\krolo\Documents\marketplace-workspace\artifacts\e2-03-2b9b080278b8.tar
+- C:\Users\krolo\Documents\marketplace-workspace\artifacts\e2-03-30b23567ac62.tar
+- C:\Users\krolo\Documents\marketplace-workspace\artifacts\e2-03-3aba3a4d506d.tar
+- C:\Users\krolo\Documents\marketplace-workspace\artifacts\e2-03-f12881b6d066.tar
+- C:\Users\krolo\Documents\marketplace-workspace\artifacts\e2-03-fece93126054.tar
+- C:\Users\krolo\Documents\marketplace-workspace\backend\.dockerignore
+- C:\Users\krolo\Documents\marketplace-workspace\backend\config\__init__.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\config\guard.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\config\settings.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\config\urls.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\config\wsgi.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\Dockerfile
+- C:\Users\krolo\Documents\marketplace-workspace\backend\manage.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\requirements.in
+- C:\Users\krolo\Documents\marketplace-workspace\backend\requirements.lock
+- C:\Users\krolo\Documents\marketplace-workspace\backend\tests\__init__.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\tests\test_guard.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\tests\test_runtime.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\tools\bootstrap_roles.py
+- C:\Users\krolo\Documents\marketplace-workspace\backend\tools\verify_web_role.py
+- C:\Users\krolo\Documents\marketplace-workspace\beta\deploy\beta.py
+- C:\Users\krolo\Documents\marketplace-workspace\beta\deploy\Caddyfile.fragment.example
+- C:\Users\krolo\Documents\marketplace-workspace\beta\deploy\compose.json
+- C:\Users\krolo\Documents\marketplace-workspace\beta\deploy\compose.template.json
+- C:\Users\krolo\Documents\marketplace-workspace\beta\deploy\images.lock.json
+- C:\Users\krolo\Documents\marketplace-workspace\beta\deploy\reproduce.py
+- C:\Users\krolo\Documents\marketplace-workspace\beta\deploy\verify_isolation.py
+- C:\Users\krolo\Documents\marketplace-workspace\beta\deploy\verify_migrations.py
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\.dockerignore
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\Dockerfile
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\index.html
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\package-lock.json
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\package.json
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\src\main.tsx
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\src\style.css
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\tsconfig.json
+- C:\Users\krolo\Documents\marketplace-workspace\frontend\vite.config.ts
+- C:\Users\krolo\Documents\marketplace-workspace\tools\package_beta.py
+
+Изменённые существующие файлы:
+- C:\Users\krolo\Documents\finkos-analytics\SYSTEM_PLAN.md
+- C:\Users\krolo\Documents\finkos-analytics\SYSTEM_ENVIRONMENTS.md
+- C:\Users\krolo\Documents\finkos-analytics\CHANGELOG.md
+- C:\Users\krolo\Documents\marketplace-workspace\README.md
+- C:\Users\krolo\Documents\marketplace-workspace\.gitignore
+- C:\Users\krolo\Documents\marketplace-workspace\docs\ROLE_CONTRACT.md
+- C:\Users\krolo\Documents\marketplace-workspace\docs\RUNBOOK.md
+
+Перед изменениями сохранены копии в C:\Users\krolo\Documents\finkos-analytics\.change-backups\2026-09-30\E2-03-20260930-153934; полный список копий и hashes — change-manifest.json. Вспомогательный finish_manifest.py и change-manifest.json также созданы здесь. Генерируемые каталоги нового проекта: backend/.venv/, frontend/node_modules/, frontend/dist/, backend/**/__pycache__/, .git/; зависимости/артефакты исключены Git согласно .gitignore. Посторонние .playwright-cli/ и output/ сохранены и не включены в наш перечень.
+
+Серверные точные пути и ID: SYSTEM_STARTUP_CHECKS.json и SYSTEM_STARTUP.md. Источники /home/adm_user/marketplace-workspace/beta/app/backend/, app/frontend/, deploy/; config/source-manifest.json отсутствует — фактический манифест deploy/source-manifest.json. Runtime markers/config: beta/config/provisioned.json, bootstrap.done, bootstrap-test.done, migration-checks.json, e2-03-checks.json, prestart-projects.json; secrets только beta/config/secrets/ (шесть имён в SYSTEM_STARTUP.md, без значений/хешей). Данные beta/data/postgres/ и postgres-test/, копия beta/backups/test/migrations-before.dump, тестовая restore БД mw_beta_test_restore. Source copies: beta/.change-backups/e2-03-prelaunch-project-guard/, e2-03-test-maintenance/, e2-03-runtime-verification/, e2-03-migration-script-syntax/. Конкретная финальная сборка e2-03-0210f27a7ab1; промежуточные архивы/образы сохранены, общий Docker cache/prune не менялся.
+
+Проверки: локальные два guard tests, pip check, TypeScript/Vite build; Linux пять Django tests с полным teardown; чистый временный PostgreSQL/network с provisioning/миграциями/tests/teardown; шесть неверных startup конфигураций отклонены; web DDL/admin/system DB запрещены; web TCP к собственному test PostgreSQL в другой сети запрещён; rollback/forward contenttypes и восстановление синтетического dump в отдельную test DB прошли. 30 исходников и три frontend build-файла совпали по SHA-256. Во время разработки исправлены POSIX путь, Gunicorn control socket, test maintenance CONNECT, module invocation и синтаксис checker, итоговые проверки прошли. FBS перезапускался Олегом параллельно (его подтверждение), наши команды FBS не меняли; остальные семь сравниваемых контейнеров включая Caddy без metadata изменений. HTTPS/общий firewall/пиковая нагрузка/полный Windows Docker запуск не проверены. Детальный результат: SYSTEM_STARTUP_CHECKS.json.
+
+Автопроверка отклонила удаление ошибочно созданного мной корневого ROLE_CONTRACT.md без собственной копии. Затем файл сохранён в accidental-root-ROLE_CONTRACT.md, hash и ожидаемое содержимое сверены; дополнение перенесено в существующий docs/ROLE_CONTRACT.md с предварительной копией, дубликат удалён. Длинная команда финализации ранее не исполнилась из-за Windows error 206, после чего операции разделены.
+
+Откат: сначала сравнить текущие hashes с change-manifest.json, сохранить позднюю/постороннюю работу. Вернуть только свои изменения существующих документов из соответствующих копий, CHANGELOG не перезаписывать — добавить отмену. Новые source/archives и генерируемые каталоги удалять только после проверки принадлежности и отсутствия поздней работы; output/.playwright-cli не трогать. Серверный откат требует конкретного разрешения: сверить labels/IDs/mounts и остановить только marketplace-beta, данные/secrets/dump автоматически не удалять; source вернуть из собственных beta/.change-backups/. Не применять git reset/clean, Docker prune или рекурсивное удаление корня. Протоколы/копии сохранять до завершения необходимых откатов.
+
+Финальный read-back 2026-09-30T16:56:48.8695170+03:00: проверены 101 строка плана, изменились только статусы E2-02/E2-03; история CHANGELOG сохранена побайтным префиксом. Git check-ignore подтвердил, что backend/config/settings.py отслеживаемый источник, а venv/node_modules исключены. Проверка Git sibling потребовала только одноразовый -c safe.directory из-за разных Windows SID; глобальные настройки не менялись. Добавлены имена secret-файлов без значений в SYSTEM_STARTUP.md с предварительной копией before-secret-names-SYSTEM_STARTUP.md. Временный ошибочный дубликат ROLE_CONTRACT удалён после сохранения и hash-проверки; незавершённых отклонённых действий нет.
+
+
+## 2026-09-30T17:16:44+03:00 (Europe/Moscow) — документы перенесены в marketplace-workspace
+
+По текущему запросу Олега комплект нового проекта собран в его отдельной папке. Перенесены 22 корневых SYSTEM_* и 62 файла из девяти подпапок D1/E2 в .change-backups/2026-09-30/. В новый проект скопированы прежний CHANGELOG.md целиком и шесть общих исходных копий с manifest.json; их экземпляры в Finkos сохранены для истории и отката правил старого приложения. Старый журнал дополнен указателем на новое место. Единственный рабочий план находится здесь.
+
+Обновлены README.md, docs/RUNBOOK.md, docs/SYSTEM_DESIGN.md, docs/design/guide.html, docs/design/CHANGELOG.md, docs/design/checksums.sha256, SYSTEM_PLAN.md, SYSTEM_ARCHITECTURE.md, SYSTEM_ENVIRONMENTS.md и SYSTEM_STARTUP.md. Созданы AGENTS.md с перенесённым правилом журнала и CLAUDE.md; правило Next.js осталось только у старого приложения. Старые JSON/SQL-протоколы, история журнала и исторические манифесты сохранены побайтно. Их абсолютные старые пути — исторические: для перенесённых файлов соответствие старого и нового места записано в манифесте переноса; перед будущим откатом пользоваться этим соответствием, старые вспомогательные скрипты автоматически не запускать.
+
+Копии до правок: .change-backups/2026-09-30/workspace-migration/before/old/ и before/new/. Полный точный перечень источников, назначений, размеров и SHA-256: .change-backups/2026-09-30/workspace-migration/manifest.json; состояние до переноса: baseline.json. Служебные файлы этой операции: migrate.py, finalize.ps1, verify.py, manifest.json, baseline.json, verification.json и перечисленные в manifest.json artifact_files исходные копии в этой же папке. Все резервные копии исключены Git. Файлы с жёсткими ссылками заменяются атомарно, чтобы не менять связанные архивные экземпляры.
+
+Проверка: SHA-256 каждого копирования до удаления старого пути, повторная проверка всех файлов после переноса, неизменность всех 101 строк задач и D1–D8, побайтный префикс прежнего журнала в обеих папках, целостность восьми контрольных сумм дизайна, существование исправленных ссылок и неизменность посторонних файлов. Результат фиксируется в verification.json после завершения; до его успешного результата перенос не считается проверенным. Сервер, зависимости и работающие приложения в этой операции не проверялись и не менялись. Commit/push не выполнялись.
+
+Откат: сначала сравнить текущие SHA-256 с manifest.json и сохранить поздние правки. Вернуть каждый отсутствующий старый путь action=move из before/old (для SYSTEM_*) или его destination (для неизменяемых копий D1/E2), сверив sha256_before; существующее содержимое не перезаписывать. Восстановить только правки ссылок по before/new и before/old. Журналы не сокращать, добавить запись об отмене. Новые файлы назначения и инструкции удалять только по точному перечню после восстановления источников, проверки SHA-256 и отсутствия поздней работы. Служебную папку и общие копии сохранять до завершения всех нужных откатов. Общие git reset/clean и рекурсивное удаление корней запрещены.
+
+
+## 2026-09-30T17:46:14+03:00 (Europe/Moscow, UTC+3) — E2-04: локальная модель владения
+
+Причина: текущий запрос Олега реализовать только E2-04 согласно принятому D1 §4. Добавлены UUID-пользователь без глобальных прав, организация, независимое членство/шаблон роли, юрлицо, бренд, кабинет и метаданные технического подключения. История связи кабинета с юрлицом фиксируется с момента наблюдения, без предположений о прошлом; ротация ссылки на секрет не создаёт кабинет. Архивирование сохраняет строки/связи. На PostgreSQL предусмотрены составные FK, неизменность organization_id/исторического приписывания и запрет физического DELETE. Роли не подменяют будущие кабинетные grant/RBAC/RLS. D1 не изменено.
+
+Изменённые существующие файлы и исходные копии:
+- `backend/config/settings.py` → `.change-backups/2026-09-30/E2-04/settings.py`.
+- `SYSTEM_PLAN.md` → `.change-backups/2026-09-30/E2-04/SYSTEM_PLAN.md`.
+- `docs/RUNBOOK.md` → `.change-backups/2026-09-30/E2-04/RUNBOOK.md`.
+- `CHANGELOG.md` → `.change-backups/2026-09-30/E2-04/CHANGELOG.md`.
+
+Новые точные пути (относительно C:/Users/krolo/Documents/marketplace-workspace):
+- `backend/config/ownership_local_checks.py`.
+- `backend/ownership/__init__.py`.
+- `backend/ownership/apps.py`.
+- `backend/ownership/models.py`.
+- `backend/ownership/services.py`.
+- `backend/ownership/migration_operations.py`.
+- `backend/ownership/migrations/__init__.py`.
+- `backend/ownership/migrations/0001_initial.py`.
+- `backend/ownership/migrations/0002_postgresql_ownership_guards.py`.
+- `backend/tests/test_ownership.py`.
+- `backend/tests/test_ownership_migrations.py`.
+- `backend/tools/verify_ownership_recovery.py`.
+- `docs/E2-04_OWNERSHIP.md`.
+- `SYSTEM_OWNERSHIP_CHECKS.json`.
+
+Служебные копии промежуточных новых файлов перед правками: `.change-backups/2026-09-30/E2-04/iteration-1/{models.py,services.py,test_ownership.py,test_ownership.before-pg-test-fix.py,test_ownership_migrations.py,verify_ownership_recovery.py,E2-04_OWNERSHIP.md}`. Манифест файлов/копий с SHA-256: `.change-backups/2026-09-30/E2-04/manifest.json`. Генерируемый Python __pycache__ исключён Git, новых установок/сборочных архивов нет. Журнал и документы сохранены атомарной заменой, исторические hardlink-экземпляры не перезаписаны.
+
+Проверки: 14 тестов обнаружено, 11 успешных, 3 явно пропущены (PostgreSQL FK, триггеры истории/удаления и конкуренция). Две синтетические организации и два кабинета; разные роли одного пользователя, допустимые/чужие связи, сохранение версий и архивов. SQLite: forward, 0002 reverse/forward с сохранением строки, 0001 zero/forward только пустой одноразовой схемы. Django check, migration drift check, pip check и AST 13 исходников прошли. Первоначальный отдельный запуск guard из корня имел ModuleNotFoundError config; корректный запуск из backend и итоговый объединённый тестовый запуск прошли. В промежуточном тесте PostgreSQL-only assertion ошибочно стоял в SQLite-тесте; перенесён в соответствующий PostgreSQL-тест, итоговый набор успешен. Recovery probe проверен только синтаксически, PostgreSQL/dump/restore не запускались. Протокол: SYSTEM_OWNERSHIP_CHECKS.json.
+
+Git: ветка codex/e2-03, исходный комплект untracked; чужие файлы, index/refs, output/.playwright-cli сохранены, commit/push не было. Серверы, Caddy/FBS/WB API/Finkos/production не читались и не менялись; реальные источники/секреты/персональные данные не читались. Старые вспомогательные скрипты не запускались. Исторические абсолютные пути сверены с workspace-migration/manifest.json, копии доступны в marketplace-workspace. E2-04 оставлена «На проверке»: необходимы реальные PostgreSQL FK/триггеры/конкуренция, миграции/откат и новый синтетический dump/restore, затем отдельно согласованная проверка схемы beta. Вход, приглашения, RBAC/RLS, UI, worker и следующие задачи не реализованы.
+
+Безопасный откат: сравнить текущие SHA-256 с manifest.json, сохранить поздние/посторонние правки; вернуть только изменения E2-04 из указанных исходных копий settings/плана/RUNBOOK. CHANGELOG не сокращать, добавить отмену. Новые файлы удалять только по точному перечню при совпадении hash и отсутствии поздней работы, предварительно убрать регистрацию ownership/AUTH_USER_MODEL и ссылки на документы. Промежуточные/исходные копии сохранять до завершения отката. Не использовать reset/clean или рекурсивное удаление корня. На заполненной БД zero удаляет историю: не применять; серверный откат отдельно разрешать через совместимый код/сохранение схемы или проверенный dump в новую собственную БД, без перезаписи живой БД/секретов/данных.
+
+
+## 2026-09-30T17:58:20+03:00 (Europe/Moscow, UTC+3) — локальные ветки main и beta
+
+По текущему запросу Олега: main предназначена для принятых production-релизов, beta — для проверок beta. Принят цикл: локальные коммиты создаёт помощник; Олег проверяет сообщения и содержимое и сам делает push; сервер получает код только из соответствующей Git-ветки после отдельного разрешения. Передача исходников архивами и прямая правка серверных исходников не используются.
+
+Проверка до операции: репозиторий без коммитов, HEAD refs/heads/codex/e2-03, index пуст; весь текущий код/документы untracked. Для создания двух реальных веток предусмотрен один пустой стартовый коммит без исходников, автор Oleg, email oleg@localhost — технический адрес для этого пустого коммита, явно выбранный Олегом в текущем чате; постоянный Git email не настроен. Обе ветки указывают на него, рабочая ветка beta. Код E2-04 не включается в main и не коммитится этой операцией. Hooks и подпись отключены только на команду стартового коммита; глобальная конфигурация не меняется. Push, remote, серверы, миграции и перезапуски не выполняются. После операций проверить обе ссылки, одинаковый commit ID, пустое дерево, текущую beta и неизменность index/рабочих файлов.
+
+Изменённый файл: CHANGELOG.md (только добавление записи). Копия исходного журнала: .change-backups/2026-09-30/git-main-beta/CHANGELOG.md; исходный символический HEAD: .change-backups/2026-09-30/git-main-beta/HEAD.before. Новые служебные файлы: .git/refs/heads/main, .git/refs/heads/beta, Git object пустого стартового коммита и штатные reflogs; резервные копии исключены Git.
+
+Откат: сначала сверить main/beta с пустым стартовым коммитом и убедиться, что нет поздних коммитов/чужой работы или публикации. Только при этих условиях вернуть символический HEAD refs/heads/codex/e2-03 и удалить исключительно созданные main/beta refs через git update-ref с ожидаемым commit ID. Объекты/reflogs автоматически не удалять. CHANGELOG не сокращать, добавить отмену. Рабочие файлы/index не трогать; git reset/clean не применять. Если ветки уже продвинулись или опубликованы, согласовать отдельный откат.
+
+Уточнение перед Git-операцией: копия журнала перед исправлением записи об авторе — .change-backups/2026-09-30/git-main-beta/CHANGELOG.before-author-correction.md. Подтверждена неизменность 17 файлов результата E2-04 и префикса прежнего журнала.
+
+Проверка 2026-09-30T18:01:31+03:00: main и beta указывают на a0463985eea5b02c1c5f1878e261b8422c1a4662, текущая ветка beta, дерево стартового коммита и index пусты. Код не добавлялся в коммит. Read-back выявил нормализацию переводов строк в старом префиксе журнала при уточнении автора; исходные байты восстановлены из собственной копии, новые записи сохранены. Копия до исправления: .change-backups/2026-09-30/git-main-beta/CHANGELOG.before-line-ending-repair.md. Префикс прежнего журнала побайтно сверён. Push/remote/серверных действий не было.
+
+
+## 2026-10-01T10:08:31+03:00 (Europe/Moscow, UTC+3) — локальный коммит технической основы и E2-04
+
+По текущему разрешению Олега создаётся первый локальный коммит файлов на beta. Включены существующая техническая основа E2-01–03 и локальная модель владения E2-04; main не меняется. Сообщение: «Добавлены техническая основа проекта и модель владения E2-04». Автор Oleg; использован ранее выбранный технический локальный адрес oleg@localhost только параметром команды, постоянная Git-конфигурация не меняется. Hooks/подпись отключены только на команду; push, remote, серверные действия отсутствуют.
+
+Полный точный состав коммита:
+- `.gitignore`.
+- `AGENTS.md`.
+- `CHANGELOG.md`.
+- `CLAUDE.md`.
+- `README.md`.
+- `SYSTEM_ARCHITECTURE.md`.
+- `SYSTEM_ENVIRONMENTS.md`.
+- `SYSTEM_OWNERSHIP_CHECKS.json`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_STARTUP.md`.
+- `backend/.dockerignore`.
+- `backend/Dockerfile`.
+- `backend/config/__init__.py`.
+- `backend/config/guard.py`.
+- `backend/config/ownership_local_checks.py`.
+- `backend/config/settings.py`.
+- `backend/config/urls.py`.
+- `backend/config/wsgi.py`.
+- `backend/manage.py`.
+- `backend/ownership/__init__.py`.
+- `backend/ownership/apps.py`.
+- `backend/ownership/migration_operations.py`.
+- `backend/ownership/migrations/0001_initial.py`.
+- `backend/ownership/migrations/0002_postgresql_ownership_guards.py`.
+- `backend/ownership/migrations/__init__.py`.
+- `backend/ownership/models.py`.
+- `backend/ownership/services.py`.
+- `backend/requirements.in`.
+- `backend/requirements.lock`.
+- `backend/tests/__init__.py`.
+- `backend/tests/test_guard.py`.
+- `backend/tests/test_ownership.py`.
+- `backend/tests/test_ownership_migrations.py`.
+- `backend/tests/test_runtime.py`.
+- `backend/tools/bootstrap_roles.py`.
+- `backend/tools/verify_ownership_recovery.py`.
+- `backend/tools/verify_web_role.py`.
+- `beta/config/environment.policy.json.example`.
+- `beta/config/runtime.env.example`.
+- `beta/deploy/Caddyfile.fragment.example`.
+- `beta/deploy/beta.py`.
+- `beta/deploy/compose.json`.
+- `beta/deploy/compose.template.json`.
+- `beta/deploy/images.lock.json`.
+- `beta/deploy/reproduce.py`.
+- `beta/deploy/verify_isolation.py`.
+- `beta/deploy/verify_migrations.py`.
+- `docs/E2-04_OWNERSHIP.md`.
+- `docs/ISOLATION_ACCEPTANCE.md`.
+- `docs/ROLE_CONTRACT.md`.
+- `docs/RUNBOOK.md`.
+- `docs/SYSTEM_DESIGN.md`.
+- `frontend/.dockerignore`.
+- `frontend/Dockerfile`.
+- `frontend/index.html`.
+- `frontend/package-lock.json`.
+- `frontend/package.json`.
+- `frontend/src/main.tsx`.
+- `frontend/src/style.css`.
+- `frontend/tsconfig.json`.
+- `frontend/vite.config.ts`.
+- `local/config/environment.policy.json.example`.
+- `local/config/runtime.env.example`.
+- `local/deploy/compose.template.json`.
+- `production/config/environment.policy.json.example`.
+- `production/config/runtime.env.example`.
+- `production/deploy/Caddyfile.fragment.example`.
+- `production/deploy/compose.template.json`.
+- `tools/package_beta.py`.
+
+Изменён только CHANGELOG.md (добавление записи); его исходная копия: .change-backups/2026-10-01/local-commit-20261001-100830/CHANGELOG.md. Служебный манифест состава и SHA-256: .change-backups/2026-10-01/local-commit-20261001-100830/manifest.json, исключён Git. Сами исходники/шаблоны не изменены. Протоколы реальных источников SYSTEM_DISCOVERY*, остальные исторические JSON/JSONSEQ-проверки, docs/design/, output/, .playwright-cli/, runtime-файлы/секреты, venv/node_modules, dist, data и резервные копии не включены, не удалялись.
+
+Повторная проверка: 14 локальных тестов, 11 успешных, 3 PostgreSQL-пропуска; Django system check и проверка отсутствия migration drift прошли. E2-04 остаётся «На проверке», PostgreSQL/beta/restore не проверены. До commit проверить точный index, неизменность source hashes, отсутствие секретных/runtime-путей и правильную ветку; после commit — состав/tree, отсутствие staged changes и неизменность main.
+
+Откат: сохранять рабочие файлы и поздние изменения. Если требуется отмена опубликованного/продвинутого коммита, отдельный обратный коммит с сохранением исходников; git revert коммита первого добавления файлов удалит их из дерева и рабочего каталога, поэтому автоматически его не запускать. Изменение ссылки beta назад допустимо только по отдельному запросу и после проверки отсутствия поздних коммитов/публикации, без reset --hard/clean и без удаления файлов. CHANGELOG не сокращать, добавить отмену.
+
+
+## 2026-10-01T10:20:28+03:00 (Europe/Moscow, UTC+3) — исключены локальные протоколы из списка Git
+
+По запросу Олега о многочисленных U-файлах добавлены точные корневые исключения в .gitignore для 18 существующих локальных документов/протоколов обследования и исторических проверок, а также .playwright-cli/ и output/. Эти файлы ранее сознательно не включались в первый коммит, но исключений для них не было. Файлы не удалены и не изменены. docs/design/ содержит исходники макета и не скрывается; SYSTEM_OWNERSHIP_CHECKS.json и рабочие SYSTEM_PLAN/ARCHITECTURE/ENVIRONMENTS/STARTUP продолжают отслеживаться.
+
+Изменены только .gitignore и CHANGELOG.md. Исходные копии: .change-backups/2026-10-01/gitignore-102028/.gitignore и .change-backups/2026-10-01/gitignore-102028/CHANGELOG.md. Новые правила:
+- `/SYSTEM_DISCOVERY.md`.
+- `/SYSTEM_DISCOVERY_AIRFLOW.json`.
+- `/SYSTEM_DISCOVERY_DB_ADDITIONAL.jsonseq`.
+- `/SYSTEM_DISCOVERY_DB_CHECKS.jsonseq`.
+- `/SYSTEM_DISCOVERY_DB_METADATA.json`.
+- `/SYSTEM_DISCOVERY_DB_PERIOD_QUALITY.jsonseq`.
+- `/SYSTEM_DISCOVERY_DB_QUALITY.jsonseq`.
+- `/SYSTEM_DISCOVERY_DEPLOYED_CODE.jsonseq`.
+- `/SYSTEM_DISCOVERY_DOMAIN_DETAILS.json`.
+- `/SYSTEM_DISCOVERY_FINANCE_PERIODS.jsonseq`.
+- `/SYSTEM_DISCOVERY_PILOT_CHECK.json`.
+- `/SYSTEM_DISCOVERY_PILOT_REPEAT.json`.
+- `/SYSTEM_DISCOVERY_READONLY_CHECKS.sql`.
+- `/SYSTEM_DISCOVERY_VARIANTS.json`.
+- `/SYSTEM_ENVIRONMENTS_BETA_PREPARATION.json`.
+- `/SYSTEM_ENVIRONMENTS_CHECKS.json`.
+- `/SYSTEM_ENVIRONMENTS_SERVER_CHECKS.json`.
+- `/SYSTEM_STARTUP_CHECKS.json`.
+- `/.playwright-cli/`.
+- `/output/`.
+
+Проверка: git check-ignore для всех перечисленных путей; git status и diff — только .gitignore/CHANGELOG и ранее неотслеживаемые исходники docs/design. Содержимое локальных протоколов/секретов не читалось, сервер/другие проекты не затрагивались. Изменение оформляется отдельным локальным коммитом beta без push.
+
+Откат: после сравнения текущего diff и сохранения поздних правок удалить только добавленный блок исключений либо вернуть .gitignore из копии, если поздних изменений нет. CHANGELOG не сокращать, добавить отмену. Исходные документы/артефакты не удалять. Общие reset/clean не использовать.
+
+
+## 2026-10-01T10:23:07+03:00 (Europe/Moscow, UTC+3) — макет интерфейса сохранён в Git
+
+По текущему запросу Олега восемь существующих файлов docs/design добавляются отдельным локальным коммитом beta как дизайн-документация на синтетических данных, без включения в рабочий frontend/backend или изменения D1/объёма задач. Сообщение: «Добавлены макет интерфейса и документация дизайна». Файлы макета не изменялись:
+- `docs/design/CHANGELOG.md`.
+- `docs/design/README.md`.
+- `docs/design/checksums.sha256`.
+- `docs/design/grid-app.js`.
+- `docs/design/grid-engine.js`.
+- `docs/design/grid-style.css`.
+- `docs/design/guide.html`.
+- `docs/design/prototype.html`.
+
+Изменён только корневой CHANGELOG.md добавлением этой записи; исходная копия: .change-backups/2026-10-01/design-commit-102307/CHANGELOG.md. Проверены восемь файлов, контрольные суммы checksums.sha256, текущая beta и отсутствие прежних tracked/staged изменений. После коммита проверить состав девяти файлов и чистоту рабочего дерева; main не меняется. Push, сервер, зависимости, реальные источники и данные не затрагиваются.
+
+Откат: сохранить поздние изменения, затем при необходимости отдельным обратным коммитом убрать только добавление макета, предварительно сохранив его локальную копию; CHANGELOG не сокращать, добавить запись об отмене. Не удалять позднюю работу и не применять reset --hard/clean.
+
+
+## 2026-10-01T10:40:34+03:00 (Europe/Moscow, UTC+3) — настроен origin GitHub
+
+По переданному Олегом адресу локальному репозиторию назначается origin https://github.com/olegnikitov062/marketplace-workspace.git. До операции remotes отсутствуют, рабочая beta, index и tracked файлы чисты. Изменяется только локальная Git-конфигурация origin и добавляется эта запись в CHANGELOG.md; настройка оформляется отдельным локальным коммитом журнала. Исходная копия журнала: .change-backups/2026-10-01/origin-104034/CHANGELOG.md. Секреты/credentials из .git/config не читаются и не копируются.
+
+Проверка: git remote get-url origin должен вернуть ровно согласованный HTTPS-адрес; main/beta refs не изменяются настройкой remote, git status после локального коммита чист. Запросов к GitHub, fetch, push, установки upstream и серверных действий нет; существование/доступность удалённого репозитория этой локальной настройкой не подтверждается. Олег публикует ветки самостоятельно после проверки коммитов.
+
+Откат: сверить текущий URL origin с указанным и убедиться, что remote не изменён позднее; удалить только созданный origin через git remote remove origin при согласованном откате. Журнал не сокращать, добавить отмену. Рабочие файлы/ветки и чужую Git-конфигурацию не менять, reset/clean не применять.
+
+
+## 2026-10-01T10:46:04+03:00 (Europe/Moscow, UTC+3) — начаты PostgreSQL-проверки E2-04 на beta
+
+Текущее разрешение Олега «тогда делай» относится к завершению E2-04 на beta после публикации. Локальная/опубликованная beta e077a7a5aed263b50d1212176806220a7ca4f971 совпадают, сервер имеет Git и доступ к этому публичному HTTPS-репозиторию. На beta работает прежний web E2-03; его не заменяем/не перезапускаем в ходе тестов. Код на сервер получает только через Git: новая отдельная копия /home/adm_user/marketplace-workspace/beta/app/repository из ветки beta, с проверкой точной ревизии. Старые app/backend, app/frontend, deploy, secrets/data и copy E2-03 сохраняются. Никаких прямых правок серверных исходников или передачи архивов.
+
+План разрешённых действий: clone новой Git-копии; сборка отдельного образа из существующего Dockerfile/lock; одноразовые контейнеры только тестовой сети marketplace-beta, свои PostgreSQL-тесты, создание двух фиксированных синтетических recovery БД, новый dump/restore с запретом перезаписи. Перед изменениями проверить отсутствие занятых имён/пользовательской модели и mounts; не применять prepare/start/bootstrap или прежние destructive scripts. Главную mw_beta и работающий web пока не менять; необходимость последующего применения оценить по результату.
+
+Локально изменён пока только CHANGELOG.md добавлением этой записи. Исходные копии документов/протокола до обновления: .change-backups/2026-10-01/E2-04-beta-104604/CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_OWNERSHIP_CHECKS.json, docs/E2-04_OWNERSHIP.md и docs/RUNBOOK.md. Новая серверная Git-копия удаляется при откате только после проверки canonical path, отсутствия поздней работы и принадлежности clone; никаких общих reset/clean/prune. Новые БД/копии/образы сохранять до проверки результата и отдельного решения очистки. Серверные source исправления при выявлении ошибки — только локальный commit → push Олега → Git на сервере.
+
+
+## 2026-10-01T10:53:21+03:00 (Europe/Moscow, UTC+3) — E2-04 подтверждена на PostgreSQL beta
+
+Причина: завершение текущей E2-04 по разрешению Олега. Через Git clone получена опубликованная beta e077a7a в /home/adm_user/marketplace-workspace/beta/app/repository, без прямого изменения app/backend/frontend/deploy и без архивов. Offline Docker build нового образа e2-04-e077a7a не прошла: pip-layer не кэширован, сеть отключена, новые зависимости/образы не установлены. Проверки продолжены существующим образом E2-03 с совпадающим lock и read-only Git source mount; прямых серверных source-исправлений нет.
+
+Проверки выполнены, реальные результаты SSH: PostgreSQL 17.11; 17 Django tests успешно без пропусков, включая две организации/права одного пользователя, смешанные FK/raw UPDATE/DELETE, архивы/историю, конкуренцию, 0002 reverse/forward с сохранением строки и 0001 zero/forward на пустой одноразовой схеме. Test DB test_mw_beta_test и одноразовые test/web контейнеры удалены штатным teardown. Seed/dump/restore/verify двух новых собственных синтетических БД прошли, данные/миграции совпадают; повторно проверены FK/история/DELETE. В restore: 3 validated composite FK, 15 triggers, 2 организации/2 членства/2 версии. Web role DDL/system DB CONNECT denied, admin/migration privileges отсутствуют. Старый dump E2-03 SHA-256 неизменен. Работающий web ID/image/StartedAt неизменны; главная mw_beta не мигрировалась, web не пересоздавался. Это не деплой нового работающего web.
+
+Изменены только локальные CHANGELOG.md, SYSTEM_PLAN.md (единственный статус E2-04 → Готово, остальные задачи/критерии неизменны), SYSTEM_OWNERSHIP_CHECKS.json, docs/E2-04_OWNERSHIP.md, docs/RUNBOOK.md. Исходные копии перед этой операцией: .change-backups/2026-10-01/E2-04-beta-104604/ с сохранением относительных путей пяти файлов. Протокол результата с ревизией, image ID, mounts, dump paths/hashes и границами: SYSTEM_OWNERSHIP_CHECKS.json. Манифест локальных файлов и hashes: .change-backups/2026-10-01/E2-04-beta-104604/manifest.json. Изменения оформляются локальным commit beta, push выполняет Олег.
+
+Новые серверные артефакты: Git clone beta/app/repository/ (с .git и точной ревизией), две БД mw_beta_test_e2_04_recovery/mw_beta_test_e2_04_restore в только postgres-test, beta/backups/test/e2-04-20261001T074853Z.dump, SHA-256 9be0c324e2b8a0ed291ad71e9b07965ddac2f5a7f4fe836251726eac22fc22be. Они сохранены, не удалялись. Незавершённая offline build могла создать промежуточные Docker cache layers; prune не выполнялся. Старые restore DB/dump, runtime secrets/data и текущий web сохранены. Production/Caddy/FBS/WB API/Finkos, реальные источники/персональные данные, внешние сообщения и следующие задачи не затрагивались. Служебные DB credentials потреблялись внутри собственных контейнеров, значения не выводились/не экспортировались.
+
+Откат: сначала сравнить текущие hashes с manifest.json, сохранить позднюю работу; применить только обратные правки плана/документов/протокола из пяти исходных копий. CHANGELOG не сокращать, добавить отмену. На главной beta нет миграций/перезапусков для отката. Новую Git-копию и синтетические БД/dump удалять только по отдельному решению после проверки canonical path/ревизии/имён/отсутствия поздней работы; существующие данные/копии E2-03 не трогать. Не применять reset --hard/clean, root deletion, Docker prune или восстановление dump поверх живой БД.
+
+
+## 2026-10-01T11:24:21+03:00 (Europe/Moscow, UTC+3) — подготовлен локальный жизненный цикл аккаунта E2-05
+
+Основание: текущий запрос Олега только на E2-05, локальные коммиты beta разрешены; push выполняет Олег. До работы beta/HEAD 2cfec7e, дерево чистое. Read-only git ls-remote подтвердил remote beta e077a7a5aed263b50d1212176806220a7ca4f971: 2cfec7e на момент проверки не опубликован. Первоначальный сетевой отказ обходился разрешённым read-only запросом с расширенным сетевым доступом; сервер проекта не опрашивался. Состояние web/главной beta E2-03 взято из исходного протокола, не из новой live-проверки.
+
+Добавлены accounts: отдельный синтетический контакт, приглашение с SHA-256/сроком/снимком области, атомарное принятие/повтор/отзыв, штатные Django password forms/session login/logout/reset, операторская глобальная блокировка с инвалидацией старого пароля/session/reset, locmem-only доставка, CSRF и счётчики попыток/категории отказов. Схема владения и миграции E2-04 не менялись. Граница E2-06 заранее обозначена: только сессия входа и блокировка; TOTP/полное управление сессиями/экспорты не реализованы. Олег подтвердил предварительные 24 часа invitation/30 минут recovery, pending-only повтор той же области и операторскую блокировку без обхода приглашением; прочие лимиты/срок сессии и ограничения выдачи owner/присоединения существующей личности остаются консервативной тестовой конфигурацией, не принятой D3/D7.
+
+Точный состав связанного изменения (пути относительно C:/Users/krolo/Documents/marketplace-workspace):
+- `CHANGELOG.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `SYSTEM_PLAN.md`.
+- `backend/accounts/__init__.py`.
+- `backend/accounts/apps.py`.
+- `backend/accounts/backends.py`.
+- `backend/accounts/delivery.py`.
+- `backend/accounts/limits.py`.
+- `backend/accounts/management/__init__.py`.
+- `backend/accounts/management/commands/__init__.py`.
+- `backend/accounts/management/commands/block_personal_account.py`.
+- `backend/accounts/migrations/0001_initial.py`.
+- `backend/accounts/migrations/0002_immutable_invitation.py`.
+- `backend/accounts/migrations/__init__.py`.
+- `backend/accounts/models.py`.
+- `backend/accounts/policy.py`.
+- `backend/accounts/services.py`.
+- `backend/accounts/urls.py`.
+- `backend/accounts/views.py`.
+- `backend/config/accounts_local_checks.py`.
+- `backend/config/settings.py`.
+- `backend/config/urls.py`.
+- `backend/tests/test_account_transactions.py`.
+- `backend/tests/test_accounts.py`.
+- `backend/tests/test_runtime.py`.
+- `backend/tools/check_accounts_postgresql.py`.
+- `backend/tools/verify_account_recovery.py`.
+- `docs/E2-05_ACCOUNTS.md`.
+- `docs/RUNBOOK.md`.
+
+Исходные копии шести существующих файлов сохранены до изменения в `.change-backups/2026-10-01/E2-05-local/` с теми же относительными путями: backend/config/settings.py, backend/config/urls.py, backend/tests/test_runtime.py, SYSTEM_PLAN.md, docs/RUNBOOK.md, CHANGELOG.md. Существующие CRLF settings.py сохранены. Служебный manifest.json в этой папке хранит точные новые/изменённые пути и hashes; копии исключены Git. Новые файлы — все пути в составе, кроме этих шести. Генерируемые Python caches исключены Git; SQLite test schema была только в памяти и удалена тестовым runner.
+
+Проверки: существующий Python 3.14.7/Django 5.2.17, pip check без ошибок. 63 теста SQLite in-memory: 51 успешно, 12 явных skips (8 E2-05 PostgreSQL, 3 E2-04 PostgreSQL, 1 PostgreSQL runtime). Проверены действующий/истёкший/использованный/отозванный токены, замена, правильный/неправильный пароль, блокировка/старые сессии/reset, recovery одноразовость/истечение, две организации/запрет повышения и чужих связей, CSRF включая anonymous и Origin, отсутствие SMTP, лимиты, offline миграции/возврат. Django check, migration drift check, AST 24 Python-файлов и whitespace check с учётом CRLF прошли. Первые HTTP-тесты выявили отсутствие Origin у HTTPS test client и обработку пустого POST без Content-Type; исправлены тестовый запрос same-origin и допустимость пустого тела операций без полей, CSRF не отключался. Последний полный прогон успешен.
+
+E2-05 оставлена «На проверке»: PostgreSQL/конкуренция/триггеры/реальные миграции/restore и ограниченная web-role HTTP проверка не выполнялись. SYSTEM_PLAN обновлён по этому результату, протокол SYSTEM_ACCOUNT_CHECKS.json и docs/E2-05_ACCOUNTS.md содержат факты, ограничения и точный A/B план серверных проверок. Новые guarded scripts заранее отказываются от занятых тестовых БД; любые skips PostgreSQL-приёмки считаются ошибкой. Текущая web-роль SELECT-only недостаточна для lifecycle, её DML grants/backup/обновление web требуют отдельной подготовки и разрешения. Никаких установок, SSH, серверных миграций/перезапусков, push, production/main/Caddy/FBS/WB/Finkos, реальных источников, адресатов или данных.
+
+Изменение оформляется одним локальным коммитом beta автора Oleg: «Добавлен жизненный цикл личного аккаунта E2-05». Перед commit проверить точный index, hashes, отсутствие runtime/secret/backup-путей; после — автор, состав, чистоту дерева и неизменность main. Значения паролей/токенов/писем/секретов в журнал или протокол не включены.
+
+Откат: сначала сравнить текущие hashes с manifest.json и сохранить позднюю работу. Применять только обратный diff этого изменения, цельные шесть исходных копий — исключительно без поздних правок; CHANGELOG не сокращать, добавить отмену. Новые файлы удалять только по манифесту при совпадении hashes и отсутствии поздней работы/потребителей, сначала убрать регистрацию accounts/URL. Локальный commit отменять отдельным согласованным обратным изменением, не reset --hard/clean. accounts 0002 reverse/forward сохраняет строки, но временно снимает защиту; accounts zero удаляет свои таблицы и допустим только на пустой одноразовой схеме. Заполненную БД восстанавливать только в отдельную новую БД из проверенного dump; главная beta этим изменением не затронута. Будущие A/B БД/dump не удалять автоматически, старые E2-03/E2-04 артефакты сохранять.
+
+
+## 2026-10-01T11:43:44+03:00 (Europe/Moscow, UTC+3) — E2-05 проверена на PostgreSQL, выполнены A/B
+
+Основание: текущее «да разрешаю» Олега на Git pull beta, изолированные PostgreSQL-тесты и синтетический dump/restore; главная БД и работающий web исключены. Публикация beta 342192b4296c84152f3da0934715816562c9fe9f подтверждена; серверный чистый checkout /home/adm_user/marketplace-workspace/beta/app/repository обновлён с e077a7a только Git pull --ff-only. Никаких source-архивов/ручных server source правок. Совпали image E2-03 sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b и requirements.lock SHA-256 c037270b5ef4e3d83696959bbf7d62eee9021e122877a28efdb2b975020efd21. Новая сборка/установка не выполнялась. Git backend фактически монтировался /workspace:ro, test-контейнер подключён только test-private.
+
+Реальные результаты SSH: PostgreSQL 17.11, 63 tests за 75.687 s, все успешны без skips; concurrent accept/recovery/reinvite/block/counters, immutable raw SQL, forward/reverse/forward и пустая accounts zero/forward, regression E2-04. Django check и migration drift check прошли. Django test_mw_beta_test и одноразовые контейнеры удалены штатно. Новый guarded seed/dump/restore/verify прошёл: обе БД равны по ownership/accounts/sessions/миграциям, поведенческие проверки входа/восстановления/блокировки/повтора и SQL-ограничения после restore успешны, их транзакции откачены. В restore 2 организации, 5 synthetic User, 6 Membership, 4 контакта, 4 приглашения, 0 сессий и 2 новых защитных триггера.
+
+Новые серверные артефакты: БД mw_beta_test_e2_05_recovery и mw_beta_test_e2_05_restore только в postgres-test, owner mw_beta_test_runner; /home/adm_user/marketplace-workspace/beta/backups/test/e2-05-20261001T083919Z.dump, mode 0600, SHA-256 4d5aa823d68bf109f1b8801bad893ee50f07e0966e7c1ebac69b1cbac93063d8. Пустота restore до восстановления проверена. БД/dump сохранены; seed повторно не запускать, имена заняты. Dump не экспортирован. Старые E2-03/E2-04 dumps сохранили SHA-256. Permission denied при checksum E2-04 от SSH-пользователя решён чтением внутри своего postgres-test без смены прав; ошибка последнего CRLF после /dev/null остановила одну shell-команду до запуска контейнера, исправлена передача команды. Source-исправлений не требовалось.
+
+Главная mw_beta до/после: только contenttypes:2. Web ID 78a7513c20dc2d851d80c60b055cb337f02f03aa024b96ebca573e2f696f2141, StartedAt 2026-09-30T13:13:33.547827254Z и image неизменны; ready успешен. Оба постоянных PostgreSQL контейнера также сохранили ID/image/StartedAt. Read-only SQL подтвердил web без superuser/CREATEDB/CREATEROLE/BYPASSRLS, SELECT=true и UPDATE=false на django_migrations. Grants не менялись. Главная beta не мигрировалась и web не перезапускался; это не новый работающий web.
+
+Изменены только локальные файлы:
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `docs/E2-05_ACCOUNTS.md`.
+- `docs/RUNBOOK.md`.
+
+Причина: сохранить фактические результаты A/B и оставшийся разрыв. Исходные копии пяти файлов до правок: .change-backups/2026-10-01/E2-05-beta/ с исходными относительными путями; manifest.json там содержит исходные/итоговые hashes. E2-05 оставлена «На проверке»: lifecycle под ограниченной web-ролью и необходимые DML/column grants ещё не проверены; test_runner их не заменяет. Пункт C требует отдельного плана/разрешения. Локальный коммит автора Oleg: «Подтверждены PostgreSQL-проверки и восстановление E2-05». Push выполняет Олег, агент push не выполнял. Код E2-05 не менялся; статусы/критерии остальных задач сохранены. Production/main/Caddy/FBS/WB/Finkos, реальные источники/данные/отправки, E2-06 и зависимости не затрагивались.
+
+Откат: сначала сравнить hashes и сохранить позднюю работу; вернуть только обратные изменения документов/протокола из этих копий, CHANGELOG не сокращать, добавить отмену. Главная beta не требует миграционного отката. Обновлённую серверную Git-копию не откатывать автоматически; возврат ревизии только после проверки чистоты/поздних коммитов и отдельного решения, без reset --hard/clean. Новые две БД/dump сохранять до отдельного решения очистки; перед удалением проверить точные имена/canonical path/принадлежность и отсутствие поздней работы. Старые БД/dump/config/secrets/data не трогать, общий prune не применять, поверх живой БД не восстанавливать.
+
+
+## 2026-10-01T12:14:52+03:00 (Europe/Moscow, UTC+3) — подготовлены права web и проверка E2-05 под ограниченной ролью
+
+Основание: «делай» после предложения подготовить конкретные DML-права/проверку; только локальная подготовка C, серверное применение отдельно. Публикация предыдущего 7ad6b67 подтверждена read-only ls-remote; агент push не выполнял. Причина: успешные A/B под test_runner не доказывают достаточность/ограниченность web-привилегий.
+
+Подготовлен точный column INSERT/UPDATE и DELETE только sessions, без blanket DML/sequence grants/GRANT OPTION/DDL/членства в миграторе. Apply/revoke проверяют beta/роль/миграции/ACL и работают транзакционно, отказываются при позднем расширении прав. PostgreSQL row locks требуют UPDATE колонки: явно предложены два SECURITY INVOKER BEFORE UPDATE OF id guards на Organization/Membership, запрещающие web менять id даже на прежний. Поля/связи/миграции E2-04 не менялись; guards применяются/отзываются вместе с SQL-привилегиями. Это не RBAC/RLS и не защита от произвольного SQL с INSERT membership: области и роли пользователя проверяет сервис E2-05.
+
+C1 probe создаёт только новую синтетическую БД/LOGIN-роль mw_beta_test_e2_05_web, отказывает при занятых именах, проверяет grant/revoke/reapply, настоящий limited LOGIN session_user, HTTP/CSRF lifecycle, SQL-отказы и невозможность RESET/SET ROLE эскалации. Callback блокировки отдельно выполняется runner. Пароль только в памяти; statement/error statement logging административного соединения отключён на создание verifier; finally отключает новую роль и удаляет verifier, БД сохраняется. Обрыв процесса требует отдельного readback/отключения своей роли. C2 пока лишь конкретный план backup/restore, Git worktree и read-only overlay существующего образа, main migration/grant и web-only update с откатом. Новых зависимостей/публичной доставки/сессий E2-06/дальнейших задач нет.
+
+Точный состав изменения (пять существующих и десять новых файлов):
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `docs/E2-05_ACCOUNTS.md`.
+- `docs/RUNBOOK.md`.
+- `backend/tools/account_web_grants.py`.
+- `backend/tools/manage_account_web_grants.py`.
+- `backend/tools/account_role_scenario.py`.
+- `backend/tools/verify_account_web_role.py`.
+- `backend/tools/verify_account_web_runtime.py`.
+- `backend/tests/test_account_role_preparation.py`.
+- `beta/deploy/compose.accounts-check.json`.
+- `beta/deploy/compose.accounts-web.json`.
+- `beta/deploy/e2_05_main_before_checks.sql`.
+- `docs/E2-05_WEB_ROLE.md`.
+
+Первые пять исходных файлов сохранены до правок в `.change-backups/2026-10-01/E2-05-web-role/` с исходными относительными путями. Служебный manifest.json содержит исходные/итоговые SHA-256 и список новых файлов, каталог исключён Git. Параллельные изменения docs/SYSTEM_DESIGN.md и docs/design/{grid-app.js,grid-style.css,guide.html,prototype.html} сохранены вне этого изменения/коммита.
+
+Проверки: 67 SQLite in-memory tests — 55 успешно, 12 прежних PostgreSQL/runtime skips; четыре новых теста повторно успешны после уточнений. Django check, makemigrations --check --dry-run, pip check, AST шести новых Python-файлов, JSON overlays/границы сервисов и whitespace прошли. Default SQL plan не делает Django setup/подключение. Проверены неизменность всех 101 строк задач, автор/состав commit и отсутствие посторонних путей в index. Новые PostgreSQL grants/guards/identity и Docker Compose runtime ещё не проверены. Прежние A/B: 63 PostgreSQL-теста и synthetic dump/restore на 342192b; это отдельное доказательство, не проверка новой подготовки.
+
+Сервер в этом изменении не опрашивался/не менялся: нет новых серверных БД/ролей/GRANT/миграций/рестартов. E2-05 «На проверке», точные C1/C2 требуют push Олега и отдельных разрешений. Последний подтверждённый web/главная БД остаются E2-03. Локальный коммит автора Oleg: «Подготовлены права web и проверка E2-05 под ограниченной ролью». Production/main/Caddy/FBS/WB/Finkos, реальные данные/источники/отправки не затронуты; токены/пароли/ссылки/персональные данные не включены в отчёты.
+
+Безопасный откат: сравнить hashes manifest с текущими файлами, сохранить позднюю работу; применять только обратный diff, CHANGELOG не сокращать, добавить отмену. Цельные пять копий возвращать только при отсутствии поздних изменений. Десять новых файлов удалять только при совпадении hashes и отсутствии поздних потребителей; отдельный согласованный reverse commit, без reset --hard/clean. Серверного отката сейчас нет. После будущего C1 сохранять новую БД/NOLOGIN роль; после будущего C2 сначала вернуть только web на исходный base compose/E2-03 image, затем guarded revoke точных DML/guards. Добавочные таблицы/данные/worktree/dumps сохранять; zero/live restore/общий prune запрещены.
+
+Уточнение 2026-10-01T12:16:29+03:00: перед окончательным оформлением того же локального коммита восстановлен исходный LF в SYSTEM_PLAN.md и SYSTEM_ACCOUNT_CHECKS.json, чтобы diff не содержал массовой смены окончаний строк. Промежуточные копии этих двух файлов и CHANGELOG сохранены в .change-backups/2026-10-01/E2-05-web-role/before-eol-normalization/. Семантика неизменна; повторно проверены hashes, состав и whitespace. Коммит не публиковался агентом.
+
+
+## 2026-10-01 12:21:48 МСК (UTC+3) — светлая и тёмная темы локального дизайна
+
+По запросу пользователя добавлены две темы с переключателем в шапке и настройках. Светлая остаётся начальной. Выбор хранится в настройках каждого демо-профиля, не меняет черновики и сохранённые виды и восстанавливается до запуска интерфейса. Цвета колонок и правил адаптируются к тёмному фону с сохранением исходных значений; все настройки таблицы доступны в обеих темах. Печать использует светлую палитру. Описание системы синхронизировано.
+
+Изменённые файлы:
+
+- `docs/design/prototype.html`.
+- `docs/design/grid-app.js`.
+- `docs/design/grid-style.css`.
+- `docs/SYSTEM_DESIGN.md`.
+- `docs/design/guide.html`.
+- `docs/design/README.md`.
+- `docs/design/checksums.sha256`.
+- `CHANGELOG.md`.
+
+До правок сохранены и сверены SHA256 копии восьми существовавших файлов в `.change-backups/2026-10-01/design-themes-1209/` с теми же относительными путями. Каталог исключён Git; `qa-before.json` в нём содержит исходный список проверочных артефактов. Перед добавлением записи журнал уже содержал более поздние изменения; дополнительно сохранён CHANGELOG.before-append.md в той же папке.
+
+Новые проверочные файлы:
+
+- `.playwright-cli/page-2026-10-01T09-12-02-197Z.yml`.
+- `output/playwright/themes-20261001/dark-card.png`.
+- `output/playwright/themes-20261001/dark-groups.png`.
+- `output/playwright/themes-20261001/dark-mobile.png`.
+- `output/playwright/themes-20261001/dark-settings.png`.
+- `output/playwright/themes-20261001/dark.png`.
+- `output/playwright/themes-20261001/light-mobile.png`.
+- `output/playwright/themes-20261001/light.png`.
+- `output/playwright/themes-20261001/server.stderr.log`.
+- `output/playwright/themes-20261001/server.stdout.log`.
+
+Проверка: node --check; git diff --check с cr-at-eol; реальный Edge, 1440/1024/768/390/360 px. Проверены переключатель/Space/настройки, сохранение после reload, изоляция профилей, неизменность черновика при смене темы, группы, цветные колонки, правила, карточка, пустой результат и мобильное меню. Отдельно до grid-app.js при загруженном CSS подтверждён тёмный фон rgb(23,26,32). В print media фон белый. Для восьми оттенков измерены 16 сочетаний текста/единицы с фоном: минимум 5,32:1. Завершающие сценарии без ошибок JS и console warnings/errors. Исправлены обнаруженные при проверке white-space и фон выбора профиля; CSS обновлён без кэша. В документах сверены 514 текстовых блоков/ячеек, структура и локальные ссылки. Это проверка макета в Edge, не полный аудит доступности; другие браузеры, fallback старых браузеров и физическая печать не проверялись.
+
+Откат: сначала сравнить текущие файлы с выдаваемыми hashes в docs/design/checksums.sha256 и учесть более позднюю/постороннюю работу. Если файлы не менялись после этой выдачи, восстановить только семь изменённых файлов дизайна из указанной копии; при поздних изменениях применить только обратные изменения темы вручную. CHANGELOG.md целиком не восстанавливать: сохранить его историю и добавить запись об откате. Новые проверочные файлы удалять только по точному списку выше после сверки, что они всё ещё относятся к этой проверке и не содержат более поздней работы. Общие каталоги и остальные файлы не удалять; git reset/clean не использовать.
+
+Изменение ограничено локальным дизайном. Frontend/backend, незавершённая работа E2-05, основной план, production/beta и finkos-analytics не изменялись в этой задаче; зависимости не устанавливались, commit/push/deploy не выполнялись. Собственный Edge-сеанс и локальный сервер 127.0.0.1:18767 остановлены после проверки личности процесса.
+
+
+### 2026-10-01 12:34:00 МСК (UTC+3) — подготовка авторизованного коммита темы
+
+По явному запросу пользователя подготовлен локальный коммит в beta: «Добавлены светлая и тёмная темы макета». Состав — те же восемь файлов дизайна и журнала из записи выше; резервные копии и снимки не включаются. Перед коммитом восстановлен исходный LF в docs/design/grid-style.css и docs/design/checksums.sha256, обновлён SHA256 CSS; смысл и проверенное поведение не изменены. Промежуточные версии этих двух файлов и CHANGELOG.md сохранены в `.change-backups/2026-10-01/design-themes-commit-123400/` с теми же относительными путями. Проверены все восемь hashes, node --check и whitespace с cr-at-eol; индекс перед подготовкой пуст. Коммит выполняется под именем Oleg без публикации.
+
+Откат подготовки: сначала сравнить более поздние изменения; восстановить только окончания строк и контрольную сумму из указанных копий, не сокращая журнал. Откат коммита — отдельное обратное изменение только этого коммита после проверки его состава, с сохранением последующих правок и новой записью в CHANGELOG; без reset/clean.
+
+
+## 2026-10-01T12:52:24+03:00 (Europe/Moscow, UTC+3) — выполнен C1, исправлена проверка прав последовательностей
+
+Основание: Олег сообщил «залил и даю разрешение» на C1. Публикация 3f4a5b052acce7233d2484c6c039f788900fc1d8 подтверждена ls-remote; включает подготовку 06d4728 и отдельный коммит макета. Серверный чистый beta checkout /home/adm_user/marketplace-workspace/beta/app/repository обновлён Git pull --ff-only с 342192b. Исходники переданы только Git; макет не развёртывался. Существующий E2-03 image/lock совпали; новая сборка/установка не выполнялась. Compose overlay config --quiet прошёл.
+
+Запущен разрешённый account-role-check, PostgreSQL 17.11. Новые собственные БД/роль mw_beta_test_e2_05_web; owner mw_beta_test_runner, marker проверен. Миграции accounts:2/auth:12/contenttypes:2/ownership:2/sessions:1, синтетические Organization=2/User=1/Membership=2/Contact=0/Invitation=0/AuthDenial=0. C1 FAIL до HTTP: has_sequence_privilege вызвана на TOAST-таблице, поскольку WHERE не гарантирует порядок вычисления. Причина воспроизведена read-only SQL. Транзакция подготовки ACL откатилась: guard=0, SELECT User/UPDATE password=false. Finally и SQL readback подтвердили NOLOGIN/PASSWORD NULL и отсутствие опасных атрибутов. Одноразовый контейнер удалён; БД/роль сохранены. Grant/revoke/reapply и lifecycle под limited LOGIN ещё не доказаны.
+
+После отказа main beta contenttypes:2 и web SELECT-only на django_migrations неизменны; ID/image/StartedAt web и двух PostgreSQL контейнеров совпали, readiness 200. Два SSH banner timeout не дали результатов, readback получен следующим подключением. Шаблоны Docker inspect сначала ошиблись на отсутствующем Health/экранировании; отдельного runtime mount/network inspect краткоживущего контейнера нет. Первый inline docker exec без закрытого stdin поглотил оставшуюся часть SSH-скрипта; SQL-проверки выполнены отдельно и подтверждены выводом. Серверные source/конфигурации вручную не редактировались, C2/main migrations/grants/restart/другие проекты не выполнялись.
+
+Исправлены локально CASE-ограждение sequence privilege function, безопасная диагностика класса/SQLSTATE без текста ошибки и фиксированные новые имена mw_beta_test_e2_05_web_v2 для будущего повтора. Первые объекты не переиспользуются/не удаляются; новое имя ещё требует разрешения. Добавлен PostgreSQL regression test. Точный исправленный SQL реально проверен read-only на PostgreSQL: 0 доступных sequences для disabled probe role, 6 для bootstrap, 84 pg_toast-объекта; ошибки нет. Это не полный повтор C1. Локально 68 тестов за 13.004 s, 55 успешно и 13 skips (12 прежних и новый PostgreSQL test); AST/JSON/whitespace и 101 неизменная строка задач проверены. Действия PostgreSQL A/B на 342192b остаются отдельным прежним доказательством.
+
+Точные локальные файлы:
+- `backend/tools/account_web_grants.py`.
+- `backend/tools/verify_account_web_role.py`.
+- `backend/tests/test_account_role_preparation.py`.
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `docs/E2-05_WEB_ROLE.md`.
+
+Все семь исходных файлов сохранены до изменения в .change-backups/2026-10-01/E2-05-C1-fix/ с теми же путями; manifest.json хранит исходные/итоговые SHA-256. Новых tracked файлов нет. Исходные окончания строк сохранены; журнал дополнен, чужой коммит дизайна сохранён. E2-05 остаётся «На проверке», C2 не разрешён. Коммит автора Oleg: «Исправлена проверка прав последовательностей после C1». Push делает Олег; агент push не выполняет. Пароли/токены/письма/персональные данные не записаны в отчёт.
+
+Откат: сверить manifest и поздние правки, сохранить текущую работу; применить только обратный diff к шести файлам кроме журнала, CHANGELOG дополнить отменой. Цельные копии использовать только при отсутствии поздней работы; не reset/clean. Серверную Git-копию автоматически не откатывать. Сохранить БД/NOLOGIN роль первой попытки и старые A/B/dumps; очистка только по отдельному решению после сверки точных имён/owner/меток/поздней работы. Главная beta не требует отката. Повтор v2 только из опубликованного Git после разрешения новой БД/роли; никаких ручных исправлений исходников или live restore.
+
+
+## 2026-10-01T13:37:23+03:00 (Europe/Moscow, UTC+3) — подтверждён C1 E2-05 под ограниченной LOGIN-ролью
+
+Основание: явное «разрешаю» Олега на повтор C1 с mw_beta_test_e2_05_web_v2 после проверки push 82b200465e15b447a43ed3d36d4522f11742bee1. Две попытки SSH banner timeout не выполняли команд; связь восстановлена. Чистый серверный beta checkout /home/adm_user/marketplace-workspace/beta/app/repository обновлён только Git pull --ff-only с 3f4a5b0 до 82b2004. requirements.lock совпал с исходным E2-03, существующий image sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b, без build/install. Compose config --quiet успешен. Runtime inspect краткоживущего контейнера подтвердил read-only Git backend /workspace и единственную marketplace-beta-test-private сеть.
+
+C1 PASS/exit 0 на PostgreSQL 17.11: создана только новая синтетическая БД/LOGIN-роль mw_beta_test_e2_05_web_v2, owner mw_beta_test_runner, фиксированные метки проверены. Миграции accounts:2/auth:12/contenttypes:2/ownership:2/sessions:1. Успешны точный ACL/guards audit, grant/revoke/reapply, настоящий limited LOGIN session_user=current_user, весь подготовленный HTTP lifecycle/CSRF scenario, 13 SQLSTATE 42501 отрицательных операций, чужих CONNECT=0 и отсутствие RESET ROLE эскалации. Callback доверенной блокировки отдельно runner; запросы после него limited LOGIN. Locmem/example.invalid, без реальной доставки/данных/источников, без вывода credential/token/link/email contents.
+
+Последующий readback: новая роль NOLOGIN/PASSWORD NULL, опасные атрибуты=false; Org=2/User=2/Membership=3/Invitation=2/Contact=1/AuthDenial=7, web guards=2. UPDATE User.password=true, is_active/Membership.role/migration UPDATE=false. Контейнер удалён, БД/роль сохранены. Первая БД/роль без _v2 сохранены с прежними 2/1/2/0 org/user/member/invite, guards=0, NOLOGIN/PASSWORD NULL. Старые A/B/dumps не использовались/не изменялись операциями этого запуска; их hashes повторно не читались.
+
+Main beta до/после contenttypes:2, main web SELECT-only на django_migrations и опасные атрибуты=false; ID/image/StartedAt web и двух PostgreSQL контейнеров совпали, readiness 200. Главные grants/migrations/restart/C2 не выполнялись. Полный 68 unittest-набор не повторялся: отдельный C1 дополняет прежние A/B 63/63 и dump/restore на 342192b. UI/browser/TLS/полный RBAC/E2-06 не проверялись и не реализовывались. E2-05 остаётся «На проверке» до main beta C2.
+
+Изменены только шесть локальных документов/протокол:
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `docs/E2-05_WEB_ROLE.md`.
+- `docs/E2-05_ACCOUNTS.md`.
+- `docs/RUNBOOK.md`.
+
+Причина: сохранить действительные результаты C1 и убрать его из недостающих проверок. Для C2 явно закреплена проверенная кодовая ревизия 82b2004 вместо позднего отчётного коммита. Исходные шесть файлов сохранены до изменения в .change-backups/2026-10-01/E2-05-C1-v2/ с теми же относительными путями; manifest.json хранит исходные/итоговые hashes. Новых tracked файлов нет, код/зависимости/ownership migrations не менялись. Проверены JSON, whitespace, неизменность всех 101 строк задач и append-only журнала. Локальный commit автора Oleg: «Подтверждён C1 E2-05 под ограниченной ролью». Push делает Олег; агент push не выполняет. Production/main/Caddy/FBS/WB/Finkos и прочие проекты не затронуты.
+
+Откат: сверить hashes и позднюю работу, сохранить текущие файлы, применить только обратный diff документов; CHANGELOG не сокращать, дополнить отменой. Цельные копии возвращать только при отсутствии поздних правок, без reset/clean. Серверный checkout/две C1 БД/NOLOGIN роли/dumps автоматически не откатывать и не удалять. Их очистка только по отдельному решению после проверки точных имён/меток/owner/поздней работы. Главная beta отката не требует. C2 требует отдельного разрешения: новый main dump/restore, main migrations/grants, Git worktree 82b2004, web-only restart и smoke; безопасный откат описан в E2-05_WEB_ROLE.md §4.
+
+
+## 2026-10-01T13:55:12+03:00 (Europe/Moscow, UTC+3) — выполнен C2 и завершена E2-05
+
+Основание: явное разрешение Олега на C2 («я разрешаю») и последующая публикация b1a9450, подтверждённая ls-remote. Серверный чистый beta checkout обновлён Git pull --ff-only до b1a9450; проверенный C1 код 82b200465e15b447a43ed3d36d4522f11742bee1 закреплён отдельным detached worktree `/home/adm_user/marketplace-workspace/beta/app/releases/82b200465e15b447a43ed3d36d4522f11742bee1`. Backend/deploy совпали, lock совпал с исходным image E2-03. Источники получены только Git, без архивов/ручных серверных source/config правок, новых зависимостей или image build.
+
+Перед изменением main БД strict проверка подтвердила только django_content_type/django_migrations. Сохранены новые `/home/adm_user/marketplace-workspace/beta/backups/database/e2-05-main-before-20261001T104501Z.dump` и `.acl.json`, оба mode 0600/noclobber. Dump SHA-256 f907f239df68cac7024187119deeea9c6b06097f7e1b618a2371d2d3557d77f9; ACL snapshot SHA-256 956cb7dd4fa981aac9dc48ab2856242ad178dbfd1aea71411b60667a4c1d0653. Snapshot — технические ACL/role flags без credentials. Restore выполнен только в новую mw_beta_test_e2_05_main_before (owner runner, PUBLIC CONNECT=false), --no-owner/--no-acl, сравнение fingerprints прошло: contenttypes 1/b2b3bb1ab957a0ae8833982992db0dd6, migrations 2/aa0f915a312d92d1509a616fd09894a2. Hashes файлов повторно совпали после применения; артефакты сохранены/не экспортированы, старые backups не перезаписывались.
+
+Django check, migration plan и forward sqlmigrate ownership/accounts 0001/0002 проверены; применены 17 новых миграций (итого accounts2/auth12/contenttypes2/ownership2/sessions1). Guarded exact main DML apply с pre/post ACL проверкой завершён транзакционно. Пересоздан только web через Git overlay, PostgreSQL контейнеры не перезапускались. C2 PASS: actual mw_beta_web, exact ACL/guards, live/ready200, session401/login GET405. Новый web ID b2d0be7a01c46d46d584b247394fca7e56021ef797d26840cbf75d355614faf8, StartedAt 2026-10-01T10:47:55.161037866Z; image sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b, backend read-only 82b2004, сеть только private, host ports отсутствуют. Base compose hash неизменен ed9da6bed25a22bf4c0cec2cc31c3d9df8a684bef2b395ce6e8f1d57b61e072a.
+
+Финальный readback: PostgreSQL17.11, 15 ownership guards/3 composite FK/2 account immutable guards/2 web guards; users/org/member/contact/invite/session main=0. Main TEMPORARY=true было и сохранено по плану, schema/DB CREATE и чужой CONNECT запрещены; это не main TEMP denial/RLS/полный RBAC. Обе C1 роли NOLOGIN/PASSWORD NULL, old C1 БД сохраняются. Одноразовые migrate-контейнеры удалены, checkout/worktree чистые. Два SSH banner timeout финального чтения не выполнили команд, результат подтверждён следующим соединением. C2 не повторяет 68 unittest-тестов: A/B63/63 и dump/restore на342192b, C1 limited LOGIN на82b2004, C2 actual runtime — отдельные доказательства.
+
+Локально изменены только документы/протокол:
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_ACCOUNT_CHECKS.json`.
+- `SYSTEM_STARTUP.md`.
+- `SYSTEM_ENVIRONMENTS.md`.
+- `docs/E2-05_WEB_ROLE.md`.
+- `docs/E2-05_ACCOUNTS.md`.
+- `docs/RUNBOOK.md`.
+
+Все восемь исходных файлов до правок сохранены в .change-backups/2026-10-01/E2-05-C2/ с прежними относительными путями; manifest.json содержит исходные/итоговые SHA-256. Новых tracked файлов нет, исходные окончания строк сохранены, журнал append-only. SYSTEM_PLAN: изменён только статус E2-05 на «Готово», остальные 100 строк/критерии/зависимости неизменны. Startup/runbook/env явно отделяют текущий Git overlay от исторического E2-03 base-only запуска. JSON/whitespace/состав и status-only изменение строки E2-05 проверены. Локальный коммит Oleg: «Завершена E2-05 и обновлена основная beta». Push не выполнялся; Олег публикует сам.
+
+Сохраняются границы: предварительные сроки/правила не окончательные бизнес-решения; нет реальных аккаунтов/данных/источников/писем, TOTP/полных сессий E2-06/RBAC/RLS/UI/worker/следующих задач. Production/main/Caddy/FBS/WB/Finkos/другие проекты не менялись. Дополнительных серверных действий для завершения E2-05 не требуется.
+
+Откат локальных документов: сравнить hashes/поздние правки, сохранить текущую работу, применить только обратный diff; цельные копии — лишь без поздних правок. CHANGELOG не сокращать, добавить отмену. Серверный откат только после сверки позднего состояния: base-only web up --no-deps --force-recreate на прежнем image E2-03, smoke старого web, затем guarded revoke из fixed worktree, сохраняющий первоначальный SELECT; добавочную схему/данные/dumps сохранять. Accounts zero и restore поверх живой БД запрещены. Для восстановления — новая отдельная БД из проверенного dump; ACL отдельно из snapshot/контракта. Не удалять mounted release, C1/recovery/restore БД или backups без отдельного решения, сверки точных путей/принадлежности/поздней работы. Никаких reset/clean/prune/удалений корня.
+
+Уточнение 2026-10-01T13:56:27+03:00: при финальном review сохранены исходные смешанные LF/CRLF неизменённых строк в SYSTEM_STARTUP.md, SYSTEM_ENVIRONMENTS.md, docs/RUNBOOK.md. Промежуточные копии этих файлов и CHANGELOG находятся в .change-backups/2026-10-01/E2-05-C2/before-ending-readback/. Содержание не менялось, diff освобождён от случайной смены окончаний строк.
+
+
+## 2026-10-01T14:38:29+03:00 (Europe/Moscow, UTC+3) — подготовлено решение E2-06 до реализации
+
+Основание: текущее задание только E2-06 с обязательным уточнением политики/зависимостей до выбора решения и запретом серверных действий. Причина: определить реальную интеграцию с E2-05 и исключить фиктивное закрытие MFA/экспорта/прав. Исходная beta чистая, HEAD f6c64d31ceb9c4c3ff057d3990455b1aaad4c8b4; публикация подтверждена read-only git ls-remote. Первая sandbox-сетевая попытка не соединилась; повтор с разрешённым сетевым доступом успешно вернул SHA. SSH к серверу проекта отсутствует.
+
+Изменены только существующие `SYSTEM_PLAN.md`, `SYSTEM_ARCHITECTURE.md`, `CHANGELOG.md`; новый файл `docs/E2-06_PREPARATION.md`. Полный корень путей: `C:/Users/krolo/Documents/marketplace-workspace/`. План отражает подготовку/открытые вопросы; критерии/зависимости и остальные задачи сохранены. Архитектура явно исправляет ошибочную ссылку E2-12: после ответа Олега «давай» проверка копии ключа шифрования TOTP относится к E2-06, общая — E2-15/D4; резервные коды пользователя отдельно.
+
+Документ содержит обследование User/Membership/login/reset/block/session/SQL, предложения и ответы Олега, конкретные девять пакетов/версий, ограничения штатного plaintext хранения, необходимость защищать wizard-session, узкие стыки прав/синтетической ссылки, матрицу проверок и план S0/S1/S2 с backup/restore/минимальными правами/откатом. Работающего механизма E2-06/новых тестов/SQL grants нет. Подтверждено MFA обязательно owner/добровольно остальным, правила подключения/замены и узкие страницы; сроки/отзыв, оператор/проверка личности и место/хранитель копии ключа ещё уточняются. Возврат web к E2-05 после включения MFA прямо запрещён как обход фактора; нужен проверенный deny-auth/maintenance план.
+
+Исходные копии трёх документов до правок: `.change-backups/2026-10-01/E2-06-preparation-143251/` с исходными именами; побайтное соответствие проверено. Промежуточная версия нового документа до ответов пользователя: `before-user-answers/E2-06_PREPARATION.md` в той же папке. `manifest.json` содержит исходные/итоговые SHA-256 и новый путь; каталог исключён Git.
+
+Проверки подготовки: существующий pip check успешен; CPython 3.14.7/Django 5.2.17 и состав venv подтверждены, MFA/cryptography отсутствуют; Docker/PostgreSQL tools не найдены в PATH. Публичные release source/PyPI metadata проверены без установки: версии/ограничения Python/Django/wheels, imports/runtime новых пакетов не проверены. Проверяются narrow diff/whitespace, сохранность прежнего журнала, 101 строка задач с единственным изменением статуса E2-06, неизменность backend/deploy/locks, исключение backups и состав commit. PostgreSQL/beta/MFA/экспорт/SQL/restore тесты новой реализации не выполнялись; результаты E2-05 не используются как их доказательство.
+
+Безопасный откат: сравнить текущие hashes и сохранить позднюю работу; применить только обратный diff SYSTEM_PLAN/SYSTEM_ARCHITECTURE этой подготовки. CHANGELOG не сокращать, добавить запись отмены. Новый `C:/Users/krolo/Documents/marketplace-workspace/docs/E2-06_PREPARATION.md` удалять только при совпадении manifest hash, отсутствии поздних правок/потребителей и после удаления собственных ссылок. Никакого reset --hard/clean. Серверного отката нет, сервер не менялся. Локальный commit автора Oleg разрешён текущим заданием; push выполняет Олег. Finkos/main/production/Caddy/FBS/WB/другие проекты и зависимости не менялись.
+
+
+## 2026-10-01T15:36:06+03:00 (Europe/Moscow, UTC+3) — добавлена локальная реализация E2-06
+
+Основание: текущее задание только E2-06 и последующие явные ответы Олега: правила MFA/сессий/30-дневного доверия, отдельный аварийный секрет оператора, зашифрованная копия ключа у Олега и локальная установка ровно девяти согласованных пакетов. Серверные действия и push не разрешались и не выполнялись. Причина изменения — действующее управление сессиями/MFA и восстановление без расширения владения/прав.
+
+Добавлены библиотечный TOTP, зашифрованные Authenticator и Django/wizard sessions, ограниченная стадия MFA, серверный реестр/отзыв сессий и доверия, одноразовые PBKDF2-коды, owner-bound операторское разрешение только на повторное подключение, живые проверки Membership и действующее синтетическое HTTP-скачивание с отзывом. Старый password-only вход в runtime закрыт. Пароль/reset/block/замена или восстановление MFA отзывают доступ и доверие; парольное восстановление MFA не отключает. Добавлены миграции/точный SQL delta, новые изолированные проверки и deploy/deny-auth overlays, но PostgreSQL и Compose не запускались.
+
+Политика: owner обязательно, остальные добровольно; сессия 24 часа, простой 1 час, MFA/подтверждение 5 минут, доверие 30 дней. Предыдущий документ подготовки явно обозначен историческим снимком; актуальные правила/ограничения/серверные этапы — docs/E2-06_SESSIONS_MFA.md. SYSTEM_PLAN оставлен «На проверке», все 101 строки/критерии задач сохранены. Расхождение E2-12 явно исправлено ранее в 5eb4b42, повторно смысл не менялся.
+
+Изменённые существующие файлы (корень C:/Users/krolo/Documents/marketplace-workspace/):
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `backend/accounts/services.py`.
+- `backend/accounts/views.py`.
+- `backend/config/settings.py`.
+- `backend/config/urls.py`.
+- `backend/requirements.in`.
+- `backend/requirements.lock`.
+- `docs/E2-06_PREPARATION.md`.
+- `docs/RUNBOOK.md`.
+
+Новые файлы:
+- `SYSTEM_SECURITY_CHECKS.json`.
+- `backend/account_security/__init__.py`.
+- `backend/account_security/apps.py`.
+- `backend/account_security/configuration.py`.
+- `backend/account_security/crypto.py`.
+- `backend/account_security/forms.py`.
+- `backend/account_security/key_backup.py`.
+- `backend/account_security/maintenance.py`.
+- `backend/account_security/management/__init__.py`.
+- `backend/account_security/management/commands/__init__.py`.
+- `backend/account_security/management/commands/issue_owner_recovery.py`.
+- `backend/account_security/management/commands/prepare_owner_recovery.py`.
+- `backend/account_security/middleware.py`.
+- `backend/account_security/migration_guards.py`.
+- `backend/account_security/migrations/0001_initial.py`.
+- `backend/account_security/migrations/0002_revocation_guards.py`.
+- `backend/account_security/migrations/__init__.py`.
+- `backend/account_security/models.py`.
+- `backend/account_security/operator.py`.
+- `backend/account_security/policy.py`.
+- `backend/account_security/services.py`.
+- `backend/account_security/session_backend.py`.
+- `backend/account_security/signals.py`.
+- `backend/account_security/templates/account_security/codes.html`.
+- `backend/account_security/templates/account_security/form.html`.
+- `backend/account_security/templates/account_security/panel.html`.
+- `backend/account_security/templates/account_security/wizard.html`.
+- `backend/account_security/tests/__init__.py`.
+- `backend/account_security/tests/test_http.py`.
+- `backend/account_security/tests/test_migrations.py`.
+- `backend/account_security/tests/test_operator.py`.
+- `backend/account_security/tests/test_role_scenario.py`.
+- `backend/account_security/tests/test_transactions.py`.
+- `backend/account_security/urls.py`.
+- `backend/account_security/views.py`.
+- `backend/config/security_local_checks.py`.
+- `backend/tools/check_security_postgresql.py`.
+- `backend/tools/manage_security_web_grants.py`.
+- `backend/tools/mfa_key_backup.py`.
+- `backend/tools/security_role_scenario.py`.
+- `backend/tools/security_web_grants.py`.
+- `backend/tools/verify_security_recovery.py`.
+- `backend/tools/verify_security_web_role.py`.
+- `backend/tools/verify_security_web_runtime.py`.
+- `beta/deploy/compose.security-check.json`.
+- `beta/deploy/compose.security-maintenance.json`.
+- `beta/deploy/compose.security-web.json`.
+- `docs/E2-06_SESSIONS_MFA.md`.
+
+Исходные копии всех изменённых существующих файлов сохранены до правок в `.change-backups/2026-10-01/E2-06-implementation/` с исходными относительными путями. manifest.json содержит before/after SHA-256 и полный список новых файлов; дополнительно сохранены installed-before.json, installed-after.json (package RECORD paths), dependency-review.json и девять проверенных wheel в wheels/. Промежуточная подготовка: `.change-backups/2026-10-01/E2-06-policy-144041/`. Каталоги/venv исключены из Git. Исходные смешанные окончания строк неизменённых строк сохранены; новые строки LF.
+
+Локально установлены только django-two-factor-auth 1.18.1, django-otp 1.7.3, cryptography 50.0.2, django-formtools 2.7, django-phonenumber-field 8.5.0, qrcode 8.2, cffi 2.1.1, pycparser 3.0, colorama 0.4.6 (Windows). Release SHA-256 и LICENSE сверены, resolver dry-run и установка only-binary/require-hashes без дополнительных пакетов и смены прежних pins, pip check успешен. Никаких plugins/глобальных установок/нативной сборки.
+
+Проверки: final security+ownership/guard 61 тест, 52 выполнены успешно, 9 PostgreSQL-only пропущены, 81.695 с; из них шесть новых конкурентных проверок пока не выполнены. Отдельный legacy accounts_local_checks: 68 тестов, 55 pass, 13 skips, 16.151 с; это регрессия E2-05, не приёмка E2-06. Focused QR/operator: 7 pass, включены в final 61, не суммируются. Django check и makemigrations --check --dry-run успешны; pip check, AST, JSON, соответствие новых ACL колонкам моделей и неизменность 101 строк задач проверены. Новые локальные тесты используют SQLite и синтетические значения/example.invalid, locmem. Тесты проверяют секреты boolean-утверждениями, без вывода значений; QR проверен как HTTP SVG, не скриншотом. Ошибки промежуточных тестов (formtools 2.7 form-list cache) устранены до финального прогона.
+
+Ограничения: нет новых PostgreSQL/limited LOGIN/17 SQL-denial/grant/revoke/reapply/dump-restore, реального восстановления файловой копии ключа, operator CLI под настоящей ролью, Linux image/Compose/браузера/Gunicorn maintenance и основной beta smoke. Docker/PostgreSQL tools локально отсутствуют; не устанавливались. SQL-plan/static/SQLite и старые E2-05 результаты не выдаются за новую приёмку. Полные RBAC/Grant/RLS и рабочий экспорт не реализованы; синтетический download действует, но критерий будущего рабочего экспорта зависит от E2-07/E2-08/E5-07 и остаётся на проверке. S0/S1/S2 имеют отдельные разрешения; до S2 обязательно завершить ключевой restore и maintenance протокол.
+
+Git: live ls-remote перед коммитом подтвердил опубликованную beta f6c64d31ceb9c4c3ff057d3990455b1aaad4c8b4; локальная подготовка 5eb4b42 не опубликована. Планируется локальный commit Oleg «Добавлены сессии и двухфакторная защита E2-06». Push выполняет сам Олег. Main, Finkos, production, Caddy, FBS, WB и прочие проекты не менялись. Сервер не опрашивался; работающая E2-05 по прежнему протоколу не объявляется заново проверенной.
+
+Безопасный откат локально: сравнить manifest/current hashes и поздние правки, сохранить текущую работу, применить только обратный diff этого коммита; CHANGELOG не сокращать, дополнить отменой. Новые перечисленные файлы удалять только при совпадении recorded hash и отсутствии поздних изменений/потребителей. Девять новых пакетов удалять только после проверки новых потребителей и возврата прежнего lock; исходный состав в installed-before.json, автоматического удаления нет. Никаких git reset --hard/clean. Серверный откат сейчас не нужен. После будущего включения E2-06 обычный E2-05/base-only вход небезопасен: использовать отдельно проверенный maintenance overlay (503 auth/business) либо остановить только beta web. Схему/ключи/данные/dumps сохранить, zero/restore поверх живой БД не выполнять; revoke только нового delta после остановки потребителя. Restore в новую БД с карантином доступа и отдельной сверкой полномочий.
+
+
+## 2026-10-01T17:09:19+03:00 (Europe/Moscow, UTC+3) — проверены S0/S1 и исправлено удержание блокировки восстановления E2-06
+
+Основание: после публикации 3db1c0c Олег явно разрешил S0/S1 (SSH/preflight/Git/сборка/только изолированные тесты/ключи/БД/роль/dump-restore); затем подтвердил продолжение. S2/main deployment и push не разрешались. Цель: проверить опубликованный E2-06 на настоящем PostgreSQL и устранить обнаруженную ошибку без ослабления защиты.
+
+Точные изменённые локальные файлы (корень C:/Users/krolo/Documents/marketplace-workspace/):
+- `CHANGELOG.md`.
+- `SYSTEM_PLAN.md`.
+- `SYSTEM_SECURITY_CHECKS.json`.
+- `docs/E2-06_SESSIONS_MFA.md`.
+- `backend/account_security/services.py`.
+- `backend/account_security/tests/test_transactions.py`.
+
+Исходные копии всех шести существующих файлов перед изменением: `.change-backups/2026-10-01/E2-06-S0-S1/<relative-path>`. `manifest.json` содержит before/after SHA-256; новые локальные игнорируемые evidence: `baseline.json`, `final-containers.json`, `progress.json` и `manifest.json` в той же папке. Новых tracked файлов нет. Неизменённые строки/окончания сохранены, журнал append-only.
+
+S0 PASS: Git remote подтвердил опубликованный 3db1c0c64880985489b86b52aa725e0c839ca001; серверный beta checkout fast-forward b1a9450→3db1c0c, detached release `/home/adm_user/marketplace-workspace/beta/app/releases/3db1c0c64880985489b86b52aa725e0c839ca001`. Image `marketplace-workspace/backend:e2-06-3db1c0c64880985489b86b52aa725e0c839ca001`, ID `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72`, собран из опубликованного Git с разрешённой загрузкой только lock-wheels/hashes; lock внутри image совпал, pip check успешен. Старый image сохранён. Compose 5.1.3: read-only source/UID10001/256MiB/0.25CPU/test-private/no ports; bootstrap test secret только ACL probe, основных секретов нет.
+
+PostgreSQL suite на 17.11 НЕ ПРИНЯТ: 61 тест, 60 pass, 1 error, 0 skips, 493.226 с. Ошибка `test_same_recovery_code_has_one_successful_consumer`: lock_timeout=2000ms, ownership_user. PBKDF2 пароля/кода удерживал User row lock при 0.25 CPU. Новая disposable `mw_beta_test_e2_06_suite` удалена штатным Django runner после завершения; старые E2-05 БД не тронуты. Локальное исправление выносит дорогую проверку до lock, затем атомарно заново проверяет активность, прежний password hash, verifier и used_at=NULL; расходует код только под User/RecoveryCode locks. Хеширование/итерации/сроки/ресурсы не ослаблены, таймауты не увеличены. Добавлены регрессии отсутствия atomic во время PBKDF2 и отказа при смене пароля между доказательством и lock.
+
+Независимые S1 проверки опубликованного 3db1c0c: PASS под настоящим ограниченным LOGIN — точные column DML, grant/revoke/reapply, HTTP/MFA/CSRF lifecycle, 17 SQL-отказов. Новая `mw_beta_test_e2_06_web` БД и одноимённая роль сохранены; readback NOLOGIN/PASSWORD NULL подтверждён. Повтор probes с занятыми именами запрещён.
+
+Backup/restore PASS: новые `mw_beta_test_e2_06_recovery`/`mw_beta_test_e2_06_restore`, владелец mw_beta_test_runner; сохранён `/home/adm_user/marketplace-workspace/beta/backups/test/e2-06-synthetic-20261001T135847Z.dump` (222907 bytes, 0600) и соседние `.mw_beta_test_e2_06_recovery.acl.json`/`.mw_beta_test_e2_06_restore.acl.json` (0600). Проверены ciphertext/строки/миграции, TOTP/replay/wrong-key, quarantine без изменения Membership; проверки в rollback-транзакциях, snapshots сохранены. Restored ACL apply/revoke/reapply проверен транзакционно с сохранённой NOLOGIN-ролью: временные CONNECT/права полностью откатились, равенство исходному snapshot подтверждено, LOGIN не включался.
+
+Созданы только синтетические закрытые файлы вне Git/БД: `/home/adm_user/marketplace-workspace/beta/config/secrets/e2_06_test_encryption_key`; `/home/adm_user/marketplace-workspace/beta/config/e2-06-test-key-recovery/backup-passphrase`; `/home/adm_user/marketplace-workspace/beta/backups/test/e2-06-key-envelope/envelope.json`; `/home/adm_user/marketplace-workspace/beta/config/e2-06-test-key-restored/key` (0600, UID/GID10001). Новые родительские каталоги 0700. Восстановление envelope выполнялось без mount исходного ключа, сравнение только boolean; затем DB verifier использовал именно восстановленный файл и не монтировал оригинал. Ключа основной beta/реального аварийного секрета владельца/Telegram-передачи нет. Секреты/пароли/коды/cookies/ссылки/персональные данные не включены в журнал, отчёт и commit.
+
+Maintenance PASS в реальном Gunicorn старого image `sha256:eade0170f4aaf5984fc22664d479f30bfc8dac085c9d31b78e70190aeb810e4b` с новым Git source: network none, без БД/ключа/портов, live 200, auth/business/ready 503, no-store. Одноразовый контейнер удалён. Final readback: основной web и оба PostgreSQL сохранили ID/image/StartedAt/mounts/networks/ports; E2-05 restricted SQL/runtime smoke успешен. Основной web по-прежнему использует 82b2004, аккаунты/организации/членства до проверки 0/0/0; основных миграций/прав/перезапуска не было. Все одноразовые S1 контейнеры удалены; исторические releases/БД/dumps сохранены.
+
+Промежуточные операционные ошибки: preflight сначала запросил отсутствующий Health у web (команда read-only); два SSH banner timeout команд не выполнили. Compose mem_limit выдаёт строку — checker исправлен на int без изменения ресурсов. При первом блоке backup docker exec поглотил следующие команды из SSH stdin; readback подтвердил существующий dump и пустую restore-цель. Продолжение восстановило тот же dump только в пустую цель; seed/создание БД/dump повторно не выполнялись. Рецепт в docs дополнен </dev/null.
+
+Проверки локального исправления: 34 затронутых теста PASS, 0 skips, 73.747 с (32 HTTP + 2 новые транзакционные регрессии); Django check и makemigrations --check --dry-run PASS/no changes; JSON/AST/diff/сохранность 101 строк задач проверяются перед commit. PostgreSQL-исправление ЕЩЁ НЕ ПРОВЕРЕНО: сервер получает код только после публикации Олегом. Ожидается full suite 63 теста с тем же lock/image и новым read-only Git release; существующие role/seed probes не повторять. Реальный браузер, полный operator CLI с доверенной фактической ролью/секретом и S2/main E2-06 остаются открыты. E2-06 — «На проверке»; RBAC/RLS/рабочий экспорт/следующие задачи не реализованы.
+
+Безопасный откат: локально сверить manifest/поздние правки и применить только обратный diff исправления/документации, журнал дополнить отменой; не reset --hard/clean. Серверу откат web/БД не нужен — они не менялись. Новые image/release/test DB/роль/dump/ACL/key/envelope/passphrase сохранять до отдельного решения; автоматического удаления/повтора нет. Для возможной последующей очистки сначала подтвердить принадлежность точных путей/объектов, отсутствие mounted release/подключений/поздней работы и независимых копий; не удалять корневые каталоги или старые probes. NOLOGIN/PASSWORD NULL оставить. S2 возможен только после успешной повторной проверки и отдельного разрешения; после MFA обычный E2-05 fallback запрещён, доступен проверенный deny-auth maintenance.
+
+Локальный commit Oleg: «Исправлена блокировка восстановления и записаны результаты S0/S1». Push выполняет Олег; main/production/Caddy/FBS/WB/Finkos/другие проекты не менялись, сотрудники/агенты не привлекались.
+
+
+## 2026-10-01T17:31:37+03:00 — Подтверждено конкурентное восстановление E2-06 на PostgreSQL
+
+Причина: после публикации Олегом 19a6d6a завершена повторная PostgreSQL-проверка исправления в рамках уже разрешённого S1. Изменены только `CHANGELOG.md`, `SYSTEM_PLAN.md`, `SYSTEM_SECURITY_CHECKS.json`, `docs/E2-06_SESSIONS_MFA.md`: сохранены предыдущие результаты/ошибка, добавлено успешное подтверждение и актуальные ограничения. Код/зависимости/схема/права в этом коммите не менялись.
+
+Резервные копии этих четырёх файлов: `.change-backups/2026-10-01/E2-06-S1-retest/<relative-path>`. Новые игнорируемые артефакты в этой же папке: `manifest.json` (before/after SHA-256), `baseline.json`, `unchanged-contract.json`, `final-containers.json`, `final-readback.txt`, `result.json`. Новых tracked файлов нет.
+
+Remote beta=19a6d6a9bbdd06c683f68f438215dd99cba6204e подтверждён, серверный checkout fast-forward только Git; создан detached release `/home/adm_user/marketplace-workspace/beta/app/releases/19a6d6a9bbdd06c683f68f438215dd99cba6204e`. Новый read-only source использовал прежний dependency image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72`; lock, модели/миграции, SQL-контракт, role/restore tools и Compose сверены с 3db1c0c без изменений. Установок/сборок не было.
+
+PostgreSQL 17.11 full suite: 63/63 PASS, 0 failures/errors/skips, 493.704 с, exit 0. Проверены гонка одного восстановительного кода и смена password hash между доказательством и lock; сохранены CPU 0.25, память 256MiB и lock_timeout 2000ms. Свободность disposable suite DB проверена runner до создания; после штатного удаления SELECT подтвердил отсутствие. Три прежние E2-06 БД сохранены, роль NOLOGIN/PASSWORD NULL. Занятые role/seed probes не запускались; их исходные 17 SQL-отказов/LOGIN/restore относятся к 3db1c0c, а не объявляются новым прогоном.
+
+Основной web и оба PostgreSQL сохранили ID/image/StartedAt/mounts/networks/ports; mounts сравнивались после нормализации порядка Docker, первоначальное сравнение списков дало ложное различие только порядка. Старый E2-05 restricted SQL/runtime smoke PASS; Git чистый, одноразовых контейнеров нет. Один SSH banner timeout команд не выполнил; повторное чтение успешно. Первый SQL readback не передал stdin psql без docker exec -i и не исполнил SELECT; после явного -i получены и проверены все три ожидаемых результата, мутаций не было.
+
+S2/основной ключ/миграции/права/перезапуск web не выполнялись, основной source по-прежнему 82b2004. Реальные аккаунты/отправки/секреты/Telegram не использовались. Браузер, полная operator CLI, фактическое хранение ключа, S2 и рабочий экспорт остаются открыты; E2-06 «На проверке», 101 строка задач без изменения критериев. JSON, append-only журнал, task-row invariant, git diff --check и manifest проверяются перед локальным commit Oleg «Подтверждено конкурентное восстановление на PostgreSQL». Push выполняет Олег.
+
+Безопасный откат: сравнить before/after manifest и поздние правки, применить только обратный diff трёх актуализированных документов, в CHANGELOG дописать отмену; не reset --hard/clean. Серверный откат не требуется — runtime основной beta не менялся. Сохранить release/image/БД/роль/dump/ключи; удаление только после отдельного решения и проверки отсутствия ссылок/mounts. Новые локальные evidence можно удалить только после переноса нужного протокола и сверки принадлежности точной папки; резервные копии существующих файлов сохранить. Production/main/Caddy/FBS/WB/Finkos/другие проекты не затронуты.
+
+
+## 2026-10-01T17:59:51+03:00 — Обновлена основная beta до E2-06 после разрешения S2
+
+Причина: Олег опубликовал f4f6059 и отдельно разрешил S2 в текущем чате. Выполнены main backup/restore, отдельный ключ/зашифрованная копия, maintenance, миграции/минимальный delta прав и обновление только web. Полная E2-06 не объявляется завершённой. Изменены только документы: `CHANGELOG.md`, `SYSTEM_PLAN.md`, `SYSTEM_SECURITY_CHECKS.json`, `docs/E2-06_SESSIONS_MFA.md`, `SYSTEM_STARTUP.md`, `SYSTEM_STARTUP_CHECKS.json`, `docs/RUNBOOK.md`. Код, зависимости и общий deploy/compose.json не менялись.
+
+Перед изменением всех семи файлов сохранены исходные копии `.change-backups/2026-10-01/E2-06-S2/<relative-path>`. Before/after SHA-256 и перечень новых игнорируемых артефактов — `manifest.json`. Точные новые файлы в этой папке: `apply-result.txt`, `apply.sh`, `backup-restore.json`, `baseline.json`, `browser-config.json`, `browser-smoke.txt`, `final-containers.json`, `final-readback.json`, `key-recovery.json`, `manifest.json`, `preapply-final.txt`, `preapply-verified.txt`, `preapply.sh`, `preapply.txt`, `s2-result.json`. Браузерные артефакты только пустых анонимных форм/ожидаемых 401/403: `output/playwright/e2-06-s2/console-2026-10-01T14-50-41-744Z.log`, `output/playwright/e2-06-s2/page-2026-10-01T14-50-42-094Z.yml`, `output/playwright/e2-06-s2/page-2026-10-01T14-51-06-404Z.yml`, `output/playwright/e2-06-s2/page-2026-10-01T14-51-08-177Z.yml`. Скриншоты QR, network/storage dumps, trace, ввод/вывод секретов не выполнялись. CLI создал только собственную временную isolated session e206-s2; она закрыта, существующие сессии не трогались.
+
+S2 preflight: опубликованная beta f4f6059 подтверждена, server repository fast-forward 19a6d6a→f4f6059 только Git; runtime source остаётся проверенным read-only release 19a6d6a9bbdd06c683f68f438215dd99cba6204e. Existing image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72`, lock равен Git, новая сборка/установка не выполнялась. Compose effective source/UID10001/read-only/private/no host ports сверены. Основная БД до применения accounts:2/auth:12/contenttypes:2/ownership:2/sessions:1, users/org/memberships=0/0/0.
+
+Новый dump `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-before-20261001T144009Z.dump` (75491 bytes,0600), соседние `.acl.json` и `.snapshot.json` без role passwords/pg_authid значений сохранены. Restore --no-owner/--no-acl в новую `mw_beta_test_e2_06_main_before` с owner mw_beta_test_runner/REVOKE PUBLIC прошёл; все 18 таблиц совпали по count/упорядоченному fingerprint, основной ACL и данные до применения не изменились. Это точная копия состояния E2-05 перед обновлением, не повтор S1 security restore. Target/dump/ACL сохранить; имя занято, не создавать повторно.
+
+Отдельный ключ `/home/adm_user/marketplace-workspace/beta/config/secrets/mfa_encryption_key`, envelope `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-main-key-envelope/envelope.json`, отдельный пароль `/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-recovery/backup-passphrase`, восстановленный файл `/home/adm_user/marketplace-workspace/beta/config/e2-06-main-key-restored/key` созданы без перезаписи: mode0600/UID:GID10001:10001, новые родительские каталоги0700. Envelope восстановлена без mount оригинального ключа, равенство проверено без значений/fingerprints. Это закрытая серверная копия, не независимое владение копией Олегом. Передачи в Telegram/владельцу не было, реальный emergency proof/verifier/permit не создавался. Эти файлы нельзя удалять вместе с временными тестовыми артефактами.
+
+Django check и additive migration plan/forward SQL/RunPython guards/column-grant delta проверены. Maintenance основного web: live200, auth/business/ready503, no-store. Затем 9 операций миграций завершились, delta ACL проверен и закоммичен guarded migrator. Django recorder добавил 17 записей, всего36: two_factor squash сохраняет 8 заменённых и свою запись; это не 9 отдельных операций two_factor. Новый web `42ea5c212f1fc3062df51214ca97428e4613741adb8fac7897e494faaeb8e106`, StartedAt `2026-10-01T14:48:24.953976075Z`, source/key mounts read-only. Runtime PASS: actual mw_beta_web, exact ACL/guards, live/ready200, anonymous session401, legacy login GET405, MFA login GET200. Оба PostgreSQL сохранили ID/image/StartedAt/mounts/networks/ports; старые образы/releases сохранены.
+
+Browser smoke существующими Playwright CLI0.1.18/Chromium через временный localhost18766 SSH tunnel: форма входа, переход восстановления, 3 обязательных поля, empty-form rejection, session401/CSRF403, формы login/operator-recovery200 и no-store. Console содержит только ожидаемые401/403. Browser/tunnel закрыты, host ports/Caddy/TLS не добавлены. Это анонимная проверка страниц, не полный browser MFA lifecycle. Оба операторских CLI из настоящей web-роли отказаны до выдачи файлов/секретов; положительное восстановление через migrator не выполнялось.
+
+Финальный readback: users/org/memberships/factors/recovery permits/codes=0; две анонимные wizard sessions с encrypted prefix mfa1; plaintext OTP таблицы пусты; locmem, все external flags=false и SECURITY_DOWNLOAD_PROBE=false подтверждены. Oneoff контейнеров нет; server Git чистый. 63/63 PostgreSQL-suite на том же коде из предыдущего S1 не повторялся и не выдаётся за новый прогон.
+
+Промежуточные ошибки проверок, без скрытого обхода: первая команда backup остановилась локальным SyntaxError до SSH; исправлена кавычка. Два SSH banner timeout не выполнили key/preapply команды; guard свободных путей/проверки повторены, существующие ключи/dump не перегенерированы. Compose config сначала не включал profile maintenance и не показывал migrator; добавлен profile только при проверке. Авто-review отклонил Playwright wrapper из-за предполагаемого npx: read-only чтение доказало прямой запуск установленного JS через node, повтор разрешён с выключенными update/download; компонентов не установлено. PowerShell/CMD исказил кавычки одного browser eval; повтор прямого установленного entrypoint с argv проверил ожидаемые результаты. Финальный assertion сначала ожидал одну запись two_factor вместо9; сверены локальный migration.replaces и реальные записи, исправлена только проверка, схема/код не менялись.
+
+Проверки документов перед коммитом: JSON, неизменность всех101 task rows/критериев, append-only CHANGELOG, before/after hashes, git diff --check. План и startup отражают E2-06 runtime, но статус остаётся «На проверке»: полный browser MFA, положительный operator CLI, фактическая независимая копия ключа у Олега и полный экспорт не закрыты. RBAC/RLS/рабочий экспорт и следующие задачи не реализованы. Новых разрешений на реальные аккаунты/секреты/передачу/production эта запись не даёт.
+
+Безопасный откат: проверить поздние правки и применить только обратный diff документов, CHANGELOG дополнить отменой; не reset --hard/clean. После MFA base-only/E2-05/accounts-overlay web запрещены. Серверный fallback — опубликованный compose.security-maintenance.json с E2-06 read-only source и проверенным старым image либо остановка только web; новая схема/ключи/права/данные сохраняются, исправление вперёд предпочтительно. Revoke только нового delta и только при отключённом потребителе; zero/live restore недопустимы. Резервный dump/restored DB/ключи/envelope/passphrase/releases не удалять. Локальные новые evidence можно убрать только после переноса нужного протокола и сверки точных путей с manifest; существующие backup/позднюю работу сохранить.
+
+Локальный commit Oleg: «Обновлена основная beta до E2-06 и записаны проверки S2». Push выполняет Олег. Production/main/Caddy/FBS/WB/Finkos/другие проекты/сотрудники не затронуты.
+
+Уточнение состава commit: SYSTEM_STARTUP_CHECKS.json сохранён локально под существующим правилом .gitignore:44, принудительно не добавлялся; коммит содержит шесть tracked документов. Его новый current_beta_e206 согласован с публикуемым SYSTEM_SECURITY_CHECKS.json/s2. Локальный исторический snapshot E2-03 сохранён.
+
+
+## 2026-10-02T11:34:43+03:00 — Подготовлена изолированная проверка восстановления владельца E2-06
+
+Причина: после S2 остаются полный браузерный MFA lifecycle и положительный operator CLI. По запросу «давай дальше» подготовлен конкретный дополнительный стенд для отдельного согласования; новое серверное окружение не запускается по старым разрешениям. Git beta чистая на старте, публикация e3e538370b7dcebd590528bb62c3a9d035cab6c6 подтверждена ls-remote. SSH, основная beta и старые probes в этом шаге не опрашивались/не менялись; состояние S2 приводится как ранее проверенное.
+
+Изменены: `CHANGELOG.md`, `SYSTEM_PLAN.md`, `SYSTEM_SECURITY_CHECKS.json`, `docs/E2-06_SESSIONS_MFA.md`. Исходные копии четырёх файлов сохранены перед редактированием в `.change-backups/2026-10-02/E2-06-owner-rehearsal/<relative-path>`; before/after SHA-256 — `manifest.json`. Новые tracked файлы: `backend/tools/owner_rehearsal.py`, `backend/tools/owner_rehearsal_bootstrap.py`, `beta/deploy/compose.owner-rehearsal.json`, `beta/deploy/prepare_owner_rehearsal.py`, `scripts/e2_06_owner_browser.cjs`, `docs/E2-06_OWNER_REHEARSAL.md`. Новые игнорируемые артефакты: `.change-backups/2026-10-02/E2-06-owner-rehearsal/manifest.json` и `local-checks.json`.
+
+План задаёт только новый Compose project marketplace-e206-owner-check, внутреннюю сеть, один volume и PostgreSQL/web/controller/issuer плюс одноразовый bootstrap; root /home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-20261002. Guard требует новый marker, настоящий cluster_name, прежнюю реальную mw_beta/mw_beta_migrator identity; operator guard и runtime auth код не менялись. Скрипт подготовки по умолчанию только печатает план, --apply запрещён на Windows и требует published detached release/свободных имён/диска/памяти. Старые БД/роли/ключи не переиспользуются. Main container baseline сверяется отдельно; никаких новых host ports/ingress.
+
+Fixture — 4 синтетических аккаунта/2 организации, адреса только example.invalid. Два владельца разделяют этапы, чтобы уложиться в исходные ограничения попыток: лимиты/clock/last_t не подменяются и buckets не сбрасываются. Только библиотечные TOTP по реальному времени; пароль/код/proof/permit проходят через закрытый SSH→Node pipe в памяти, не через аргументы/env/логи. Proof вводится настоящей CLI в PTY с выключенным echo; неверный proof, чужой владелец, не-владелец и блокировка должны отказать. Web имеет только 3 необходимых secrets; controller/issuer не монтируют bootstrap/web credentials, все runtime-ключи read-only. HTTP тестовых hooks/обхода MFA нет.
+
+Browser runner использует существующую библиотеку Playwright/Chromium без npm/npx/установки; импорт и наличие browser проверены. Для секретных шагов нет CLI-снимков/trace/video/storage dumps/скриншотов и raw error output. Предусмотрены enrollment/QR load, неверный/просроченный/верный/replay TOTP, одноразовые коды и permit, реальные CLI, выборочный/общий logout, trusted device/reauth, парольная смена, блокировка и отсутствие повышения прав. Это подготовленный сценарий, **не результат его исполнения**. Существующие SQL/concurrency/export-probe доказательства S1 не считаются повторёнными.
+
+Локальные проверки: AST 3 новых Python модулей, node --check, JSON/изоляция/secret mount whitelist, безопасный plan без мутаций; ожидаемый отказ Windows --apply, private-pipe без rehearsal marker, bootstrap без разрешённой среды и browser runner без обязательных аргументов. Runtime auth/ownership/accounts/settings/requirements не изменены. Полного browser-run, Linux PTY, нового PostgreSQL/Compose/SQL не было; новые зависимости/плагины не устанавливались, сотрудники/агенты не привлекались. JSON/101 неизменная строка задач/append-only журнал/diff/manifest проверяются перед commit.
+
+При подготовке исправлены ошибки самого сценария: формы mutation принимают application/x-www-form-urlencoded, поэтому fetch использует URLSearchParams; mount bootstrap credentials удалён из operator процессов; полные container IDs сравниваются с --no-trunc. Одна начальная локальная команда не создалась из-за Windows CreateProcessWithLogonW 1056, повторилась чтением без побочных действий. Серверные результаты из этих проверок не выводятся. E2-06 остаётся «На проверке».
+
+Безопасный откат: сверить manifest/поздние изменения, обратный diff только четырёх изменённых документов, в CHANGELOG дописать отмену. Новые шесть файлов можно удалить только при совпадении hashes и отсутствии поздних ссылок/публикации/использования; локальные evidence сохранять до фиксации нужного протокола. Не reset --hard/clean. На сервере этим изменением откатывать нечего. Для будущего стенда предусмотрена остановка только нового проекта с сохранением volume/secret/fixture/proof/verifier/permit; down -v/prune/старые probes запрещены, удаление отдельным решением.
+
+Локальный commit Oleg «Подготовлена изолированная проверка восстановления владельца». Push выполняет Олег; затем отдельно согласуется точный docs/E2-06_OWNER_REHEARSAL.md. Основной ключ/передача его envelope и пароля/реальный emergency secret/Telegram/RBAC/RLS/рабочий экспорт/следующие задачи не входят в это разрешение. Main/production/Caddy/FBS/WB/Finkos/другие проекты не менялись.
+
+
+## 2026-10-02T12:12:30+03:00 — Проверен отдельный стенд E2-06 и исправлен браузерный CSRF-отказ
+
+Причина: Олег опубликовал 6ec715f и отдельно разрешил конкретный docs/E2-06_OWNER_REHEARSAL.md. В начале beta на 6ec715f, существующее изменение docs/SYSTEM_DESIGN.md сохранено; во время работы появились дополнительные посторонние изменения docs/design/*, они не редактируются и не включаются в E2-06 commit. Публикация 6ec715f5a1343ef7cccc5f89beea606433f31d03 подтверждена ls-remote. Серверный repository обновлён fast-forward с f4f6059; новый detached release получен только Git, ручной правки исходников/архивов/push не было.
+
+Изменены ровно: `backend/account_security/middleware.py`, `backend/account_security/tests/test_http.py`, `backend/tools/owner_rehearsal.py`, `scripts/e2_06_owner_browser.cjs`, `docs/E2-06_OWNER_REHEARSAL.md`, `docs/E2-06_SESSIONS_MFA.md`, `SYSTEM_PLAN.md`, `SYSTEM_SECURITY_CHECKS.json`, `CHANGELOG.md`. Исходные девять файлов сохранены перед изменением в `.change-backups/2026-10-02/E2-06-owner-run/before/<relative-path>`; manifest.json содержит before/after hashes. Новые tracked файлы: `backend/tools/check_security_browser_referrer.py`, `scripts/e2_06_referrer_browser.cjs`. Новые локальные evidence в том же `.change-backups/2026-10-02/E2-06-owner-run/`: `manifest.json`, `prepare.txt`, `start.txt`, `isolation.txt`, `browser.txt`, `browser-state.txt`, `login-diagnostic.json`, `header-diagnostic.json`, `stop.txt`, `http-tests.txt`, `local-checks.json`, `result.json`. Только безопасные статусы/булевы признаки/счётчики; значений credentials/ключей/QR/URI/cookies/codes/permit нет.
+
+Серверные новые ресурсы строго по согласованному плану: project marketplace-e206-owner-check, internal network marketplace-e206-owner-check-private, volume marketplace-e206-owner-check-data, postgres/web/controller/issuer и одноразовый bootstrap. Каталог /home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-20261002 и его secrets/state/operator-output созданы закрытыми; только новые синтетические ключи/пароли. Existing immutable backend image 86f9cac63025 и PostgreSQL image 248efd5e58cd, lock совпал, без install/build/pull. Фактический PostgreSQL 17.11, DB mw_beta и LOGIN mw_beta_migrator/mw_beta_web находятся только в новом кластере. Новый restricted SQL/runtime PASS; 36 записей миграций (accounts2/account_security2/auth12/contenttypes2/otp_static3/otp_totp3/ownership2/sessions1/two_factor9). UID/mounts/capabilities/limits/logging none/private network/no ports/locmem/600-файлы проверены. Четыре synthetic аккаунта, две организации, пять членств; адреса только example.invalid.
+
+Настоящий prepare_owner_recovery под реальным migrator LOGIN прошёл: owner-bound proof/verifier созданы в закрытых файлах, обычному участнику отказано без файлов; пароли/владение/права не изменены. Положительный issue_owner_recovery, getpass/PTTY и browser MFA lifecycle не пройдены: Chromium остановился до входа. GET login200, native POST403; cookie/CSRF-поле присутствуют, но Referrer-Policy:no-referrer вызывает Origin:null. Узкий повтор одного password POST подтвердил403; отдельный header-only POST перехвачен и отменён до сервера, значения заголовков не выводились. Пароли fixture проверены в памяти. Контроль до остановки: authenticators/account sessions/codes/permits/challenges/attempt buckets=0, users4/org2/memberships5 и владение прежние, proof/verifier сохранены, owner-permit отсутствует. Повторного init/configure/prepare и сброса buckets не было.
+
+Все четыре новых контейнера остановлены, volume/network/файлы сохранены; browser/tunnel localhost18767 закрыты. Основной web и оба PostgreSQL сохранили ID/image/StartedAt/mounts/networks/ports; основной SQL/runtime smoke PASS. Основной source19a6d6a не менялся и сохраняет обнаруженный браузерный дефект. Ранее сохранённые S1/S2/E2-05 БД/dumps/ключи не использовались для нового fixture и не удалялись. Реальные аккаунты/внешние отправки/Telegram/production/main/Caddy/FBS/WB/Finkos не затронуты.
+
+Локальное исправление заменило no-referrer на same-origin в обоих ответах SessionGate; no-store, secure cookies и штатные CSRF/Origin проверки сохранены. Отдельный настоящий Chromium + Django LiveServer test воспроизводит проблему с прежним заголовком (ожидаемый FAIL2.621s) и проходит с исправлением (1/1 PASS3.106s): native password POST, ограниченный MFA этап, отсутствие полноценной сессии, отказ без CSRF, разрешённый CSRF logout, отсутствие внешнего Referer при перехваченном переходе example.invalid. Новый HTTP-тест отвергает null/foreign Origin даже с корректным токеном и пропускает свой Origin. Все 33 HTTP-теста PASS, 0 skips, 62.345s. Это локальная SQLite/Chromium проверка, не новый PostgreSQL результат и не полный MFA acceptance. AST/Node syntax/check/makemigrations --check PASS. Guard pre_browser отказывает вне rehearsal; положительный Linux guard ещё не выполнялся. Owner runner теперь проверяет policy до пароля и явно ожидает завершение form navigation.
+
+Ошибки самой диагностики/проверок не скрыты: первый read-only SELECT использовал несуществующее поле scope вместо level и не выполнил мутаций; исправленная диагностика успешна. Локальный новый browser harness сначала отказал по SETTINGS_MODULE и отсутствующему STATIC_URL; исправлены только его guard/параметры LiveServer до контрольного прогона. Первая static-check команда не нашла относительный venv executable с cwd backend; повтор с абсолютным путём успешен. Общий git diff --check выявил whitespace только в посторонних design-файлах, они не исправлялись; проверка точных E2-06 файлов проходит.
+
+Продолжение подробно записано в docs/E2-06_OWNER_REHEARSAL.md: после push Олега получить исправление Git в новый release; тот же сохранённый postgres и новые source mounts только controller/issuer/web; без --apply/bootstrap/configure/init/operator_prepare. Read-only pre_browser требует сохранённое состояние до первого входа и не чинит/не сбрасывает его. Затем полный browser/operator run и остановка только стенда. Это продолжение уже разрешённого изолированного этапа, не новое разрешение на основную beta. Её обновление исправлением, real-owner proof и передача независимой encrypted key backup требуют отдельных конкретных разрешений. E2-06 остаётся «На проверке», 101 строка/критерии плана сохранены; полный экспорт/RBAC/RLS не реализованы.
+
+Безопасный откат: сравнить hashes и поздние изменения, применить только обратный diff нужных E2-06 файлов; CHANGELOG дополнить отменой. Не reset --hard/clean. Два новых тестовых файла удалять только после проверки их hash/ссылок/отсутствия поздней работы; evidence сохранять до переноса нужного протокола. Возвращение старого no-referrer снова ломает native формы, это не исправление сервера. На сервере новый стенд уже остановлен; не удалять volume/ключи/fixture/proof/releases, не запускать занятые probes. Основную beta этим шагом откатывать не нужно; прежний MFA maintenance/stop-only fallback сохраняется, password-only/base-only запрещён.
+
+Локальный commit Oleg: «Исправлен CSRF-отказ браузерных форм MFA и сохранён результат проверки». Push выполняет Олег. Новых зависимостей/плагинов и привлечения сотрудников/агентов не было.
+
+
+## 2026-10-02T12:19:52+03:00 — Спроектировано личное рабочее место v3 и расширен интерактивный макет
+
+По ответам Олега 1–16 подготовлена модель: готовые рабочие таблицы, индивидуальные виды и поля, отдельные личные расчёты, один редактор общей таблицы, явный черновик и согласование руководителем. Добавлены разделы «Закупки» и «Моё рабочее место», формы, личные/общие заметки, безопасные формулы, атомарная вставка TSV, канбан/календарь/сводная, виджеты, личные задачи и ограниченное правило просрочки. Светлая/тёмная темы и прежний товарный модуль сохранены. Подробный документ отделяет принятые решения от предлагаемой реализации; статусы SYSTEM_PLAN.md не менялись.
+
+Изменены: `docs/SYSTEM_DESIGN.md`, `docs/design/prototype.html`, `docs/design/grid-app.js`, `docs/design/guide.html`, `docs/design/README.md`, `docs/design/checksums.sha256`, `CHANGELOG.md`. Новые файлы: `docs/design/workbench-app.js`, `docs/design/workbench-engine.js`, `docs/design/workbench-style.css`, `docs/design/WORKSPACE_V3.md`, `docs/design/workspace-v3-guide.html`. Исходные копии существующих файлов до правки — `.change-backups/2026-10-02/workspace-v3-114310/<relative-path>`, SHA-256 — `manifest.json`. Во время работы другая задача дополнила корневой CHANGELOG; её записи сохранены, актуальная копия непосредственно перед нашим добавлением — `.change-backups/2026-10-02/workspace-v3-114310/CHANGELOG.before-v3-append.md`. Поздние сторонние коммиты/файлы не откатывались и не редактировались.
+
+Локальные артефакты: `output/playwright/workspace-v3-20261002/qa-results.json`, синтетический `demo-invoice.txt`, снимки экранов, журналы временного HTTP-сервера и `server-identity.json`; новый снимок CLI `.playwright-cli/page-2026-10-02T09-05-57-644Z.yml`. Их точные пути и SHA-256 перечислены в `.change-backups/2026-10-02/workspace-v3-114310/after-manifest.json`; новые служебные `qa-before.json`, `manifest.json`, `after-manifest.json` относятся только к локальному откату и не коммитятся.
+
+Проверка: Node --check для новых JS и изменённого grid-app; 52 проверки движка (блокировка, атомарность, ревизии/согласование, формулы/циклы/недопустимый код). В настоящем Edge через существующий Playwright CLI пройдены: блокировка и чтение/комментарии вторым профилем, неизменность общей версии до решения, запрет manager approve, возврат с причиной, сохранение/возобновление черновика, согласование правки и полной новой записи (ревизии 7→8→9), TSV в визуальном порядке групп и отклонение всего ошибочного диапазона, undo/redo, соседний фокус после ввода, личные расчёты и их перенос, циклы/очистка формул, изоляция личных полей/заметок/листа, формы/метаданные, календарь вне месяца, канбан/сводная, фильтр/цвет/личный вид, виджеты и личные задачи. Финальный проход не дал pageerror. Снимки desktop 1536×960 и mobile390×844 в обеих темах просмотрены; горизонтального переполнения страницы нет. HTML-документ: проверены 13 якорей, локальные ссылки и desktop/mobile. Исходный текст старого guide сохранён. SHA-256 и diff --check с core.whitespace=cr-at-eol проверены; CRLF исходных файлов не считается ошибкой.
+
+В ходе проверки исправлены: порядок вставки при группах, имя операции notEmpty, полное отображение новых полей на согласовании, причина возврата, фокус/отмена в полях ввода и синхронизация формул, стили сетки/форм/мобильного вида. Две ошибки harness (неоднозначный close locator и недоступный Buffer) исправлены в проверочных командах; синтетические данные не выходили за локальный браузер.
+
+Границы: это локальный демонстрационный макет с localStorage, не реальная серверная изоляция, блокировка или сохранение рабочих данных. Личный лист A1:H10 с ограниченным языком формул; совместимость с Google Sheets/XLSX не заявлена. Вложения — только личные имена/размеры, содержимое не читается/не загружается. После inline правки сортировка/фильтры обновляются при следующей перерисовке, чтобы не сдвигать курсор. file:// автоматизированно не проверялся; HTTP-проверка выполнена. Runtime frontend/backend, зависимости, серверы проекта, production и интеграции не менялись; коммит/push/deploy не выполнялись. Созданные только для QA Edge session mw-v3-20261002 и Python PID5880 остановлены после проверки PID/start/command; порт18768 закрыт.
+
+Безопасный откат: сначала сравнить текущие файлы с after-manifest и проверить позднюю работу; применить только обратные изменения v3 из сохранённых копий к шести изменённым design-файлам, корневой CHANGELOG дополнить записью отмены, не заменять весь журнал. Пять новых исходных файлов и перечисленные локальные артефакты удалять только при совпадении SHA-256 и отсутствии поздних изменений/ссылок; при расхождении сохранить их и разбирать diff. Для собственных демо-данных можно удалить только ключи mw-workbench-v3:shared/owner/manager, предварительно сохранив нужные личные настройки; mw-grid-v2 не затрагивать. Не использовать reset --hard, clean, рекурсивное удаление общей output или откат чужой работы.
+
+
+## 2026-10-02T12:39:19+03:00 — Проверено восстановление владельца E2-06 через браузер и операторскую команду
+
+Причина: после push Олега продолжен уже явно разрешённый изолированный owner rehearsal. Опубликованный 14d9f48cee6eb2a9d7eca9f029770af51c45b6d9 проверен ls-remote; серверный repository fast-forward, новый detached Git release. Основной web не переключался. Посторонняя работа docs/design/* и docs/SYSTEM_DESIGN.md сохранена; во время выполнения появилась чужая запись CHANGELOG о v3, она сохраняется в рабочем файле и не включается в E2-06 commit. Копия непосредственно перед добавлением нашей записи — `.change-backups/2026-10-02/E2-06-owner-retry/CHANGELOG.before-e206-append.md`; отдельный `commit-changelog.md` содержит только HEAD-журнал плюс эту запись для выборочного index, рабочий журнал не перезаписывается.
+
+Изменены ровно: `backend/tools/owner_rehearsal.py`, `scripts/e2_06_owner_browser.cjs`, `docs/E2-06_OWNER_REHEARSAL.md`, `docs/E2-06_SESSIONS_MFA.md`, `SYSTEM_PLAN.md`, `SYSTEM_SECURITY_CHECKS.json`, `CHANGELOG.md`. До изменения семь файлов сохранены в `.change-backups/2026-10-02/E2-06-owner-retry/before/<relative-path>`; before/after hashes в manifest.json. Новый tracked файл: `docs/E2-06_WEB_FIX_ROLLOUT.md`. Новые локальные evidence в том же каталоге retry: `manifest.json`, `start.txt`, `browser.txt`, `state-diagnostic.json`, `final-state.json`, `stop.txt`, `main-counts.json`, `local-checks.json`, `result.json`, `CHANGELOG.before-e206-append.md`, `commit-changelog.md`. Значений секретов/кодов/cookies/паролей/provisioning URI/личных данных нет; приватный транспорт браузера остаётся в памяти.
+
+Сервер: возобновлён только сохранённый marketplace-e206-owner-check. Preflight подтвердил принадлежность остановленных четырёх контейнеров/network/volume и прежний source6ec715f; три основных контейнера совпали с baseline. Существующий PostgreSQL17.11 запущен; только controller/issuer/web получили RO source14d9f48. Lock совпал с прежним image86f9cac63025, effective Compose/SQL runtime/изоляция PASS. Read-only pre_browser проверил состояние до первого входа (4 users/2 org/5 memberships; нулевые factors/sessions/codes/permits/challenges/buckets/trust), прежние пароли/владение и proof/verifier. Никаких --apply/bootstrap/configure/init/operator_prepare/сброса counters/новых ключей/ролей/БД/зависимостей/сборок не выполнялось.
+
+Реальный Chromium прошёл 8 функциональных этапов: invalid/expired/valid enrollment и однократный показ кодов; replay TOTP, запрет disable владельцу, CSRF; current/selected/all sessions, trusted device и reauth; однократный recovery code и отзыв старой сессии; настоящая issue_owner_recovery под mw_beta_migrator с getpass/PTY без echo, неверным proof/чужим владельцем, one-use permit и limited reenrollment; password change с сохранением MFA и отзывом trust; block/session/code/operator denial; добровольный password-only вход не подключавшего MFA участника. Корректный новый пароль был проверен реальным входом до блокировки. Основная модель владения/права сохранены. Не заявляется повтор S1 concurrency/17SQLdenials/export-probe/dump-restore: это прежние доказательства.
+
+Сводный runner exit1 не скрыт: последняя helper-проверка ожидала next_password после block_account, но E2-05 штатно устанавливает unusable password. Повторный read-only finish воспроизвёл этот отказ, диагностика обнаружила только неверное ожидание. Правильный финал независимо проверен прямым read-only чтением PostgreSQL: active=false, has_usable_password=false, оба пароля отвергаются; все сессии/trust отозваны, единственный permit used, 4/2/5 и владение неизменны, приглашений0. Закрытые operator outputs0600 присутствуют только для успешных команд; файлы отказов отсутствуют. Session payloads/TOTP зашифрованы, recovery verifiers PBKDF2, plaintext OTP tables пусты, locmem. Глобальный pageerror counter не дошёл до проверки после failed RPC; zero pageerrors и чистый aggregate PASS не заявляются.
+
+Локально исправлен только helper finish на проверку unusable password, а runner теперь явно обозначает final-state и проверяет pageerrors до финального RPC. Runtime auth/accounts/ownership/миграции/SQL/lock в этом commit не меняются. Существующие локальные регрессии E2-05 block и MFA block пройдены отдельно (1/1 за2.199s и1/1 за4.539s, SQLite; не новый PostgreSQL-suite). AST/Node syntax PASS. Исправленный helper ещё не запускался на сервере из нового опубликованного Git revision. Полный сценарий на использованном fixture не повторялся; владелец остаётся заблокированным, permit использован.
+
+Четыре новых контейнера остановлены, volume/network/закрытые keys/fixture/proof/verifier/permit/releases сохранены. Browser/tunnel18767 закрыты. Основной web/оба PostgreSQL сохранили ID/image/StartedAt/mounts/networks/ports до и после остановки; restricted runtime SQL PASS. Итог main SELECT: users/org/memberships/authenticators/codes/permits/account sessions=0, четыре анонимные encrypted Django sessions. GET login smoke может создать анонимную wizard session; это не полноценный вход и не доказательство побайтовой неизменности DB. Source основной beta остаётся19a6d6a с дефектом no-referrer; никаких реальных аккаунтов/ключевых передач/Telegram/production/main/Caddy/FBS/WB/Finkos/посторонних проектов не меняли.
+
+Подготовлен конкретный docs/E2-06_WEB_FIX_ROLLOUT.md для отдельного разрешения: только основной web на уже опубликованный/проверенный14d9f48, прежний image/lock/ключ/SQL; закрытый metadata backup, сохранённые прежние DB/key backups с явными историческими ограничениями, без миграций/DBrestore/новых DB/ролей/ключей. Анонимный browser header/Origin probe отменяет POST до сервера. Fallback — проверенный MFA maintenance или stop только web. Этот этап не запускался и не разрешён текущим owner rehearsal. E2-06 «На проверке»; 101 строка и критерии плана прежние, independent key custody/полный экспорт и оговорённые ограничения итогового runner остаются открыты.
+
+Безопасный откат: проверить hashes и поздние изменения, применить только обратный diff семи E2-06 файлов; CHANGELOG дополнить отменой, чужую запись v3 не удалять. Новый rollout-plan удалять только при совпадении hash/отсутствии поздних ссылок и разрешений; evidence сохранять до переноса протокола. Не reset --hard/clean. Серверный стенд уже остановлен, его volume/файлы сохраняются; не разблокировать/пересоздавать fixture, не запускать старые probes. Основную beta откатывать не нужно, она не обновлялась. Локальный commit Oleg «Проверено восстановление владельца и исправлена итоговая проверка блокировки»; push выполняет Олег.
+
+
+## 2026-10-02T12:59:24+03:00 — Подготовлен локальный коммит макета рабочего места v3
+
+По явному запросу Олега «коммить» в ветке beta фиксируется только подготовленный дизайн v3: корневой CHANGELOG.md, docs/SYSTEM_DESIGN.md, docs/design/README.md, docs/design/checksums.sha256, docs/design/grid-app.js, docs/design/guide.html, docs/design/prototype.html, docs/design/WORKSPACE_V3.md, docs/design/workbench-app.js, docs/design/workbench-engine.js, docs/design/workbench-style.css, docs/design/workspace-v3-guide.html. Название коммита: «Добавлены личное рабочее место и управляемые таблицы в макет v3». Автор и коммитер — Oleg, существующая Git identity из истории; внешняя отправка не запрашивалась и не выполняется.
+
+Повторно проверены Node --check трёх JS, diff --check с учётом CRLF, 13 SHA-256 дизайн-файлов и 5 SHA-256 новых исходников из after-manifest.json. Рабочие файлы совпадают с ранее проверенным макетом; повтор браузерных сценариев не требовался. Staging перед операцией пуст, runtime frontend/backend не включаются. Результаты предыдущей UI-проверки и её ограничения сохранены в записи v3 выше. Локальные output, .playwright-cli, .change-backups остаются вне коммита.
+
+Перед добавлением этой записи журнал сохранён в `.change-backups/2026-10-02/workspace-v3-commit-125924/CHANGELOG.md`; SHA-256 и исходный HEAD — в соседнем manifest.json. Журнал дополняется в конце, чужие записи не заменяются. Откат после проверки поздних изменений: применить обратный diff только v3-файлов (либо отдельный git revert этого коммита после проверки конфликтов); журнал дополнить записью отмены, не восстанавливать его целиком. Без reset --hard/clean; новые локальные копии журнала и manifest удалять лишь после проверки их SHA-256 и ненужности для отката.
+
+
+## 2026-10-02T13:41:10+03:00 — Обновлён основной beta web и проверены браузерные заголовки MFA
+
+Причина: применено исправление Referrer-Policy после успешных функциональных этапов отдельного owner rehearsal, строго по явному разрешению Олега на docs/E2-06_WEB_FIX_ROLLOUT.md. Публикация beta 91b079a30569b6fc38997b47fe18d6af723b9321 подтверждена; сервер получил код только Git fast-forward, использован существующий read-only release 14d9f48cee6eb2a9d7eca9f029770af51c45b6d9. Пересоздан только marketplace-beta web. Исполняемое приложение отличается от 19a6d6a только same-origin вместо no-referrer; CSRF не ослаблен, существующий image/lock/ключи/миграции/SQL-права сохранены. Новых установок/сборок/ролей/БД/ключей/миграций/GRANT/restore нет.
+
+Изменены точные файлы: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, SYSTEM_STARTUP.md, docs/RUNBOOK.md, docs/E2-06_SESSIONS_MFA.md, docs/E2-06_WEB_FIX_ROLLOUT.md, SYSTEM_STARTUP_CHECKS.json. SYSTEM_STARTUP_CHECKS.json локальный ignored, в коммит не включается; исправлено также испорченное старое отображение task_status. Исходные копии каждого файла: `.change-backups/2026-10-02/E2-06-main-web-fix/before/<тот же относительный путь>`, исходные SHA-256 в manifest.json и startup-before.json. Новые локальные артефакты внутри `.change-backups/2026-10-02/E2-06-main-web-fix/`: manifest.json, startup-before.json, preflight.txt, checkpoint.json, switch.txt, browser.json, final-state.jsonl, result.json, local-checks.json. Содержат только разрешённые metadata/счётчики/результаты, без секретных значений/токенов/cookies/provisioning URI; каталог не коммитится. Код приложения и посторонние файлы не изменены.
+
+Новый серверный файл: `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-referrer-before-20261002T102702Z.metadata.json` (0600, no-overwrite, fsync/read-back equal). Проверены наличие/0600 прежних e2-06-before-20261001T144009Z.dump, его .acl.json/.snapshot.json, e2-06-main-key-envelope/envelope.json и отдельных runtime key/passphrase; значения не выводились. Это metadata checkpoint переключения, не новый dump/restore; S1/S2 остаются историческими доказательствами. Первый локальный Python wrapper остановился с SyntaxError до SSH/создания checkpoint; quoting исправлен, повторная подготовка прошла.
+
+Новый основной web ID `53dd81f2850521138b9596d1aa5f910f7889785d8836329efbbfb0f7b57654c5`, StartedAt `2026-10-02T10:28:21.386899228Z`, source `/home/adm_user/marketplace-workspace/beta/app/releases/14d9f48cee6eb2a9d7eca9f029770af51c45b6d9/backend`. Image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72`, RO mounts, UID10001:10001, 384MiB/0.25CPU, private network/no ports прежние. Оба PostgreSQL сохранили ID/image/StartedAt/mounts/networks/ports. Сохранённые четыре контейнера owner rehearsal не запускались; его baseline не переписывался.
+
+Проверки: фактическая mw_beta_web / exact column ACL / guards PASS до и после; 36 записей миграций прежние. Runtime PASS: live/ready200, session401, legacy login GET405, MFA login GET200. Chromium: same-origin/no-store, Secure cookies/CSRF поле, native POST с корректным Origin; POST отменён до сервера, credentials не отправлялись, pageerrors0 только для этой анонимной проверки. Browser/tunnel закрыты. Итоговые users/org/memberships/authenticators/recovery codes/permits/account sessions/attempt buckets/auth denials=0; encrypted anonymous Django sessions4→6 от GET login. Locmem/внешние flags off/public probe off, runtime key0600 UID10001 и server Git clean подтверждены. Полный S1 suite/owner browser не повторялись; публичный TLS не проверен.
+
+Локальная проверка перед коммитом: JSON/read-back/backup hashes, append-only CHANGELOG, сохранность 101 строки и критериев плана, git diff --check и точный состав изменений; результат в local-checks.json. План/протокол сохраняют «На проверке»: исправленный helper опубликован, но не запускался на Linux; общий pageerror counter и чистый итог полного runner, независимая копия ключа у Олега и рабочий экспорт остаются незакрытыми. Real owner proof/передача envelope/пароля/Telegram не выполнялись; будущие конкретные операции с ними требуют отдельного разрешения. E2-07/E2-08/E5-07, production/main/Caddy/FBS/WB/Finkos/worker/UI не менялись.
+
+Безопасный откат: сначала сравнить текущие файлы и исходные hashes, затем отменить только этот документальный diff, сохранив позднюю/постороннюю работу; запись журнала не удалять. Локальные новые артефакты удалять только после проверки отсутствия потребителей и сохранения нужного доказательства. Серверный checkpoint сохранять до окончания приёмки, удаление — отдельное явное действие после сверки пути/ссылок. Рабочий fallback — согласованный MFA deny-auth maintenance либо stop только основного web; base-only/accounts overlay, обратные миграции, удаление ключей/занятых БД/release и restore поверх живой БД запрещены. Fallback здесь не применялся. Локальный коммит автора Oleg, push выполняет Олег.
+
+
+## 2026-10-02T13:41:23+03:00 — Выполнена независимая проверка макета v3
+
+По запросу беспристрастной обратной связи проверен commit91b079a: исходники, описание, восемь разделов, светлая/тёмная темы, ноутбук1366×768, телефон360×800 и1000 синтетических строк. Три независимых read-only оценки дополнены воспроизведением в Edge. Найдены6 групп проблем: устаревший черновик без доступного сравнения/переноса;8 видимых строк против7 в счётчике после inline-фильтра; ложные пустые результаты фильтров по датам и текстовым формулам; общая панель настроек меняет скрытый товарный вид вместо закупок; потеря несохранённого оформления вида; потеря фокуса при последовательном вводе личных ячеек. Статические рекомендации отдельно: единый договор настроек, массовый ввод/жизненный цикл личных полей, полноценные таблицы рядом, сокращение верхних панелей. Сбоя мобильного закрепления не обнаружено;1000 строк открылись за694мс и выбор всех занял261мс в одном прогоне — не нагрузочная проверка продукта.
+
+Код не исправлялся. Новый локальный отчёт `output/playwright/workspace-v3-review-20261002/review-results.json`, снимки и журналы в той же папке; точный перечень/SHA-256 — `.change-backups/2026-10-02/workspace-v3-review/manifest.json`. Исходный журнал сохранён рядом как CHANGELOG.md. Собственные Edge-session mw-review-20261002 и Python PID22420 закрыты после сверки идентичности, порт18769 закрыт. Прод/рабочие данные не затрагивались, коммит не выполнялся. Откат: после сравнения hashes удалить только новые неизменённые артефакты из manifest, журнал дополнить отменой, не заменять историю и не удалять общие output/.playwright-cli каталоги.
+
+
+## 2026-10-02T13:43:20+03:00 — Сохранены параллельные изменения при фиксации результата E2-06
+
+Во время проверки документации в CHANGELOG.md появилась чужая запись о проверке макета v3, а в docs/design — новый APPEARANCE_PRESETS.md. Они сохранены без правок и не включаются в коммит E2-06. Общий git diff --check обнаружил CRLF-пробелы только в чужой записи; проверяется точный staged diff E2-06, чужое форматирование не исправляется. Исходный журнал перед этим дополнением сохранён в `.change-backups/2026-10-02/E2-06-main-web-fix/concurrent-CHANGELOG.md`, SHA-256 — в новом concurrent-check.json того же каталога. Для точечного staging подготовлен новый index-CHANGELOG.md (HEAD + только две записи E2-06), рабочий журнал не заменяется. Проверки/перечень staged файлов сохраняются в local-checks.json. Эти локальные артефакты не коммитятся; удаление допустимо только после сверки hashes/отсутствия потребителей и сохранения доказательства. Откат этой записи — новым дополнением, без удаления истории или чужой работы.
+
+
+## 2026-10-02T13:54:53+03:00 — Добавлены личные и общие пресеты оформления таблиц
+
+Во время ревью Олег запросил общие/личные пресеты визуала и подтвердил: общий набор доступен команде, каждый применяет его сам. Добавлена библиотека для «Товары → Оформление → Пресеты оформления» и «Закупки → Цвет → Пресеты оформления». Автор сохраняет текущее оформление с названием и областью «Только мне»/«Для команды», может обновить, переименовать или удалить свой набор; чужой общий набор доступен для применения. Применение сохраняет копию оформления в текущем личном виде и его сохранённой версии. Изменения/удаление оригинала не перезаписывают уже применённые копии.
+
+В состав входят цвета колонок, поддерживаемые условные правила/подсветка, плотность, зебра, линии и формат чисел. Данные, черновики закупки, фильтры, поиск, сортировки, группы, видимость, порядок, ширина и закрепление колонок не переносятся. Общие наборы исключают личные поля и зависимые правила. При применении общего оформления собственные цвета/правила по личным полям сохраняются; личные правила идут перед общими. Настройки недоступных столбцов пропускаются. Запись проверяется до изменения применённого состояния; отказ localStorage возвращает false без ложного success и с восстановлением прежнего состояния.
+
+Изменены `docs/design/grid-app.js`, `docs/design/workbench-app.js`, `docs/design/prototype.html`, `docs/design/README.md`, `docs/design/checksums.sha256`, `CHANGELOG.md`. Новые файлы: `docs/design/appearance-presets.js`, `docs/design/appearance-presets.css`, `docs/design/APPEARANCE_PRESETS.md`. Бэкапы до правок и SHA-256 — `.change-backups/2026-10-02/appearance-presets/<relative-path>` и `before-manifest.json`. Перед этой записью актуальный журнал с параллельными записями другой задачи дополнительно сохранён как `.change-backups/2026-10-02/appearance-presets/CHANGELOG.before-presets-append.md`; журнал дописан без замены истории. Изменения другой задачи в SYSTEM_PLAN/SYSTEM_SECURITY_CHECKS/SYSTEM_STARTUP/E2-06/RUNBOOK не редактировались, не откатывались и не включались в эту работу.
+
+Проверка: Node --check трёх JS;18 проверок модуля,10 проверок протокола и7 проверок отказов хранения/сохранности личных правил. В Edge подтверждены личное/командное создание, разделение областей и таблиц, авторские update/rename/delete, отсутствие принудительного применения, добровольное повторное применение, сохранность фильтра/данных и сохранённого личного вида, перенос условного правила товаров, независимость применённого оформления после обновления/удаления. Светлая/тёмная темы и диалог360px просмотрены. Синтаксис, дизайн-SHA-256 и diff --check с учётом CRLF проверены; исходные окончания строк prototype сохранены. Артефакты/снимки/qa-results.json — `output/playwright/appearance-presets-20261002/`; точные пути и hashes, включая новый CLI snapshot, перечислены в `.change-backups/2026-10-02/appearance-presets/after-manifest.json`. Проверочный Edge session mw-presets-20261002 и Python PID13576 закрыты после сверки идентичности; порт18770 закрыт.
+
+Границы: только localStorage `mw-appearance-v1` и два демонстрационных профиля; настоящие серверные ACL/библиотека команды не реализованы. Пресеты относятся к конкретной готовой таблице, тема остаётся личной. Замечания независимого ревью исходного commit91b079a сохранены отдельно и этим дополнением не объявляются исправленными. Новых зависимостей, плагинов, внешних отправок, production-операций и коммита не было.
+
+Откат: сравнить before/after manifests и текущие файлы с поздней работой; применить только обратный diff этого дополнения к пяти существующим design-файлам, журнал дополнить записью отмены. Три новых файла/локальные артефакты удалять только при совпадении hashes и отсутствии поздних изменений/использования. Собственные демо-пресеты при необходимости предварительно экспортировать и удалить только ключ mw-appearance-v1; остальные localStorage namespace не трогать. Не использовать reset --hard/clean или рекурсивное удаление общих каталогов. Бэкапы/QA остаются локальными и не коммитятся.
+
+
+## 2026-10-02T13:58:37+03:00 — Проверен исправленный finish на сохранённом PostgreSQL-стенде E2-06
+
+Причина: закрыта отдельная Linux/PostgreSQL-проверка исправленного завершающего helper, по текущему явному разрешению Олега только на запуск сохранённых postgres/controller, read-only finish и остановку. Подтверждён опубликованный dd9803597941e9516676e8f03aa0cb6f48f1eb92; серверный repository обновлён Git fast-forward, создан detached release `/home/adm_user/marketplace-workspace/beta/app/releases/dd9803597941e9516676e8f03aa0cb6f48f1eb92`, source backend read-only у controller. Исполняемый auth-код/lock/Compose не изменены; backend diff к14d9f48 только tools/owner_rehearsal.py.
+
+Изменены точные локальные файлы: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, docs/E2-06_OWNER_REHEARSAL.md, docs/E2-06_SESSIONS_MFA.md. Исходные копии каждого в `.change-backups/2026-10-02/E2-06-finish-readonly/before/<тот же относительный путь>`, SHA-256 в manifest.json. Перед дополнением общий журнал сохранён также в concurrent-CHANGELOG.md, hash в journal-before.json. Новые артефакты в том же каталоге: manifest.json, run_finish.py, server-result.json, concurrent-CHANGELOG.md, journal-before.json, index-CHANGELOG.md, local-checks.json. Код wrapper проверен AST до SSH; серверный Python выполнялся как кратковременная диагностика через stdin, исходники приложения получены только Git. Сохранены исключительно allowlisted metadata/счётчики/результаты без секретных значений или key fingerprints. Каталог не коммитится.
+
+Сервер: существующий PostgreSQL marketplace-e206-owner-check-postgres ID `3bd4dae16b095ffa63fe40bc7b384e2c27efb1bae8cc2afc5bcc91d035a38ea7` запущен без пересоздания; controller на прежнем image `sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72` пересоздан с новым RO source. Новый controller `6a6602e6b86644bae7614e8f7bb2194c578984883c8d8c8482143d79f3feaf1b`, StartedAt `2026-10-02T10:54:52.361712667Z`. Сеть internal/no host ports, UID10001/read-only/256MiB/0.25CPU/logging none и secret boundaries проверены; web/issuer не запускались. Минимальная роль для неизменённого operator guard — mw_beta_migrator только отдельного кластера; SQL-сессия дополнительно ограничена default_transaction_read_only=on с подключения. SHOW default/transaction_read_only, фактическая DB/роль, marker/cluster_name/locmem пройдены. Новых DB/ролей/ключей/прав/миграций/установок/сборок нет.
+
+Finish PASS: active=false, unusable password, sessions/trusted=0, used_permits=1, invitations=0, ownership unchanged. Подтверждённый фактор1 сохраняется у заблокированного аккаунта, recovery_required=false; это не восстановленный доступ. Private state/output/secret файлы до/после совпали побайтово и по metadata, без вывода значений. Все четыре контейнера стенда остановлены; volume/network/файлы сохранены. Основной web и оба PostgreSQL основной beta совпали по ID/image/StartedAt/mounts/networks/ports, старый baseline не переписывался. Основной source14d9f48 сохранён; runtime/auth smoke и полный browser не повторялись.
+
+Нового backup/dump/restore не было: SQL только чтение, прежний синтетический volume и закрытые файлы сохранены; S1/S2 restore не выдаётся за новую проверку. Полный aggregate runner всё ещё имеет исторический exit1, итоговый pageerror counter не доказан; отдельный finish не подменяет их. E2-06 остаётся «На проверке»; 101 строка и критерии плана сохранены. Независимое хранение ключа у Олега/реальный owner proof/Telegram/рабочий экспорт не выполнены; соседние E2-07/E2-08/E5-07 не реализуются. Production/main/Caddy/FBS/WB/Finkos/UI не менялись.
+
+Локальная проверка: JSON/read-back, backup hashes, 101 неизменная строка, append-only CHANGELOG и точный staged diff; отчёт local-checks.json. Параллельная работа docs/design и чужая запись журнала сохранены, в коммит E2-06 не включаются; index-CHANGELOG.md содержит HEAD и только это дополнение. Автор локального коммита Oleg; push делает Олег.
+
+Безопасный откат: остановка двух запущенных тестовых контейнеров уже выполнена; основная beta не менялась, SQL-откат не нужен. Не удалять занятые volume/DB/ключи/release и не сбрасывать fixture. Для локальных документов сначала сравнить текущие файлы с backups, затем отменить только этот diff с сохранением поздней/чужой работы; журнал дополнять, не переписывать. Новые локальные артефакты удалять только после сверки hashes/потребителей и сохранения доказательства. Серверный Git release и контейнеры сохранять до отдельного решения. Без reset --hard/clean, live restore или старых probes.
+
+
+## 2026-10-02T14:03:59+03:00 — Подготовлен локальный коммит пресетов оформления
+
+По текущему явному запросу Олега «делай коммит» фиксируются личные и добровольно применяемые общие пресеты оформления и ранее записанные результаты ревью. Точный состав: CHANGELOG.md, docs/design/README.md, docs/design/checksums.sha256, docs/design/grid-app.js, docs/design/prototype.html, docs/design/workbench-app.js, docs/design/APPEARANCE_PRESETS.md, docs/design/appearance-presets.css, docs/design/appearance-presets.js. Название: «Добавлены личные и общие пресеты оформления таблиц». Автор и коммитер — Oleg. Публикация не выполняется.
+
+Проверены синтаксис трёх JS, 16 SHA-256 дизайн-файлов, diff --check с учётом CRLF и независимая сверка состава. Код совпадает с ранее проверенной в Edge версией; повтор браузерных сценариев не требовался. Runtime и чужие изменения не включены, исходный индекс пуст. Ограничения макета и открытые замечания ревью сохранены в предыдущих записях.
+
+Перед дополнением журнал сохранён в .change-backups/2026-10-02/appearance-presets-commit-140359/CHANGELOG.md; исходный HEAD, SHA-256 и перечень файлов — .change-backups/2026-10-02/appearance-presets-commit-140359/manifest.json. Журнал дополнен без перезаписи истории. Откат: сначала сравнить поздние изменения, затем применить обратный diff только этого коммита к дизайн-файлам, журнал дополнить записью отмены; не заменять журнал целиком. Новые локальные backup/manifest удалять только после сверки hashes и подтверждения ненужности для отката. Без reset --hard/clean. Бэкапы и QA-артефакты остаются локальными.
+
+
+## 2026-10-02T14:31:59+03:00 — Подготовлен отдельный полный браузерный прогон E2-06 R2
+
+Причина: старый fixture терминальный, исправленный finish отдельно прошёл, но чистый сводный browser exit/pageerror counter ещё не подтверждены. После общего «разрешаю» уточнён объём будущих серверных действий; ответ на уточнение пока не получен. Выполнена только разрешённая локальная подготовка конкретного проверяемого плана. SSH/серверные ресурсы/секреты/миграции/перезапуски не выполнялись.
+
+Изменены точные существующие файлы: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, docs/E2-06_OWNER_REHEARSAL.md, backend/tools/owner_rehearsal.py, backend/tools/owner_rehearsal_bootstrap.py, beta/deploy/prepare_owner_rehearsal.py, scripts/e2_06_owner_browser.cjs. Исходные копии находятся в `.change-backups/2026-10-02/E2-06-browser-r2-preparation/before/<тот же относительный путь>`, SHA-256 в manifest.json. Перед дополнением общий журнал также сохранён в journal-before.md, hash в journal-before.json. Новые файлы проекта: beta/deploy/compose.owner-rehearsal-r2.json, docs/E2-06_BROWSER_R2.md. Новые локальные артефакты в том же каталоге backups: manifest.json, local-preparation-checks.json, journal-before.md, journal-before.json, index-CHANGELOG.md, local-checks.json; вне Git, без секретов.
+
+Выделен фиксированный профиль marketplace-e206-owner-check-r2 с root /home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002. Новый Compose отличается от старого только именами/путями. Helper/bootstrap/browser разрешают только original/R2; marker, реальный cluster_name, DB/роль operator guard сохранены. Подготовка принимает --project из двух фиксированных вариантов, отказывает на занятых ресурсах и сохраняет metadata основной beta плюс остановленного первого стенда в отдельный preserved-rehearsal.json; исходный baseline не перезаписывается. Browser дополнительно проверяет Compose project controller/issuer. Runtime auth/accounts/ownership/config/migrations/SQL grants/requirements.lock не менялись.
+
+Локальные проверки: 3 Python AST, Node --check; исходный профиль по умолчанию и точные R2 plan paths; отказы неизвестному project, --apply на Windows, helper/bootstrap без нужной среды и browser до SSH при неверных аргументах; сравнение двух Compose после обратной замены идентификаторов; internal/no ports, secret mounts и прежние limits/images/logging none; backup hashes. Итоговый JSON/read-back, неизменные 101 строки/критерии плана, append-only журнал и staged diff проверяются перед коммитом; local-checks.json. Установленные Node/npx/Playwright API/Chromium найдены, установки не выполнялись. Чтение существующего Playwright SKILL.md сначала ограничено sandbox, повторное разрешённое read-only чтение успешно; это не отказ пользовательского approval. Используется прежний приватный API runner без snapshots/traces/вывода секретов, согласно прямому условию Олега.
+
+Документ задаёт новую пустую синтетическую БД/роли, отдельные ключи, 4 пользователя example.invalid/2 организации/5 членств, actual operator CLI и 10 итоговых отметок браузера. Основные S1/S2 backups и первый стенд неприкосновенны; новые R2 volume/закрытые файлы сохраняются после остановки, автоматического restore/reseed нет. Effective Compose/Linux/PostgreSQL/browser не выполнены и не объявляются PASS. E2-06 «На проверке»; публикацию выполняет Олег, запуск требует конкретного согласования плана. Передача основного ключа/реальный proof/Telegram/RBAC/RLS/рабочий экспорт не включены.
+
+Безопасный откат локальной подготовки: сверить текущие файлы и backups, отменить только этот diff, сохранив чужую/более позднюю работу. Новые compose/doc можно удалить только если не изменены и не используются опубликованным серверным этапом; локальные артефакты — после проверки hashes/потребителей и сохранения доказательства. Журнал не удалять, отмену добавлять. После будущего запуска безопасный fallback только stop новых R2 containers с сохранением volume/network/files; без down -v/DROP/prune/live restore/сброса counters или изменений старого стенда/main beta. Production/main/Caddy/FBS/WB/Finkos/другие проекты не затронуты. Локальный коммит автора Oleg, push не выполняется агентом.
+
+
+## 2026-10-02T14:49:58+03:00 — Подготовлена передача копии ключа E2-06 и создан отдельный файл пароля
+
+Получено явное уточнение Олега: полный browser на отдельном синтетическом стенде и подготовка передачи ключа. Авторизация R2 зафиксирована, его запуск ожидает публикации 400f462 самим Олегом; SSH/серверные действия в этом шаге не выполнялись. Подготовка передачи не объявляется разрешением фактического чтения/обёртки/скачивания основного key. Затем Олег отдельно попросил файл пароля и подтвердил хранение обоих файлов в Telegram после объяснения общего риска доступа. Это явное изменение прежнего решения, а не молчаливое ослабление условий.
+
+Изменены: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, docs/E2-06_BROWSER_R2.md, docs/E2-06_SESSIONS_MFA.md. Исходные копии каждого в `.change-backups/2026-10-02/E2-06-key-handoff-preparation/before/<тот же относительный путь>`, hashes в manifest.json; журнал перед дополнением также сохранён в journal-before.md. Новые отслеживаемые файлы: docs/E2-06_KEY_HANDOFF.md, backend/tools/check_mfa_key_envelope.py, backend/account_security/tests/test_key_envelope_check.py. Новые локальные артефакты в указанном backups каталоге: manifest.json, prepare_owner_passphrase.ps1, passphrase-file-result.json, journal-before.md, index-CHANGELOG.md, local-checks.json. Они содержат только код/безопасные metadata, без значений/fingerprints секретов; каталог не коммитится.
+
+По прямому запросу Олега создана новая закрытая папка C:/Users/krolo/Documents/marketplace-recovery и её beta, файл C:/Users/krolo/Documents/marketplace-recovery/beta/e2-06-backup-passphrase-20261002.txt. Проверены отсутствие занятых путей/reparse points, Windows ACL текущего пользователя и SYSTEM без широких правил, отключение наследования у обоих каталогов, ACL файла, эксклюзивное создание и read-back. Пароль создан криптографическим RNG, в stdout/отчёт/Git/clipboard не попадал; fingerprints не сохранялись. Это новый пароль будущего envelope, не пароль старого S2 и не TOTP key. SSH/чтения ключа/нового envelope/Telegram/отправок не было.
+
+План K1/K2/K3 предлагает новый envelope того же RO runtime key с этим паролем через штатный Linux wrap/getpass; отдельный приватный локальный файл ciphertext вне Git, сверку передачи без раскрытия, локальную проверку в памяти и ручную загрузку/скачивание Олегом. Runtime key, БД, основной web, существующие S2 backups и реальный owner proof не изменяются. Фактические server wrap/download и независимая копия остаются отдельным разрешением и проверкой. Совместное Telegram-хранение не выдаётся за независимый канал пароля.
+
+Новая утилита check_mfa_key_envelope только читает ограниченный обычный envelope-файл, вызывает существующий unwrap и не возвращает/не пишет plaintext key. CLI требует интерактивный stdin/stdout, getpass fallback с echo превращается в отказ; ошибки без данных. Существующий запрет plaintext restore на Windows в mfa_key_backup.py сохранён. Три синтетических теста SimpleTestCase прошли без БД за1.084s, 0 skips: верный/неверный пароль и повреждённый envelope без plaintext/new files; отказ до prompt без TTY; отказ getpass echo fallback. Это не реальный owner terminal/SQL/передача. PowerShell AST создания приватного файла проверен до исполнения, ACL/read-back подтверждены фактически. Новых зависимостей нет.
+
+Локальные JSON/AST/backup hashes, 101 неизменная строка плана, append-only CHANGELOG и staged diff проверяются перед коммитом; local-checks.json. Статус E2-06 «На проверке»: R2/независимая копия ключа/рабочий экспорт не закрыты. Production/main/Caddy/FBS/WB/Finkos/другие проекты не менялись. Локальные коммиты автора Oleg, push выполняет Олег.
+
+Безопасный откат: локальные документы/утилиту отменять только точечным обратным diff после сравнения текущих файлов и backups, с сохранением чужой/поздней работы; запись журнала не удалять. Новые исходники удалять только если не изменены/не используются. Файл пароля и каталоги сохранять до решения Олега; удаление допустимо только по отдельному указанию после подтверждения, что этот пароль не используется ни одним envelope и файл не изменён, с проверкой точного абсолютного пути; рекурсивное удаление общей папки запрещено. Локальные evidence удалять после сверки и сохранения нужного доказательства. Серверного отката нет, поскольку server key/копии/контейнеры не менялись.
+
+
+## 2026-10-02T15:23:05+03:00 — Пройден полный браузерный прогон E2-06 R2
+
+Причина: закрыть чистый aggregate exit и pageerror counter после исправления финального helper, не сбрасывая старый терминальный fixture. Олег явно разрешил полный браузерный прогон и подготовку передачи ключа, затем сообщил о публикации. origin/beta проверена на 2c2f8f737262267d29d06ab40d7bef3571693745, локальная и серверная beta чистые; сервер получил код только Git fast-forward/new detached release. Push агентом не выполнялся.
+
+Точные изменённые локальные файлы: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, docs/E2-06_BROWSER_R2.md, docs/E2-06_OWNER_REHEARSAL.md, docs/E2-06_SESSIONS_MFA.md. Исходные копии: .change-backups/2026-10-02/E2-06-browser-r2-run/before/<тот же относительный путь>, hashes в backup-manifest.json; журнал непосредственно перед дополнением — journal-before.md. Новые локальные артефакты в том же каталоге: run_r2.py, record_result.py, setup-result.json, browser-result.json, final-result.json, backup-manifest.json, journal-before.md, journal-entry.md, local-checks.json, index-CHANGELOG.md, check_terminal_readonly.py, terminal-readonly-result.json; исходный record_result.py перед коррекцией сохранён в before-audit-correction/record_result.py. Только безопасные metadata/счётчики/код, без секретов и key fingerprints; вне Git.
+
+Созданы ровно новые R2 ресурсы из опубликованного docs/E2-06_BROWSER_R2.md: project marketplace-e206-owner-check-r2; containers с суффиксами postgres/web/controller/issuer; private internal network, data volume; root /home/adm_user/marketplace-workspace/beta/rehearsals/e2-06-owner-r2-20261002 с новыми 0600 secrets/state/operator-output и baseline.json/preserved-rehearsal.json. Новые БД/роли mw_beta/mw_beta_bootstrap/mw_beta_migrator/mw_beta_web принадлежат только отдельному PostgreSQL-кластеру. Fixture 4 example.invalid пользователя/2 организации/5 членств. Код RO из beta/app/releases/2c2f8f737262267d29d06ab40d7bef3571693745/backend. Существующие pinned images, без pull/build/install; PG/web/controller/issuer 384/384/256/256MiB, CPU0.25, logging none. Выполнены одноразовые UID/secret/bootstrap контейнеры в пределах плана; они завершены/удалены штатным --rm.
+
+Проверки: effective Compose и фактические limits/mounts/UID/read-only/internal/no host ports; lock с image совпал, рабочий runtime auth/settings/ownership/migrations/SQL grants неизменен. Миграций 36 на PostgreSQL17.11; точный restricted web LOGIN/SQL-контракт и HTTP runtime smoke до браузера PASS. Полный Chromium: 10 PASS, result=PASS, exit0, actualOperatorCli=true, pageerrors0. TOTP wrong/expired/valid/replay, ограниченная стадия до MFA, CSRF, сессии/trust/reauth, одноразовые коды, реальная CLI proof/owner-binding/permit, смена пароля с сохранением MFA, блокировка/code/operator denial и добровольный member login. Настоящее время/штатные throttles, без сбросов counters/last_t. Финальный SQL read-only PASS: owner inactive/unusable password, sessions/trust0, used permit1, invitations0, ownership unchanged; factor1 остаётся заблокированным состоянием аккаунта. Файлы0600/содержимое/metadata неизменны при итоговом чтении; только locmem.
+
+Tunnel закрыт, все четыре R2 контейнера остановлены; volume/network/files/release сохранены. ID/image/StartedAt/mounts/networks/ports основных трёх beta контейнеров и четырёх остановленных старого стенда совпали до/после. Основной web остаётся14d9f48; основной key, БД, права, backups и старый fixture не менялись. Исторический browser exit1 не переписан; новый R2 дал независимый полный PASS. Конкурентность/17 SQL-отказов/export link/dump/restore/maintenance — прежнее S1, не выданы за повтор. K1/K2/K3 не выполнены; основной key не читался и envelope не создавался/не скачивался. Telegram/реальный owner proof/production/main/Caddy/FBS/WB/Finkos/соседние задачи не затронуты.
+
+SYSTEM_PLAN.md сохранён «На проверке»: независимая копия ключа владельца и рабочий экспорт ещё не закрыты; 101 строка/критерии неизменны. JSON/read-back/backup hashes/append-only журнала и точный staged diff проверяются перед коммитом, local-checks.json. Код приложения не менялся, повтор локальных MFA тестов не требуется. Внешний итоговый audit сначала отказал из-за обращения к User.email вместо AccountContact.email; browser exit0 уже был подтверждён. Сохранены первый FAIL/остановка, затем исправленный SQL read-only PASS через временный старт только тех же postgres/controller и повторную остановку; web/issuer не запускались, browser не повторялся. Локальный коммит автора/коммитера Oleg; публикация только Олегом.
+
+Безопасный откат server run уже выполнен остановкой только R2. Не down -v/DROP/prune/live restore/reseed/сброс buckets, не перезапускать старый fixture. Новые занятые ресурсы/закрытые файлы/release сохранять до отдельного решения; удаление только по точному плану после подтверждения ненужности. Локальные документы откатывать обратным diff после сравнения с backups, сохраняя позднюю/чужую работу; журнал дополнять, не стирать. Локальные артефакты удалять лишь после сверки и сохранения доказательства. Без reset --hard/clean. Следующее отдельное разрешение — конкретные K1/K2 в docs/E2-06_KEY_HANDOFF.md с вводом пароля владельцем; K3 выполняет Олег вручную.
+
+
+## 2026-10-02T15:44:49+03:00 — Подготовлено разрешённое получение копии ключа E2-06 K1/K2
+
+Олег отдельно разрешил конкретные K1/K2 после итогового R2. Проверена публикация b3c50f7034bd454ea8066c6f194010d91ca9068a, локальная beta чистая. Выполнена серверная подготовка по docs/E2-06_KEY_HANDOFF.md, фактический wrap/transfer ожидает скрытого ввода владельца. Повторное согласование K1/K2 не требуется; секреты не запрашиваются в чате.
+
+Изменены точные файлы: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, docs/E2-06_KEY_HANDOFF.md, docs/E2-06_SESSIONS_MFA.md. Исходные копии `.change-backups/2026-10-02/E2-06-key-handoff-k1-k2/before/<тот же относительный путь>`, SHA-256 в backup-manifest.json; журнал непосредственно перед дополнением — journal-before.md. Новые локальные артефакты в том же каталоге: server_step.py, prepare-result.json, owner-key-handoff.ps1, owner_wrap_console.py, download_envelope.py, check_owner_argv.py, check_owner_argv.ps1, backup-manifest.json, journal-before.md, journal-entry.md, local-checks.json. Перед коррекцией launcher сохранён в before-terminal-compatibility/owner-key-handoff.ps1. Эти скрипты/metadata не коммитятся и не содержат значений секретов/ciphertext/key fingerprints. Будущие owner-wrap-result.json, verify-result.json, download-result.pending/download-result.json и owner-verify-result.json пока отсутствуют, их наличие и PASS не предполагаются.
+
+Сервер: используется существующий published RO release2c2f8f7 и прежний pinned image sha256:86f9cac63025d6c6119d2f7e0b232004b3ebfe98a82800a672bef73fdd1fbe72; backup/crypto/operator/lock неизменны относительно main14d9f48, lock совпал с image. Main RO key mount/source сверены. ID/image/StartedAt/mounts/networks/ports основной beta и обоих остановленных rehearsal сверены до/после. Существующие runtime key/S2 envelope/passphrase проверены только stat metadata (0600/UID10001/size/mtime/inode), содержимое/fingerprints не читались. После проверки отсутствия создан только `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-owner-key-envelope-20261002`, mode0700/UID10001. UID установлен одноразовым network-none/readonly/logging-none контейнером с CHOWN и mount только нового каталога. Проверочные one-off контейнеры завершены с --rm. Никаких web/PG restart, SQL/roles/migrations, новых ключей, envelope или копирования пока нет.
+
+Локально read-only проверены ACL существующего marketplace-recovery/beta и файла пароля (владелец/SYSTEM), отсутствие целевого envelope; пароль не прочитан. Подготовленный launcher требует собственный TTY Олега; агент не получает его stdout/stdin или пароль. После actual wrap агент выполнит только приватное получение ciphertext/ACL/readback/byte equality; затем launcher вызовет прежний read-only verifier с вводом Олега. Значения не попадут в argv/ENV/Git/логи, plaintext key не скачивается/не создаётся. Telegram и реальные owner proofs не затрагиваются.
+
+Проверки: Python local/remote AST, PowerShell parser, ciphertext tool --check; локальная проверка прямой передачи длинного SSH argv через старый PowerShell отказала до SSH, вызов заменён Python subprocess с наследованием приватного терминала. Исправленный Windows argv roundtrip PASS, неинтерактивный вызов отвергнут до SSH. Одна первоначальная попытка генерации launcher остановилась локальным PowerShell parser до исполнения, затем файл создан и синтаксис проверен. Это статическая проверка транспорта, не реальный getpass/wrap/decrypt. JSON/readback, backup hashes, 101 неизменная строка/критерии плана, append-only журнал и diff --check проверяются перед локальным коммитом. E2-06 «На проверке»: actual K1/K2/K3 и рабочий экспорт не закрыты.
+
+Откат: сохранить новый закрытый пустой каталог и подготовленные скрипты до завершения handoff; не перезапускать prepare/wrap и не перезаписывать output. Основной web/БД/key/старые копии не менялись, runtime откат не нужен. Любое удаление нового/частичного output — только отдельное решение после сверки точного абсолютного пути и отсутствия использования; старые key/envelope/passphrase сохранять. Локальные документы отменять только обратным diff после сравнения backups с текущим состоянием, сохраняя чужую/позднюю работу; журнал дополнять. Новые локальные служебные артефакты удалять после завершения процесса и сохранения нужного доказательства, не во время ожидания launcher. Без reset --hard/clean/рекурсивного удаления. Push выполняет Олег, автор/коммитер локального коммита Oleg. Production/main/Caddy/FBS/WB/Finkos/другие проекты не менялись.
+
+
+## 2026-10-02T15:47:25+03:00 — Уточнён запуск закрытого терминала K1/K2 на Windows
+
+По сообщению Олега штатная ExecutionPolicy отказала в запуске owner-key-handoff.ps1 до исполнения. Передана команда powershell.exe -NoProfile -ExecutionPolicy Bypass -File с точным локальным launcher; разрешение только для нового процесса, настройки пользователя/компьютера не меняются. Секреты/скриншоты приватного ввода не запрашивались. Дополнены только docs/E2-06_KEY_HANDOFF.md и CHANGELOG.md; исходные текущие копии в .change-backups/2026-10-02/E2-06-key-handoff-k1-k2/before-terminal-policy/<тот же относительный путь>. Runtime/сервер не менялся этим уточнением; фактический wrap ещё ожидается. Проверка — чтение сообщения PowerShell и ранее выполненные parser/TTY/argv checks; успешный пользовательский запуск не предполагается. Откат — после сравнения текущих файлов убрать только добавленную инструкцию при необходимости, запись журнала сохранить; системную ExecutionPolicy откатывать не требуется. Локальные копии удалять только после сохранения доказательств и завершения процесса.
+
+
+## 2026-10-02T15:56:18+03:00 — Зафиксирован отказ первого интерактивного K1 без создания копии
+
+Владелец обошёл ExecutionPolicy только для запущенного процесса; достигнуто штатное приглашение getpass, что видно на предоставленном screenshot без секретов. После сообщения о проблеме вставки даны инструкции скрытого ввода. Launcher записал owner-wrap-result.json с exit1 в 2026-10-02T15:50:17.0879930+03:00. Текст причины пока не получен; ввод/stdout частного терминала не захватывались. Не считаем причиной ошибку пароля/crypto без подтверждения. Значения пароля/ключа агент не читал и не выводил. Возможное чтение ключа внутри разрешённого CLI в памяти не определено.
+
+Первый metadata verify по сообщению «запустил, ожидаю» был выполнен до завершения owner wrapper и отказал; verify-result.json сохранён. После фактического exit1 отдельный одноразовый readonly/network-none/logging-none контейнер с единственным mount нового output подтвердил directory_empty=true, envelope_exists=false; failed-wrap-output-check.json. Download и локальная расшифровка не запускались, повтор wrap не выполнялся. В server_step.py и download_envelope.py добавлен gate owner-wrap-result exit0, отдельный путь verify-after-owner-result.json для будущего чтения; исходные версии сохранены в before-owner-completion-gate/. Проверка Python AST успешна; это не новый серверный wrap и не установка компонентов.
+
+Изменены те же пять документов: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, docs/E2-06_KEY_HANDOFF.md, docs/E2-06_SESSIONS_MFA.md. Их промежуточные исходные копии — .change-backups/2026-10-02/E2-06-key-handoff-k1-k2/before-owner-attempt-result/<тот же относительный путь>. Новые локальные evidence в том же корне: owner-wrap-result.json, verify-result.json, failed-wrap-output-check.json, before-owner-completion-gate/server_step.py, before-owner-completion-gate/download_envelope.py. Старые protocol files не перезаписаны. SYSTEM_PLAN сохранён «На проверке»; R2 PASS не меняется, K1 attempted/failed, K2/K3 не выполнены. Требуется только уточнение владельца по терминалу; согласование K1/K2 сохраняется.
+
+Откат/продолжение: сохранить пустой новый output и evidence, существующие key/S2 envelope/passphrase не трогать. Launcher блокирует повтор по owner-wrap-result.json; не удалять маркер и не перезапускать вслепую. После определения причины и новой проверки пустого output подготовить ограниченное продолжение в пределах разрешённого K1/K2, не заявляя успешный wrap заранее. Локальные документы отменять обратным diff после сравнения с backups, сохраняя посторонние изменения; журнал дополнять. Новые локальные evidence удалять только после сохранения доказательств и отсутствия потребителей, отдельным решением; никаких server runtime/SQL откатов не требуется. Значений секретов и key fingerprints в файлах/выводе/Git нет.
+
+
+## 2026-10-02T16:13:47+03:00 — Получена и проверена зашифрованная копия ключа E2-06 K1/K2
+
+После проблемы вставки Олег повторно запустил первый launcher и получил ожидаемый запрет по сохранённому маркеру. Перед отдельной второй попыткой fresh read-only preflight подтвердил пустой output, отсутствие активного writer и неизменность beta/старых ключевых metadata; подготовлен отдельный owner-key-handoff-retry.ps1 без стирания первого отказа. Вторая попытка остановлена владельцем Ctrl+C, exit130. Затем он явно разрешил автоматическое чтение пароля из уже существующего закрытого файла. Этот новый способ был объяснён заранее; прежний ручной getpass не выдаётся за успешный. Автоматический precheck подтвердил 0 активных output writers.
+
+Первый автоматический запуск остановился на local-preconditions до чтения пароля/SSH: в дочернем Windows PowerShell5 отсутствовал Get-Acl. Диагностика выводила только безопасные признаки ACL, имя cmdlet и тип исключения. Права владельца/SYSTEM подтверждены отдельно. После перевода локального вызова на уже установленный PowerShell7.6.5 ACL PASS; новых компонентов и системной смены ExecutionPolicy нет. Исходные скрипты и automatic-result FAIL сохранены. Published локальный backup/verifier побайтово совпал с2c2f8f7.
+
+Фактически выполнено K1/K2: существующий password-файл прочитан только приватным автоматическим процессом в память; передача серверному одноразовому контейнеру только SSH stdin, без argv/ENV/echo/логов/печати. Использованы неизменённые wrap/write_private_new из published RO source2c2f8f7, существующий pinned dependency image, network none/logging none/readonly/UID10001/cap-drop ALL/256MiB/0.25CPU; mounts только source RO, основной key RO, новый output RW. Создан новый `/home/adm_user/marketplace-workspace/beta/backups/database/e2-06-owner-key-envelope-20261002/envelope.json`,0600/UID10001,O_EXCL. Ciphertext получен приватным pipe в новый `C:/Users/krolo/Documents/marketplace-recovery/beta/e2-06-key-envelope-20261002.json` вне Git; эксклюзивная запись, ACL владельца/SYSTEM, regular/size/format/mode, read-back и повторное байтовое равенство серверу PASS. С тем же паролем из файла опубликованный verifier расшифровал копию в памяти и проверил Fernet key. Plaintext key на диск не писался/с сервера не скачивался; значения/ciphertext/fingerprints в протокол не попадали.
+
+Итог automatic-after-acl-result.json: PASS, wrap/download/decrypt=true. Password-файл не изменился и теперь используется новым envelope; это уже не неиспользуемый подготовленный пароль. Метаданные основной beta и обоих остановленных rehearsal до/после равны; old runtime key/S2 envelope/passphrase mode/UID/size/mtime/inode прежние, старые копии сохранены. Web/PG/SQL/роли/миграции/сессии не менялись, новые runtime key/owner emergency proof не создавались. Одноразовые контейнеры завершены с --rm. Source сервера оставался published Git release, manual patches/archives не применялись. Telegram агентом не использовался; K3 и рабочий экспорт остаются незакрытыми, E2-06 «На проверке».
+
+Точные изменённые документы: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, docs/E2-06_KEY_HANDOFF.md, docs/E2-06_SESSIONS_MFA.md. Их промежуточные копии перед этим дополнением: .change-backups/2026-10-02/E2-06-key-handoff-k1-k2/before-completion/<тот же относительный путь>; исходные до всей работы — before/, hashes в backup-manifest.json. Новые локальные служебные файлы/evidence (включая копии исправляемых вспомогательных скриптов) перечислены относительно этого каталога: automatic-after-acl-result.json, automatic-precheck.json, automatic-result.json, auto_common.json, backup-manifest.json, check_owner_argv.ps1, check_owner_argv.py, download_envelope.py, failed-wrap-output-check.json, handoff_from_private_file.py, journal-before.md, journal-entry.md, local-checks.json, owner-key-handoff-retry.ps1, owner-key-handoff.ps1, owner-wrap-result.json, owner-wrap-retry-result.json, owner_wrap_console.py, prepare-result.json, retry-preflight-result.json, retry_preflight.py, server_step.py, verify-result.json, before-completion/CHANGELOG.md, before-completion/SYSTEM_PLAN.md, before-completion/SYSTEM_SECURITY_CHECKS.json, before-existing-powershell/download_envelope.py, before-existing-powershell/handoff_from_private_file.py, before-owner-attempt-result/CHANGELOG.md, before-owner-attempt-result/SYSTEM_PLAN.md, before-owner-attempt-result/SYSTEM_SECURITY_CHECKS.json, before-owner-completion-gate/download_envelope.py, before-owner-completion-gate/server_step.py, before-owner-retry/download_envelope.py, before-owner-retry/server_step.py, before-terminal-compatibility/owner-key-handoff.ps1, before-terminal-policy/CHANGELOG.md, before-terminal-policy/docs/E2-06_KEY_HANDOFF.md, before-owner-attempt-result/docs/E2-06_KEY_HANDOFF.md, before-owner-attempt-result/docs/E2-06_SESSIONS_MFA.md, before-completion/docs/E2-06_KEY_HANDOFF.md, before-completion/docs/E2-06_SESSIONS_MFA.md. Дополнительно создаётся completion-checks.json с итоговыми JSON/AST/hash/read-back/101-row/append-only/diff checks. Никакие эти локальные артефакты или приватные envelope/password не коммитятся. В Git только пять документов, автор/коммитер Oleg; push выполняет Олег.
+
+Проверки: фактические K1/K2 PASS выше; неизменность данных парольного файла и защищаемых metadata; syntax PowerShell/Python, byte equality published verifier, JSON/read-back, исходные backup hashes, 101 строка/критерии плана неизменны, журнал append-only, git diff --check. Код приложения не менялся, повтор Django/MFA suite не требуется. Первый отказ, преждевременный metadata verify и остановленная попытка сохранены отдельно и не объявляются PASS.
+
+Безопасный откат: runtime неизменен, серверный откат не нужен. Сохранить новый server/local envelope, используемый password и старые S2 копии; не повторять wrap/launcher на занятых путях, не регенерировать key/пароль и не перезаписывать ciphertext. Удаление копий только по отдельному решению владельца после проверки восстановимости/точных путей, без рекурсивного удаления общей папки. Для документов сравнить с backups и применить только обратный diff, сохранив позднюю/постороннюю работу; журнал не стирать. Служебные артефакты удалять после завершения процессов и сохранения нужного доказательства. Нет изменений production/main/Caddy/FBS/WB/Finkos/следующих задач и нет секретов в Git/выводе.
+
+
+## 2026-10-02T16:22:32+03:00 — Зафиксировано подтверждение скачивания копий и отменена дополнительная проверка K3
+
+Олег сообщил «все скачал все норм», затем на уточнение путей прямо указал «не надо проверять». Дополнительные проверки прекращены. До указания выполнен только поиск имён в согласованной закрытой папке и Downloads; sandbox отказал в перечислении закрытой папки, разрешённое чтение только имён/metadata прошло. Обнаружены прежние два имени в marketplace-recovery/beta; возвращённые копии не идентифицированы. Содержимое любых key/password/envelope в этом шаге не читалось, сравнение/расшифрование/изменение ACL/файлов не выполнялись. Сервер/SSH/Telegram не использовались, прошлые probes не повторялись.
+
+Точные изменённые файлы: CHANGELOG.md, SYSTEM_PLAN.md, SYSTEM_SECURITY_CHECKS.json, docs/E2-06_KEY_HANDOFF.md, docs/E2-06_SESSIONS_MFA.md. Исходные копии `.change-backups/2026-10-02/E2-06-key-handoff-k3/before/<тот же относительный путь>`, hashes в backup-manifest.json; журнал непосредственно перед дополнением — journal-before.md. Новые локальные артефакты в этом каталоге: backup-manifest.json, owner-report.json, journal-before.md, journal-entry.md, local-checks.json; только безопасные сведения о результате/ограничении, без секретов/ciphertext/fingerprints. В Git не включаются.
+
+K3 отмечен как owner-reported download, повторная техническая проверка отменена владельцем. Не выдаётся за новый технический PASS; K1/K2 и R2 PASS сохраняются как прежние доказательства. Повторно запрашивать пути/читать копии без нового указания Олега не планируется. E2-06 оставлен «На проверке»: полный критерий рабочего экспорта зависит от E2-07/E2-08/E5-07, синтетический действующий механизм и S1 не подменяют рабочий экспорт. Реальный owner proof не создавался, синтетическая процедура проверена ранее; соседние задачи не начаты.
+
+Проверки только документов: JSON/read-back, исходные backup hashes, 101 неизменная строка/критерии плана, append-only журнала и diff --check. Новых MFA/SQL/browser/crypto тестов нет и PASS не приписывается. Локальный коммит автора/коммитера Oleg, push выполняет Олег. Основная beta/production/main/Caddy/FBS/WB/Finkos и другие проекты не менялись.
+
+Безопасный откат: ключевые файлы и runtime не менялись, откат для них не нужен. Для документов сначала сравнить текущие файлы и backups, затем отменить только этот diff, сохранив позднюю/постороннюю работу; журнал дополнить, не стирать. Новые локальные evidence удалять только после сохранения нужного доказательства и проверки отсутствия потребителей. Отказ владельца от дополнительной проверки сохранять как действующее указание, пока он сам его не изменит. Не удалять/перезаписывать/перегенерировать ключевые файлы, не reset --hard/clean.
+
+
+## 2026-10-05T11:26:24+03:00 (Europe/Moscow) — Спроектирована системная роль технического администратора
+
+По запросу Олега продумано расширение модели доступа: `platform_admin` отделён от владельца организации и предусматривает обслуживание всех организаций, системную диагностику, логи/аудит, управление доступами, загрузками, интеграциями и состоянием резервирования. Описаны отдельный личный служебный аккаунт, серверные права и RLS без обхода, временная область поддержки, отзыв сессий/ссылок, MFA для чувствительных действий, точная область блокировки, защита последнего администратора/владельца и независимое операторское восстановление. Сроки административной сессии и поддержки записаны как предварительные параметры. Конкретные люди, постоянный финансовый доступ и право назначения остаются D3; роль/панель не реализованы, реальные доступы не выданы.
+
+Изменены только `C:/Users/krolo/Documents/marketplace-workspace/SYSTEM_ARCHITECTURE.md` (модель назначения и раздел 4.1, уточнение административной проверки области), `C:/Users/krolo/Documents/marketplace-workspace/SYSTEM_PLAN.md` (связь предложения с будущими задачами и состав D3) и `C:/Users/krolo/Documents/marketplace-workspace/CHANGELOG.md` (эта добавленная запись). Статусы, зависимости и исходные критерии всех 101 задачи сохранены; D3 остаётся «Не принято». Код, UI, зависимости и сервер не менялись; commit/push не выполнялись.
+
+До редактирования сохранены побайтовые копии с проверенными SHA256: `.change-backups/2026-10-05/platform-admin-design-112054/SYSTEM_ARCHITECTURE.md`, `.change-backups/2026-10-05/platform-admin-design-112054/SYSTEM_PLAN.md`, `.change-backups/2026-10-05/platform-admin-design-112054/CHANGELOG.md`. Новые локальные файлы дополнительно: `.change-backups/2026-10-05/platform-admin-design-112054/backup-manifest.json` и `.change-backups/2026-10-05/platform-admin-design-112054/documentation-checks.json`. Все пять путей находятся внутри `C:/Users/krolo/Documents/marketplace-workspace/`; каталог исключён из Git действующим `.gitignore`.
+
+Проверка документов: сверены актуальные User/Membership и проверка владельца; проверены исходные backup SHA256, read-back добавленного раздела и ссылки на него, структура Markdown-таблиц, побайтовое сохранение всех 101 строки задач и исходных CRLF, неизменный статус D3, append-only журнала и `git diff --check`. Итоговый протокол — `documentation-checks.json`. Runtime/MFA/RBAC/RLS/UI-проверки нового администратора не выполнялись: изменены только документы.
+
+Безопасный откат: сначала сравнить текущие документы с указанными копиями, затем убрать только добавленную модель/раздел 4.1, уточнение проверки административной области, заметку плана и дополнение формулировки D3, сохранив любые поздние/посторонние изменения. CHANGELOG не перезаписывать: добавить запись об откате. Пять новых локальных файлов можно удалить только после проверки точных путей, отсутствия потребителей и сохранения нужного доказательства/возможности отката; не удалять общий каталог `.change-backups/`, не применять reset --hard/clean. Серверный откат не требуется.
+
+
+## 2026-10-05T12:29:58+03:00 (Europe/Moscow) — Реализованы локальные разрешения E2-07 и ограниченный системный администратор
+
+По согласованной матрице добавлены Grant, серверные потребители приглашений/синтетических данных, четыре независимых действия, организационные и кабинетные области, отзыв без восстановления старой ссылки, шаблоны и ограничения выдачи, обязательный MFA при повышении, platform_admin с отдельным назначением и временной поддержкой. Подготовлены PostgreSQL guards, минимальный SQL-контракт web, отдельный серверный план и инертные средства нового синтетического стенда. Новых зависимостей/плагинов нет. Сервер/основная beta/production/main/Caddy/FBS/WB/Finkos не менялись, push не выполнялся, реальные ключи/пароли и K3 не открывались.
+
+Точные файлы относительно C:/Users/krolo/Documents/marketplace-workspace/:
+
+- `CHANGELOG.md`
+- `SYSTEM_GRANT_CHECKS.json`
+- `SYSTEM_PLAN.md`
+- `backend/access_control/__init__.py`
+- `backend/access_control/apps.py`
+- `backend/access_control/management/__init__.py`
+- `backend/access_control/management/commands/__init__.py`
+- `backend/access_control/management/commands/manage_access_operator.py`
+- `backend/access_control/migration_guards.py`
+- `backend/access_control/migrations/0001_initial.py`
+- `backend/access_control/migrations/0002_access_guards.py`
+- `backend/access_control/migrations/__init__.py`
+- `backend/access_control/models.py`
+- `backend/access_control/operator.py`
+- `backend/access_control/services.py`
+- `backend/access_control/tests/__init__.py`
+- `backend/access_control/tests/test_http.py`
+- `backend/access_control/tests/test_migrations.py`
+- `backend/access_control/tests/test_platform.py`
+- `backend/access_control/tests/test_preparation.py`
+- `backend/access_control/tests/test_role_contract.py`
+- `backend/access_control/tests/test_transactions.py`
+- `backend/access_control/urls.py`
+- `backend/access_control/views.py`
+- `backend/account_security/management/commands/prepare_owner_recovery.py`
+- `backend/account_security/services.py`
+- `backend/account_security/tests/test_http.py`
+- `backend/accounts/services.py`
+- `backend/config/access_local_checks.py`
+- `backend/config/settings.py`
+- `backend/config/urls.py`
+- `backend/tools/access_rehearsal.py`
+- `backend/tools/access_restore_check.py`
+- `backend/tools/access_web_grants.py`
+- `backend/tools/verify_access_web_runtime.py`
+- `beta/deploy/compose.access-rehearsal.json`
+- `beta/deploy/prepare_access_rehearsal.py`
+- `docs/E2-07_GRANTS.md`
+- `docs/E2-07_SERVER_PLAN.md`
+
+Проверки: основной E2-07/E2-06 HTTP-набор 68 обнаружено, 63 PASS, 5 PostgreSQL-пропусков; ещё четыре новые HTTP/подготовительные проверки PASS. E2-04/E2-05 legacy: 58 обнаружено, 47 PASS, 11 PostgreSQL-пропусков. Полный локальный E2-06 набор: 53 обнаружено, 44 PASS, 6 пропусков, три ошибки недоступного Windows TEMP; эти три синтетических файловых теста успешно повторены с TEMP внутри проекта (вместе с новым recovery-тестом: 4 PASS). Исходные ошибки не скрыты; это не K3 и не работа с реальными ключами. Django check, migration drift, pip check, AST 26 файлов, безопасные dry-plan/Windows refusal и diff --check успешны. Два shell-блока серверного плана прошли bash -n без исполнения команд; запуск Git Bash для синтаксической проверки потребовал локального выхода из sandbox. Протокол SYSTEM_GRANT_CHECKS.json содержит команды/ограничения. PostgreSQL/реальный SQL LOGIN/сетевой web/новый dump-restore не выполнены; E2-07 «На проверке», E2-06 статус не закрыт.
+
+Исходные копии существующих файлов до редактирования — `.change-backups/E2-07-20261005-115038/` с теми же относительными путями; manifest.json содержит исходные SHA256, preexisting.patch сохраняет прежний diff трёх документов. Дополнительно локальные e207-files.json, plan-addition.txt, changelog-addition.txt, SYSTEM_PLAN.md.index, CHANGELOG.md.index и пустой после тестов test-temp/ находятся в этой исключённой из Git папке. SYSTEM_ARCHITECTURE.md не редактировался; прежние правки SYSTEM_PLAN/CHANGELOG сохранены и не включаются в коммит E2-07. Автор/коммитер локального коммита — Oleg, без Co-Authored-By.
+
+Откат: сначала сравнить текущие файлы с копиями и поздними изменениями, затем применить только обратный diff E2-07. Новые файлы перечислены выше и в e207-files.json; удалять только если после этой работы не появились потребители/чужие изменения, сверив каждый точный путь. CHANGELOG дополнять, историю не стирать; reset --hard/clean не применять. Серверного отката сейчас нет. Будущий стенд при отказе только остановить, сохранить новые volume/БД/секреты/dump; не down -v/DROP/prune и не restore поверх живой БД. После внедрения нельзя возвращать обычный E2-06 код, обходящий Grant: нужен закрытый maintenance/отдельный план.
+
+
+## 2026-10-05T12:48:49+03:00 (Europe/Moscow) — Подготовлено коммитирование проекта системной роли
+
+По текущему запросу Олега «сделай коммит» к локальному коммиту в ветке `beta` подготовлены только `SYSTEM_ARCHITECTURE.md`, `SYSTEM_PLAN.md` и `CHANGELOG.md`. Планируемое сообщение: «Проектирование системной роли технического администратора»; автор и коммитер Oleg, `oleg@localhost`, задаются только для команды без изменения глобальной конфигурации Git. Push не входит в запрос.
+
+Перед коммитом найдена уже сохранённая в `10c2af0` последующая локальная реализация ограниченного `platform_admin`. Уточнены только три устаревшие фразы нашего проектного описания: отделены целевая полная панель/логи от уже реализованных назначения, технического обзора, административной сессии и поддержки на чтение. E2-07 сохраняет «На проверке»; его код, критерии, статус и чужие записи журнала не изменяются. Историческая запись проектирования от 11:26 сохранена.
+
+Побайтовые копии перед уточнением: `.change-backups/2026-10-05/platform-admin-commit-124849/SYSTEM_ARCHITECTURE.md`, `.change-backups/2026-10-05/platform-admin-commit-124849/SYSTEM_PLAN.md`, `.change-backups/2026-10-05/platform-admin-commit-124849/CHANGELOG.md`; SHA256 — `.change-backups/2026-10-05/platform-admin-commit-124849/backup-manifest.json`. Это четыре новых локальных файла внутри `C:/Users/krolo/Documents/marketplace-workspace/`, исключённые из Git. Проверки: Git diff/status, сравнение с текущим HEAD, 101 неизменная строка задач, исходные backup hashes, журнал дополняется, `git diff --check`; после коммита проверяются состав файлов, авторство и чистота рабочей копии. Runtime-тесты не повторяются для изменений только документов.
+
+Безопасный откат: сначала сравнить актуальные документы с указанными копиями и отменить только уточнение статуса/проектный diff, сохранив последующие и чужие изменения. Журнал дополнять записью, не стирать. При необходимости отмены коммита сначала проверить его состав и поздние коммиты, затем применить обратное изменение только этих документов; без reset --hard/clean. Четыре локальных файла можно удалить после проверки точных путей и сохранения нужных доказательств/возможности отката; общий `.change-backups/` не удалять. Серверный откат не нужен.
+
+## 2026-10-05T13:29:00+03:00 (Europe/Moscow) — Проверен изолированный серверный стенд E2-07
+
+После push Олега, прямого `git ls-remote` и отдельного разрешения проверен опубликованный `3369e3196753804655a7ae0cc9a845395545036e` с реализацией `10c2af0`. Получен только через Git, server repository fast-forward, создан чистый detached release. По docs/E2-07_SERVER_PLAN.md подготовлен новый изолированный project `marketplace-e207-20261005-01a10b2d`, выполнены миграции/минимальные ACL, PostgreSQL/HTTP/SQL и backup/restore проверки. Основная beta осталась на runtime `14d9f48cee6eb2a9d7eca9f029770af51c45b6d9`; её metadata и оба старых owner rehearsal сверены без изменений. Все новые сервисы остановлены, ресурсы сохранены. Серверных исходников вручную не меняли; push, установки/build/pull образов, операции production/main/Caddy/FBS/WB/Finkos и K3 не выполнялись. Использованы только новые синтетические секреты/аккаунты, example.invalid и locmem.
+
+Изменённые локальные файлы: `SYSTEM_GRANT_CHECKS.json` (новый фактический протокол, прежние локальные результаты сохранены), `SYSTEM_PLAN.md` (добавлена запись исполнения, E2-07 и E2-06 остаются «На проверке»), `docs/E2-07_GRANTS.md` (актуальный результат и границы), `docs/E2-07_SERVER_PLAN.md` (факт исполнения, запрет слепого повторения занятых ресурсов и поправки запуска), `CHANGELOG.md` (эта запись). Новый файл: `docs/E2-07_SERVER_RESULTS.md`, полный протокол с SHA, командами, ошибками, проверками, dump digest, ID ресурсов, состоянием остановки и оставшимися допусками. Пути относительно `C:/Users/krolo/Documents/marketplace-workspace/`.
+
+Проверки: PostgreSQL 17.11, полный suite 72 теста/70 PASS/2 ошибки файловых статических тестов/0 пропусков/703.878 s, exit 1. Все пять гонок и миграционный rollback/forward прошли. Два test_preparation не увидели beta/deploy вне backend mount; после остановки стенда отдельно прошли в контейнере без сети/БД/секретов с тем же полным Git release read-only, 2 PASS/0.012 s/exit 0. Предшествующий вызов unittest был отклонён offline command guard до тестов; защита не отключалась. Полного чистого повторного suite не было. HTTP под реальным session_user=current_user=mw_beta_web прошёл; старый permit не ожил после regrant. 10 SQL-отказов сценария плюс две откатываемые platform Grant INSERT/UPDATE пробы — `42501`. Дважды прошёл сетевой Gunicorn smoke, проверены точные ACL/mounts. Новый pg_dump/restore — exit 0, строки всех public-таблиц совпали, отмена отзыва Grant отклонена, восстановленные сессии/ссылки помещены в карантин. Dump SHA256 `0410d3a91c47d559491a6483e7c2628ae825c7da284e0327941a7e0b00d7fc16`. Аутентифицированный HTTP — Django client, не браузер/TLS; сетевые проверки анонимные. Изолированный успех не является внедрением основной beta или готовностью рабочего экспорта/RLS.
+
+Новые серверные артефакты: `/home/adm_user/marketplace-workspace/beta/app/releases/3369e3196753804655a7ae0cc9a845395545036e`; корень `/home/adm_user/marketplace-workspace/beta/rehearsals/e2-07-20261005-01a10b2d` с `baseline.json`, `preserved-rehearsal.json`, `state/manifest.json`, `backups/access-after.dump`, каталогом `operator-output/` и только новым синтетическим комплектом `secrets/{db_bootstrap_password,pg_bootstrap_password,db_migrator_password,db_web_password,django_secret_key,mfa_encryption_key}`. Их содержимое не копировалось в отчёты. Созданы только новый network `marketplace-e207-20261005-01a10b2d-private`, volume `marketplace-e207-20261005-01a10b2d-data`, контейнеры с суффиксами `-postgres`, `-web`, `-controller`; одноразовые контейнеры удалены штатным --rm. В новом кластере БД `mw_beta`, `test_mw_beta`, `mw_e207_01a10b2d_restore` и отдельные bootstrap/migrator/web роли. Все эти имена теперь заняты. Финально 13:24:29 +03:00 новые сервисы stopped, PostgreSQL/web exit 0, idle controller exit 137 без OOM. ID ресурсов и точные ограничения — в новом протоколе.
+
+Побайтовые копии пяти существующих документов до изменений: `.change-backups/E2-07-server-20261005-130657/{SYSTEM_GRANT_CHECKS.json,SYSTEM_PLAN.md,CHANGELOG.md,docs/E2-07_GRANTS.md,docs/E2-07_SERVER_PLAN.md}`; SHA256 и точные пути — `.change-backups/E2-07-server-20261005-130657/manifest.json`. Эти шесть локальных файлов исключены из Git. Проверены JSON, diff whitespace, сохранение прежних строк задач/записей CHANGELOG, backup hashes и отсутствие изменений кода. Локальный коммит — Oleg, без Co-Authored-By; push выполняет Олег.
+
+Безопасный откат: серверный отказ уже выполнен остановкой только новых сервисов. Не удалять новые/старые volume, БД, роли, dump или секреты, не выполнять DROP/down -v/prune и не восстанавливать поверх живой БД. Очистка — отдельное разрешение с точным перечнем; release сначала проверить на отсутствие потребителей. Для документов сначала сравнить текущие файлы с копиями и отменить только этот diff, сохранив позднюю работу; журнал дополнить, не перезаписывать. Новый docs/E2-07_SERVER_RESULTS.md и локальные backup-файлы можно удалить только после проверки отсутствия новых потребителей/чужих изменений и сохранения доказательств/отката; общий backup-каталог не удалять. Внедрение/проверка E2-07 в основную beta потребует нового конкретного плана и отдельного разрешения, текущий допуск на неё не распространяется.
+
+## 2026-10-05T13:47:06+03:00 (Europe/Moscow) — Подготовлен конкретный план внедрения E2-07 в основную beta
+
+После публикации cf6f4cc и согласия Олега на следующий шаг локально подготовлен план основной beta. Публикация `cf6f4ccd48106d9a44a64703bcfd79e49513ec3e` повторно проверена напрямую через GitHub; backend/deploy совпадают с проверенным 3369e31. Новых SSH/серверных действий не выполняли: прежнее разрешение охватывало только отдельный стенд. План предназначен для отдельного рассмотрения перед остановкой основной beta и миграциями, а не объявляет их разрешёнными/выполненными.
+
+Новый файл `docs/E2-07_MAIN_ROLLOUT.md`: фиксированный APP_REV, source/image/lock, stop при данных/дрейфе/занятых именах, точные новые checkpoint `/home/adm_user/marketplace-workspace/beta/backups/database/e2-07-main-20261005-01a10b2d` и restore-БД `mw_e207_main_restore_20261005_01a10b2d`, нагрузка/окно недоступности, свежий backup/restore, запрет выдачи реальных Grant/platform_admin, стандартный security overlay и явные runtime/SQL-проверки. Выявлено различие с чистым стендом: нельзя напрямую apply_fresh на E2-06 ACL; спланирован проверяемый переход старого DML/guards к новому в одной транзакции с двумя миграциями. Запрет TEMP проверяется/устанавливается отдельно владельцем БД, не приписывается транзакции migrator. Безопасный отказ — остановленный web; ordinary E2-06 после commit не возвращать. План явно запрашивает отдельный допуск на штатное чтение уже смонтированных SQL/Django/MFA секретов соответствующими сервисами и только db_bootstrap_password процессом backup внутри postgres; это не ручной просмотр/копирование/вывод, не K3 и не передача ключа. До допуска команды не запускать.
+
+Изменены `SYSTEM_PLAN.md` (добавленная запись; прежние 101 строки задач/статусы сохранены), `SYSTEM_GRANT_CHECKS.json` (ссылка и неизполненное состояние плана без изменения фактов предыдущего стенда), `docs/E2-07_GRANTS.md` (ссылка на конкретный план), `CHANGELOG.md` (эта запись). Пути относительно `C:/Users/krolo/Documents/marketplace-workspace/`. Код приложения, настройки, зависимости и сервер не менялись, push не выполнялся. E2-07/E2-06 остаются «На проверке».
+
+Исходные копии четырёх существующих документов — `.change-backups/E2-07-main-plan-20261005-134028/{SYSTEM_PLAN.md,CHANGELOG.md,SYSTEM_GRANT_CHECKS.json,docs/E2-07_GRANTS.md}`, SHA256/точные пути — `.change-backups/E2-07-main-plan-20261005-134028/manifest.json`; пять новых локальных файлов исключены из Git. Проверки: JSON parse, AST Python-фрагмента, bash -n обоих shell-блоков без исполнения, совпадение старых/новых lock guards и сохранение прежнего DML в новом контракте, отсутствие backend/deploy diff между 3369e31 и cf6f4cc, backup hashes, append-only CHANGELOG, 101 неизменная строка задач, git diff --check. Локальный запуск bash -n потребовал разрешённого обхода sandbox-ограничения запуска процесса; сетевых/серверных команд этот тест не выполнял. SQL-переход/restore/rollout основной beta не проверены исполнением и не объявляются PASS по предыдущему стенду. Коммит только документов, автор/коммитер Oleg, без Co-Authored-By.
+
+Откат: сравнить текущие документы с указанными копиями, затем отменить только этот diff, сохранив позднюю/постороннюю работу; CHANGELOG дополнить, не стирать историю. Новый docs/E2-07_MAIN_ROLLOUT.md и пять локальных backup-файлов можно удалить только при отсутствии поздних изменений/потребителей и после сохранения доказательств/возможности отката; общий .change-backups не удалять, reset --hard/clean не использовать. Серверного отката сейчас нет; имена будущих ресурсов ещё не проверены на сервере и их свободность не заявляется. Будущий запуск — только после рассмотрения и отдельного подтверждения конкретного плана; старые/сохранённые ресурсы не переиспользовать и не удалять.
+
+## 2026-10-05T14:25:47+03:00 (Europe/Moscow) — Внедрён и проверен E2-07 в основной beta
+
+После push опубликованного плана18e4a18 и отдельного «разрешаю», явно охватывающего основной web, backup/restore, миграции/SQL-права и штатные secret mounts, выполнен docs/E2-07_MAIN_ROLLOUT.md. Публикация проверена напрямую, серверный repository fast-forward до18e4a1856f3e078b771c34b2124af0d3153f4afc; clean detached APP_REVcf6f4ccd48106d9a44a64703bcfd79e49513ec3e получен только Git. Исполняемый backend совпадает с проверенным3369e31; исходники на сервере вручную не редактировались. Установок/build/pull образов/push/production/main/Caddy/FBS/WB/Finkos действий не было. Секреты только штатно потреблялись разрешёнными сервисами и backup-процессом внутри postgres, не просматривались/не выводились/не копировались/не передавались; K3 не возобновлялся.
+
+Preflight подтвердил runtime14d9f48, прежние image/lock, metadata14контейнеров, пустоту основных account/organization сущностей, точный E2-06 ACL, ровно две новые миграции, свободные имена и достаточные ресурсы. После остановки только web повторены проверки под operator advisory lock, других клиентских соединений перед dump не было. Свежий main before.dump295697bytes/mode0600/SHA256267dcecac7a3434870f09915deee1b6950a43df672c1eedad6dea2086e006529 восстановлен в новую закрытую БД, exit0. Строки30таблиц/11sequences, столбцы/индексы/триггеры/функции/table-column-default ACL совпали. Первоначальная строгая строковая проверка двух CHECK дала AssertionError; разная запись cast массива после pg_restore доказана эквивалентной для ровно membership_role_valid/membership_state_valid с проверкой точных форм/validated/равенства массивов/ANY для допустимых, неверных и NULL значений. Правила/данные для проверки не менялись. Отказ и успешная уточнённая проверка сохранены в протоколе.
+
+Под существующим bootstrap отдельно отозван TEMP у PUBLIC/web. Под настоящим migrator исполнен Python-фрагмент именно Git-плана18e4a18: access_control.0001/0002 и переход DML/SELECT ACL одной транзакцией с verify до commit. Прежние строки сохранены, ровно две новые миграции и пять пустых access-таблиц; пользователей/организаций/Grant/platform_admin не создавали. Настоящий mw_beta_web прошёл точные ACL/guards и10SQL-отказов42501, все пробы rollback. Пересоздан только основной web: ID969d11c5bfd1c13e58a9bbcef07659d3bdf0662ec0cc5e53af06b71476c17807, StartedAt2026-10-05T11:16:12.521846356Z, sourcecf6f4cc/backend RO, прежние dependency image/secret mounts/UID/read-only/384MiB/0.25CPU/internal/no ports. От команды stop14:08:02 до подтверждённого ready14:17:32 +03:00 —9мин30с. Все10сетевых health/auth/default-deny/CSRF запросов PASS, security flags активны, synthetic export probe выключен. Аккаунты/Grant остаются пустыми, anonymous encrypted Django sessions6→7 от GET входа. Остальные13контейнеров неизменны, PostgreSQL не перезапускались, старые стенды не запускались.
+
+Технические поправки исполнения: preflight ожидал короткие secret targets вместо абсолютных и inline internal network вместо существующей external-managed сети; сверка уточнена по реальным metadata до остановки web, дрейфа не было. Первая shell-команда writer count отказала из-за quoting до dump/создания БД; исправленная read-only проверка подтвердила0. Пароль не выводился. Runtime-код и полномочия ради прохождения проверок не ослаблялись.
+
+Изменены восемь локальных файлов относительно `C:/Users/krolo/Documents/marketplace-workspace/`: `SYSTEM_GRANT_CHECKS.json` (фактический main rollout, ограничения/статус), `SYSTEM_PLAN.md` (подтверждение критерия и только статус E2-07 → «Готово»), `SYSTEM_STARTUP.md` и `docs/RUNBOOK.md` (текущий source/обязательный overlay/безопасный отказ), `docs/E2-07_MAIN_ROLLOUT.md` (согласованный план сохранён, добавлен факт исполнения), `docs/E2-07_GRANTS.md` (техническое завершение и границы), `CHANGELOG.md` (эта запись), локальный `SYSTEM_STARTUP_CHECKS.json` (новый latest_runtime_e207, старые факты сохранены). Последний файл уже исключён правилом .gitignore:44; не добавляется принудительно, полный актуальный протокол коммитится в SYSTEM_GRANT_CHECKS.json. Новых файлов приложения/новых зависимостей нет. Критерий E2-07 подтверждён отдельным PostgreSQL-стендом и основной beta; прежний suite70PASS+2static errors/отдельный2PASS не переписан в чистый72PASS. E2-06 остаётся «На проверке», E2-08/E2-09/рабочий экспорт/реальные роли D3/UI/worker/интеграции не закрываются.
+
+Новые сохранённые серверные пути: `/home/adm_user/marketplace-workspace/beta/app/releases/cf6f4ccd48106d9a44a64703bcfd79e49513ec3e` и checkpoint `/home/adm_user/marketplace-workspace/beta/backups/database/e2-07-main-20261005-01a10b2d/{containers.before.json,database.before.json,acl.before.json,before.dump,result.json}` (закрытые режимы/no-overwrite/read-back). Новая restore-БД `mw_e207_main_restore_20261005_01a10b2d` в основном PostgreSQL закрыта от web, не подменяет mw_beta; новых SQL-ролей/ключей нет. Старые checkpoint/БД/стенды/секреты сохранены. Имена новых ресурсов теперь заняты; повторное создание/restore не выполнять.
+
+Побайтовые копии восьми существующих локальных файлов до изменений — `.change-backups/E2-07-main-result-20261005-141955/` с теми же относительными путями; SHA256/полный список — `.change-backups/E2-07-main-result-20261005-141955/manifest.json`. Эти9локальных файлов исключены из Git. Проверки документов: оба JSON, сохранность прежних startup/server доказательств, backup hashes, append-only CHANGELOG, 101строка задач с изменением только статуса E2-07, синтаксис актуального shell-блока без исполнения и git diff --check. Коммит автора/коммитера Oleg только7отслеживаемых документов, без Co-Authored-By; push делает Олег.
+
+Безопасный откат: после новой схемы остановить только основной web; обычный E2-06 не возвращать, он обходил Grant. Не выполнять reverse/zero/restore поверх mw_beta, не удалять новые/старые БД/volume/секреты/dump, не down -v/DROP/prune. Возврат схемы/данных, новый деплой/provisioning и очистка требуют отдельного конкретного плана/разрешения; release сначала проверить на отсутствие потребителей. Для локальных документов сравнить актуальное содержимое с указанными копиями и отменить только этот diff, сохранив позднюю/постороннюю работу; журнал дополнить. Девять backup-файлов удалять только после проверки точных путей/потребителей и сохранения доказательств/возможности отката; общий .change-backups не удалять, reset --hard/clean не применять.
+
+
+## 2026-10-06T12:07:42+03:00 (Europe/Moscow) — Подготовлена локальная изоляция E2-08 и проверены HTTP-потребители
+
+По текущему запросу Олега выполнена только локальная работа в чистой beta от 1b765629badd6fe70f605fd9f6d504954e44d618; публикация исходной beta проверена live GitHub после sandbox DNS-отказа. Сервер не опрашивался и не менялся, исходное runtime cf6f4cc взято из задания/документов. Добавлены RLS/FORCE 27 таблиц, короткая HMAC capability точного SQL/транзакции/соединения/области, живая проверка SyntheticRecord и signed control plane с явно доверенными auth/Grant-сервисами. Произвольный SET не считается идентификацией. Для deferred проверки владельца и полного каскада отзыва 11 фиксированных trigger-only функций подготовлены как SECURITY DEFINER; запреты web current_user остаются INVOKER. Добавлен узкий synthetic list/search; рабочий экспорт/бренды/финансовые поля/worker/интеграции не добавлены.
+
+Новая миграция не меняет предметные строки; populated reverse закрыт. Пустую private schema создаёт отдельный bootstrap, не выдаётся широкое CREATE migrator. Штатный security overlay подготовлен к новому отдельному RO signing key; серверный ключ не создавался/не читался. Без ключа/политик новый runtime должен отказать; возврат к обходящему RLS/Grant/MFA приложению запрещён. Подготовлены только новые E2-08 rehearsal/SQL/runtime/restore tools; старые ресурсы/скрипты и их разрешения не переиспользованы.
+
+Точные затронутые файлы относительно C:/Users/krolo/Documents/marketplace-workspace/:
+
+- `CHANGELOG.md`
+- `SYSTEM_ISOLATION_CHECKS.json`
+- `SYSTEM_PLAN.md`
+- `backend/access_control/services.py`
+- `backend/access_control/urls.py`
+- `backend/access_control/views.py`
+- `backend/config/isolation_local_checks.py`
+- `backend/config/settings.py`
+- `backend/config/urls.py`
+- `backend/data_isolation/__init__.py`
+- `backend/data_isolation/apps.py`
+- `backend/data_isolation/context.py`
+- `backend/data_isolation/middleware.py`
+- `backend/data_isolation/migrations/0001_statement_and_row_policies.py`
+- `backend/data_isolation/migrations/__init__.py`
+- `backend/data_isolation/sql.py`
+- `backend/data_isolation/tests/__init__.py`
+- `backend/data_isolation/tests/test_context.py`
+- `backend/data_isolation/tests/test_http.py`
+- `backend/data_isolation/tests/test_migrations.py`
+- `backend/data_isolation/tests/test_preparation.py`
+- `backend/tools/isolation_rehearsal.py`
+- `backend/tools/isolation_restore_check.py`
+- `backend/tools/isolation_sql_probe.py`
+- `backend/tools/isolation_web_contract.py`
+- `backend/tools/verify_isolation_web_runtime.py`
+- `beta/deploy/compose.isolation-rehearsal.json`
+- `beta/deploy/compose.security-web.json`
+- `beta/deploy/prepare_isolation_rehearsal.py`
+- `docs/E2-08_ISOLATION.md`
+
+Исходные побайтовые копии восьми существующих файлов: `.change-backups/E2-08-20261006-1140/` с теми же относительными путями; точный список и SHA256 — `manifest.json` там же. Новые локальные backup-артефакты: эти восемь копий и manifest.json; каталог исключён из Git. Новые отслеживаемые файлы — перечисленные выше пути, отсутствующие в baseline 1b76562; runtime data/секреты не создавались.
+
+Проверки: первый targeted 5 PASS; промежуточный 91 PASS SQLite включал повторную discovery импортированного legacy-класса, не 91 независимый новый сценарий. Итоговый HTTP/context 68 PASS/2 PostgreSQL skips за 123.549с; отдельно static/context 5 PASS/0.222с; legacy ownership/accounts 47 PASS/11 skips/10.095с. check, makemigrations --check --dry-run, pip check, AST 24 Python files, JSON и инертный plan успешны. Первоначальный diff --check выявил CRLF на добавленных строках; изменённые Python/JSON нормализованы в LF, проверка повторена успешно. PostgreSQL/реальный SQL LOGIN/серверный HTTP/миграции/backup-restore не выполнены; подготовленные тесты не выдаются за PASS. Код после HTTP-прогона менялся только в PostgreSQL DDL/contract/серверной подготовке, для которых остаётся отдельная проверка.
+
+SYSTEM_PLAN: только E2-08 → «На проверке» и добавленная фактическая запись; E2-06 не закрывается, E2-07 сохраняется «Готово». Нет установки, SSH, push, production/main/Caddy/FBS/WB/Finkos изменений, реальных аккаунтов/секретных значений/передачи ключа/повторения K3. Локальный коммит автора и коммитера Oleg, без Co-Authored-By.
+
+Безопасный откат: сначала сравнить текущие файлы с указанными копиями/коммитом и отменить только этот diff, сохраняя позднюю/постороннюю работу; журнал дополнять. Новые пути удалять только после проверки отсутствия поздних изменений и потребителей и сохранения нужных доказательств; общий .change-backups не удалять. Не reset --hard/clean. Серверного отката сейчас нет. После будущего RLS включения — остановленный web; не отключать политики, не возвращать обычный E2-07/E2-06 и не restore поверх рабочей БД. Любые SSH/новые контейнеры/БД/роли/ключи/миграции/restore требуют отдельного разрешения по конкретному опубликованному плану; основная beta — следующий отдельный этап.
+
+
+### 2026-10-06T12:11:55+03:00 — Уточнён подготовленный SQL-прогон E2-08 перед фиксацией исходников
+
+В backend/tools/isolation_rehearsal.py добавлен отдельный синтетический кабинетный view Grant второй организации; backend/tools/isolation_sql_probe.py проверяет обе организации под одним настоящим web LOGIN и RLS на Cabinet при SELECT без WHERE. Это подготовленные, ещё не исполненные PostgreSQL-проверки; локальное HTTP-поведение не изменилось. Промежуточные версии этих двух новых файлов и CHANGELOG.md сохранены в `.change-backups/E2-08-20261006-1140/before-final-sql-probe/` под их basename; три новых backup-файла исключены из Git. Исходный коммит этой же незавершённой локальной подготовки ещё не публиковался; перед выдачей на проверку уточняется локально. Первая попытка commit отказала из-за отсутствующего Git email; использован email предыдущего коммита только в ENV процесса, без вывода и без изменения глобального Git config. Author/committer Oleg проверены. AST/diff проверяются повторно; откат только обратным diff после сравнения, сохранённые ресурсы/ключи не затрагиваются.
+
+
+### 2026-10-06T12:13:26+03:00 — Устранена неоднозначность имён PL/pgSQL при локальном review
+
+В backend/data_isolation/sql.py параметры requested_action/requested_session отделены от одноимённых SQL-столбцов; иначе разрешение переменных PL/pgSQL могло отказать при первом выполнении. Промежуточные sql.py и CHANGELOG.md сохранены в `.change-backups/E2-08-20261006-1140/before-sql-parameter-review/`. Проверка исходников/AST/diff, без PostgreSQL исполнения; серверные критерии остаются открыты. Откат только обратным diff после сравнения; эти две новые копии исключены из Git.
+
+
+## 2026-10-06T12:18:06+03:00 (Europe/Moscow) — Подготовлен конкретный план серверной проверки E2-08
+
+Новый `docs/E2-08_SERVER_PLAN.md` фиксирует код `17e03b0b6c5f452c0b25c8b6ecaf0401819d0e37`, новые project/cluster/root/network/volume/container/restore имена, отказ коллизий, existing immutable images/lock, 60-минутное окно, ресурсы/таймауты, только новые синтетические секреты, реальные web LOGIN/RLS/HTTP/rollback/конкурентные проверки, dump/restore/quarantine и остановку с сохранением ресурсов. Код пока локальный: последняя live beta 1b765629badd6fe70f605fd9f6d504954e44d618; публикация и отдельный допуск являются обязательными незакрытыми условиями. План не разрешает и не объявляет выполненными SSH/сервер/основную beta.
+
+Изменены ровно `docs/E2-08_SERVER_PLAN.md` (новый), `SYSTEM_ISOLATION_CHECKS.json` (source SHA/неисполненный план), `SYSTEM_PLAN.md` (добавлена ссылка, статусы сохранены), `CHANGELOG.md` (эта запись). Код/зависимости после зафиксированного source SHA не менялись. Три промежуточные копии — `.change-backups/E2-08-20261006-1140/before-server-plan/` с исходными basename; SHA256 в manifest.json. Ещё новый локальный server-blocks.sh содержит только извлечённые плановые shell-блоки для bash -n, не исполняется. Все пять локальных артефактов исключены из Git.
+
+Проверки: JSON/ссылки/full SHA, backup hashes, неизменность строк/статусов плана, append-only журнала, diff --check; bash -n только синтаксис двух блоков, без их исполнения и без соединения с сервером. PostgreSQL-проверок/секретных чтений/push/нового K3 нет. Author/committer локального коммита Oleg, без Co-Authored-By.
+
+Откат: сравнить с промежуточными копиями и отменить только добавленный diff, сохраняя поздние изменения; CHANGELOG не стирать. Новый серверный план/server-blocks.sh и backup-артефакты удалять только после проверки отсутствия поздних изменений/потребителей и сохранения доказательств. Серверный откат не требуется: сервер не трогали. Для будущего отказа — только остановка новых сервисов, без старого приложения, DROP/restore поверх БД/prune/удаления сохранённых ресурсов.
+
+Уточнение проверки shell-синтаксиса этого же плана: первый bash -n получил отказ MSYS NtCreateDirectoryObject в sandbox; повторный разрешённый локальный bash -n завершился exit0. Команды из блоков не исполнялись, сети/сервера не было; первоначальный отказ не выдаётся за успешную первую попытку.
+
+
+### 2026-10-06T12:22:13+03:00 — Усилена обработка неполного подписанного SQL-контекста
+
+При локальном review трёхзначной логики PostgreSQL добавлен явный отказ JSON null в обязательных claims и NULL resource для record; одной проверки наличия ключей/сравнения через <> недостаточно. Изменены `backend/data_isolation/sql.py`, `backend/tools/isolation_sql_probe.py`: подготовлены восемь реальных SQL-проверок корректно подписанного, но неполного envelope. PostgreSQL ещё не выполнялся; это статическое устранение граничного случая, а не новый PASS. Промежуточные sql.py/isolation_sql_probe.py/CHANGELOG.md — `.change-backups/E2-08-20261006-1140/before-null-context-review/`, три новых локальных файла исключены из Git. AST/diff успешны. Последний собственный непубликованный коммит уточняется; после него source SHA плана будет перепривязан отдельным документальным коммитом. Откат только обратным diff после сравнения, без отключения runtime-защиты/изменения сервера.
+
+
+## 2026-10-06T12:23:32+03:00 (Europe/Moscow) — Закреплена окончательная ревизия изолированной проверки E2-08
+
+Точный REV в `docs/E2-08_SERVER_PLAN.md` и `SYSTEM_ISOLATION_CHECKS.json` обновлён до `a1eeff72d72369c492c078fb5bd5ce91268f19cd`, включающего явный отказ NULL claims/resource. `SYSTEM_PLAN.md` дополнен фактом смены локального source-pin; статусы/критерии не менялись. `CHANGELOG.md` дополнен этой записью. Только эти четыре документа, backend/deploy неизменны. Политики PostgreSQL ещё не исполнялись, разрешение/публикация остаются обязательными отдельными условиями.
+
+Четыре промежуточные копии сохранены в `.change-backups/E2-08-20261006-1140/final-source-pin/` по исходным относительным путям; hashes в manifest.json. Новый server-blocks.sh содержит только два извлечённых блока для bash -n. Все шесть локальных артефактов исключены из Git. Проверяются JSON, pin/full SHA, unchanged backend/deploy, hashes, прежние строки плана, append-only CHANGELOG, diff --check и только shell-синтаксис. Никакие команды плана/SSH/push/чтение реальных секретов не выполняются.
+
+Безопасный откат — после сравнения отменить только этот документальный diff и согласованно вернуть предыдущий source-pin, не запускать устаревший код автоматически. Журнал дополнить, позднюю работу сохранить. Новые backup-файлы/server-blocks.sh удалять только после проверки отсутствия потребителей и сохранения доказательств; общий каталог не удалять. Локальный коммит Oleg без Co-Authored-By; push выполняет Олег.
+
+
+## 2026-10-07T10:24:44+03:00 (Europe/Moscow) — Зафиксирован отказ R1 и исправлен порядок миграций E2-08
+
+По текущему отдельному разрешению Олега проведён только изолированный R1: live beta 9e6458ed9d145633e47480e12a8dcbf3be351b3f, source a1eeff72d72369c492c078fb5bd5ce91268f19cd. Серверный чистый beta checkout обновлён Git fast-forward, создан новый detached release; штатный подготовщик проверил images/lock/ресурсы/коллизии и создал только новый synthetic secret set. Новый PostgreSQL 17.11 и bootstrap успешны; configure exit1. Read-only диагностика обнаружила отсутствие django_session и неверный migration graph: data_isolation идёт до sessions.0001_initial. Исходное исключение helper не раскрывал, его текст не заявляется известным. RLS-таблиц и private tables после сбоя 0. Дальнейшие тесты/dump/restore не запускались. Новый postgres остановлен 07.10.2026 10:18:01 +03:00; метаданные main beta и трёх старых стендов неизменны. Первая read-only preflight-команда имела ошибку CRLF аргумента, повторена до mutations с очисткой CR; не скрывается как PASS первой попытки.
+
+Серверные изменения: /home/adm_user/marketplace-workspace/beta/app/repository и app/releases/a1eeff72d72369c492c078fb5bd5ce91268f19cd; новый root beta/rehearsals/e2-08-20261006-01a1105a, семь synthetic secret files (db_bootstrap_password, pg_bootstrap_password, db_migrator_password, db_web_password, django_secret_key, mfa_encryption_key, isolation_signing_key), state/manifest.json, baseline.json, preserved-rehearsal.json, каталоги operator-output/backups; project marketplace-e208-20261006-01a1105a, его postgres/internal network/data volume, БД mw_beta, три SQL-роли, пустая mw_isolation и предшествующие успешно применённые миграции. Точные ID/времена — docs/E2-08_ISOLATED_R1_RESULT.md. Persistent web/controller и test_mw_beta/restore/dump не созданы. Основная beta не останавливалась/не мигрировалась; исходный runtime cf6f4cc сохраняется.
+
+Локально добавлена sessions.0001_initial в зависимости RLS и проверка всех 27 целевых таблиц на состоянии родителей миграции. Первая черновая версия теста дала TypeError (set вместо list keys), затем получен корректный RED по django_session и GREEN после fix. Новые уникальные R2 root/project/network/volume/restore/guards; подготовщик также защищает остановленный R1. План использует named controller через up/exec, поскольку прежний --rm controller не существовал для итогового verifier. Политики/права/бизнес-правила не ослаблены.
+
+Точные локальные файлы: `backend/data_isolation/migrations/0001_statement_and_row_policies.py`, `backend/data_isolation/tests/test_preparation.py`, `backend/data_isolation/apps.py`, `backend/tools/isolation_rehearsal.py`, `backend/tools/isolation_restore_check.py`, `backend/tools/isolation_sql_probe.py`, `beta/deploy/compose.isolation-rehearsal.json`, `beta/deploy/prepare_isolation_rehearsal.py`, `docs/E2-08_SERVER_PLAN.md`, `docs/E2-08_ISOLATED_R1_RESULT.md`, `SYSTEM_ISOLATION_CHECKS.json`, `SYSTEM_PLAN.md`, `CHANGELOG.md`. Новый tracked файл — docs/E2-08_ISOLATED_R1_RESULT.md; остальные исходные копии сохранены до изменения по относительным путям в .change-backups/E2-08-20261007-isolated-failure/ (12 файлов), SHA256 — manifest.json. Локальные backup-артефакты исключены из Git.
+
+Проверки: 6 PASS graph/preparation/context за 0.313с; итоговые 73 discovered, 71 PASS/2 PostgreSQL skips SQLite за 127.363с; makemigrations --check --dry-run и system check PASS. Подготавливаются AST/JSON/diff/backup hashes и shell syntax без исполнения; R2 не запускался. E2-08 остаётся «На проверке», E2-06 не менялась. Push/установки/K3/реальные ключи/production/Caddy/FBS/WB/Finkos не выполнялись.
+
+Безопасный откат: R1 уже остановлен; сохранить все новые и прежние ресурсы, не повторять configure/bootstrap, не DROP/down -v/prune/restore поверх БД. Локальный diff отменять только после сравнения с копиями и поздними правками; журнал дополнять, не стирать. Новый report/backup-артефакты удалять лишь после проверки отсутствия поздних потребителей и сохранения evidence; source release/серверные ресурсы не удалять без отдельного решения. Не откатывать приложение на обходящее RLS/Grant/MFA. Для R2 нужны публикация Олегом и отдельный допуск нового плана, для основной beta — следующий самостоятельный допуск.
+
+Проверки завершены 2026-10-07T10:25:36+03:00: AST/JSON, 12 backup hashes, append-only SYSTEM_PLAN/CHANGELOG, точный список изменённых файлов, git diff --check PASS. Новый локальный `.change-backups/E2-08-20261007-isolated-failure/server-r2-blocks.sh` содержит извлечённые команды только для успешного bash -n; они не исполнялись. Артефакт ignored, безопасное удаление только после сохранения проверки и сравнения с поздними изменениями.
+
+
+## 2026-10-07T10:26:21+03:00 (Europe/Moscow) — Закреплена ревизия повторного изолированного плана E2-08
+
+В `docs/E2-08_SERVER_PLAN.md`, `SYSTEM_ISOLATION_CHECKS.json`, `SYSTEM_PLAN.md` закреплён полный локальный source REV `21548e9040948b16d371fe31add6c0aca2fbbf3f`. `CHANGELOG.md` дополнен этой записью. Только эти четыре документа; backend/deploy неизменны после проверенного локального коммита. R2 не опубликован/не разрешён/не исполнен, основная beta не затронута.
+
+До изменения четыре точные копии по относительным путям сохранены в `.change-backups/E2-08-20261007-isolated-failure/r2-source-pin/`, SHA256 в новом manifest.json. Новый server-r2-blocks.sh там же — только извлечённый shell для bash -n, не запуск. Эти шесть локальных артефактов ignored. Проверки: JSON/full revision, backup hashes, append-only журнал/план, неизменность backend/deploy, diff --check и bash -n.
+
+Откат после сравнения только обратным документальным diff с сохранением поздней работы и добавлением записи журнала; source-pin не является разрешением запускать предыдущий код. Новые backup/синтаксические артефакты удалять лишь после сохранения evidence/проверки отсутствия потребителей. Серверный R1 остаётся остановленным, его ресурсы сохраняются. Push выполняет Олег, отдельный R2 допуск запрашивается после публикации; основная beta требует следующего самостоятельного плана/допуска.
+
+
+## 2026-10-07T10:46:38+03:00 (Europe/Moscow) — Зафиксирован прерванный R2 и подготовлен устойчивый протокол R3
+
+По текущему «залил и разрешаю» live beta подтверждена e8f857d0fa07d1f419bf1364eb98b25239c77613. Серверный чистый beta repo fast-forward обновлён, новый release21548e9040948b16d371fe31add6c0aca2fbbf3f получен только Git. Prepare/bootstrap/configure R2 exit0, 27 FORCE/ENABLE RLS таблиц и SQL metadata-контракт прошли. Создана test_mw_beta. Suite запущен под migrator; SSH прервался до сводки, результат неизвестен. При стоп-проверке процесс ещё работал (626с); suite не повторялся. R2 controller/postgres остановлены к 07.10.2026 10:40:20 +03:00; OOM=false, основной runtime cf6f4cc и metadata main/трёх старых стендов/R1 сохранены. Real web LOGIN/SQL probes/network HTTP/backup-restore не запускались.
+
+Новые серверные ресурсы: beta/app/releases/21548e9040948b16d371fe31add6c0aca2fbbf3f; beta/rehearsals/e2-08-20261007-01a1105a-r2 с secrets/db_bootstrap_password, pg_bootstrap_password, db_migrator_password, db_web_password, django_secret_key, mfa_encryption_key, isolation_signing_key (только новые synthetic значения, не выводились), state/manifest.json, baseline.json, preserved-rehearsal.json, operator-output/backups; project marketplace-e208-20261007-01a1105a-r2, postgres/controller/internal network/data volume, mw_beta/test_mw_beta, SQL bootstrap/migrator/web, RLS schema/policies/ACL/key. Точные ID/времена и ограничения — docs/E2-08_ISOLATED_R2_RESULT.md. Web/dump/restore не создавались.
+
+Локально добавлен tools.isolation_test_runner: фиксированный suite, failfast/deadline1750с, ограниченный буфер, только allowlisted JSON без сырых ошибок/traceback/SQL/секретов, heartbeat30с, новый durable suite-events.jsonl (O_EXCL/0600/fsync). Exit0 без полной сводки или со skips не PASS. Новый потребитель — точная команда runner в серверном плане; не helper без пути запуска. Причина SSH-разрыва не доказана; keepalive указан как мера устойчивости, не подтверждённое исправление инфраструктуры. Новый профиль R3 и проверки сохранности остановленного R2; runtime-политики/бизнес-код не менялись.
+
+Точные локальные файлы: `CHANGELOG.md`, `SYSTEM_ISOLATION_CHECKS.json`, `SYSTEM_PLAN.md`, `backend/data_isolation/apps.py`, `backend/data_isolation/tests/test_preparation.py`, `backend/data_isolation/tests/test_runner.py`, `backend/tools/isolation_rehearsal.py`, `backend/tools/isolation_restore_check.py`, `backend/tools/isolation_sql_probe.py`, `backend/tools/isolation_test_runner.py`, `beta/deploy/compose.isolation-rehearsal.json`, `beta/deploy/prepare_isolation_rehearsal.py`, `docs/E2-08_ISOLATED_R2_RESULT.md`, `docs/E2-08_SERVER_PLAN.md`. Новые tracked: backend/tools/isolation_test_runner.py, backend/data_isolation/tests/test_runner.py, docs/E2-08_ISOLATED_R2_RESULT.md. Копии 11 существующих файлов до изменения — .change-backups/E2-08-20261007-r2-result/ с относительными путями; четыре документальных hashes в manifest.json, семь source hashes в source-manifest.json. Дополнительный новый локальный server-r3-blocks.sh содержит shell только для bash -n. Все backup/syntax артефакты ignored.
+
+Проверки: 11 PASS локально за0.574с, включая отбрасывание secret-like сообщений, durable evidence и отказ false PASS; system check/makemigrations --check --dry-run PASS; AST/JSON. Это не R3 PostgreSQL/HTTP проверка. Статусы E2-08/E2-06 не закрыты. Установок, push, реальных ключей/K3/production/Caddy/FBS/WB/Finkos изменений нет.
+
+Безопасный откат: R2 уже остановлен, R1 и старые ресурсы сохранить; не повторять suite/bootstrap/configure, не DROP/down -v/prune и не открывать restore. Локально сравнить копии/позднюю работу, применять только обратный diff, журнал дополнять. Новые runner/tests/report удалять только при отсутствии поздних изменений/потребителей и после сохранения evidence; не откатывать runtime на обход RLS/Grant/MFA. Для R3 нужны push Олега, live ancestry и отдельный допуск; основная beta — самостоятельный следующий этап.
+
+Уточнение той же проверки R3: нулевое число тестов также не считается PASS; после этого изменения повторные 11 PASS за0.333с. 11 backup hashes, append-only SYSTEM_PLAN/CHANGELOG, AST/JSON, git diff --check и bash -n PASS. Серверные команды R3 не исполнялись.
+
+
+## 2026-10-07T10:48:08+03:00 (Europe/Moscow) — Закреплена ревизия плана R3 E2-08
+
+Точный новый source REV `149414466473053a5eff7ad2edab4415a216c6b4` записан в docs/E2-08_SERVER_PLAN.md и SYSTEM_ISOLATION_CHECKS.json; SYSTEM_PLAN.md и CHANGELOG.md дополнены. Только эти четыре документа; backend/deploy не менялись. Четыре копии до изменения — .change-backups/E2-08-20261007-r2-result/r3-source-pin/ по относительным путям, hashes в manifest.json. Новый server-r3-blocks.sh там же — только извлечённый shell для bash -n. Шесть локальных артефактов ignored. Проверяются JSON/full pin, backup hashes, append-only журнал/план, отсутствие backend/deploy diff, git diff --check и bash -n без исполнения. R3 не опубликован, не разрешён, не запускался.
+
+Откат: сравнить копии и позднюю работу, отменить только документальный diff, журнал дополнить; новый source-pin не разрешает запуск. Backup/syntax artifacts удалять только после сохранения evidence и проверки отсутствия поздних потребителей. R1/R2 сохранять остановленными; не повторять их suite/bootstrap/configure и не отключать защиту. Push — Олег; R3 и основная beta требуют отдельных допусков.
+
+
+## 2026-10-07T10:57:38+03:00 (Europe/Moscow) — Зафиксирован FAIL R3 и подготовлена тестовая авторизация R4
+
+Текущее разрешение Олега исполнено только для R3. Live beta971600e8fca04b23d0de41f06bca950b09116883, source149414466473053a5eff7ad2edab4415a216c6b4. Серверный repo fast-forward и новый detached release только Git. Prepare/bootstrap/configure/test_database exit0, 27 RLS-table/ACL contract PASS. Suite failfast: 5tests42.991с, FAIL data_isolation.tests.test_http.IsolationHTTPTests.test_default_deny_and_four_independent_actions, exit1; runner complete за53с, exact assert неизвестен. Протокол state/suite-events.jsonl перечитан,0600. Повторов нет. R3 stopped к07.10.2026 10:52:04 +03:00, OOM=false; main/три прежних стенда/R1/R2 metadata совпали. Real web LOGIN/SQL probes/network HTTP/static container/dump/restore не запускались.
+
+Серверные изменения: beta/app/repository; beta/app/releases/149414466473053a5eff7ad2edab4415a216c6b4; новый beta/rehearsals/e2-08-20261007-01a1105a-r3: secrets/db_bootstrap_password,pg_bootstrap_password,db_migrator_password,db_web_password,django_secret_key,mfa_encryption_key,isolation_signing_key (новые synthetic, значения не выводились), state/manifest.json,state/suite-events.jsonl,baseline.json,preserved-rehearsal.json,operator-output/backups; project marketplace-e208-20261007-01a1105a-r3, postgres/controller/private network/data volume, mw_beta/test_mw_beta, роли/bootstrap schema/RLS ACL/key. Точные ID/времена — docs/E2-08_ISOLATED_R3_RESULT.md. Всё сохранено остановленным.
+
+Локальный разбор подтвердил отсутствие provisioning ключа в test_mw_beta: configure записывает его только в mw_beta, миграция создаёт пустую key. SQL export_cabinet требует claims даже у оператора. Это дефект подготовки; причинная связь с конкретной строкой FAIL R3 не заявляется доказанной. Новый tools.isolation_django_runner.IsolationDiscoverRunner вызывается реальным suite runner, после setup_databases проверяет точные test_mw_beta/cluster/session_user/current_user и пустую key, записывает synthetic key и выполняет signed claims probe. Не меняет политики/ACL, отказывает основной mw_beta и повторному ключу. Протокол допускает только статические test file/line/function без текста исключения/SQL/locals/source lines/значений. Новый профильR4 сохраняет stoppedR3.
+
+Точные локальные файлы: `CHANGELOG.md`, `SYSTEM_ISOLATION_CHECKS.json`, `SYSTEM_PLAN.md`, `backend/data_isolation/apps.py`, `backend/data_isolation/tests/test_preparation.py`, `backend/data_isolation/tests/test_runner.py`, `backend/tools/isolation_django_runner.py`, `backend/tools/isolation_rehearsal.py`, `backend/tools/isolation_restore_check.py`, `backend/tools/isolation_sql_probe.py`, `backend/tools/isolation_test_runner.py`, `beta/deploy/compose.isolation-rehearsal.json`, `beta/deploy/prepare_isolation_rehearsal.py`, `docs/E2-08_ISOLATED_R3_RESULT.md`, `docs/E2-08_SERVER_PLAN.md`. Новые tracked: backend/tools/isolation_django_runner.py,docs/E2-08_ISOLATED_R3_RESULT.md. До изменений13 копий по относительным путям — .change-backups/E2-08-20261007-r3-result/, SHA256 в manifest.json. Новый server-r4-blocks.sh там же только для bash-n, не исполнение. Backup/syntax файлы ignored.
+
+Проверки:13 PASS за0.352с, system check PASS; AST/JSON, hashes/append-only/diff/shell syntax проверяются. Нового PostgreSQL прогона нет. E2-08/E2-06 не закрыты, E2-07 без изменения. Установки/push/production/Caddy/FBS/WB/Finkos/K3/реальные ключи не затронуты.
+
+Откат: новые процессы уже остановлены, всеR1/R2/R3 и старые ресурсы/evidence сохранить; не repeat configure/suite, не DROP/down-v/prune/restore поверхБД, не отключать RLS/MFA/Grant. Локальный diff отменять только после сравнения с копиями/поздней работой, журнал дополнить. Новые runner/report/backup artifacts удалять лишь после проверки потребителей и сохранения evidence. Для R4 — push Олега,live ancestry и отдельный допуск; для основной beta — следующий самостоятельный план/допуск.
+
+Проверки той же подготовки R4 завершены: makemigrations --check --dry-run, AST/JSON, 13 backup hashes, append-only SYSTEM_PLAN/CHANGELOG, git diff --check и bash -n PASS. Серверные команды R4 не исполнялись.
+
+
+## 2026-10-07T10:58:55+03:00 (Europe/Moscow) — Закреплена ревизия плана R4 E2-08
+
+Точный source REV `409c71f65db53873183c6ffd8d059561c05185d2` записан в docs/E2-08_SERVER_PLAN.md и SYSTEM_ISOLATION_CHECKS.json; SYSTEM_PLAN.md/CHANGELOG.md дополнены. Только четыре документа; backend/deploy неизменны. Четыре исходные копии по относительным путям в .change-backups/E2-08-20261007-r3-result/r4-source-pin/, hashes в manifest.json; новый server-r4-blocks.sh там же для bash-n. Шесть локальных артефактов ignored. Проверки JSON/full pin/backup hashes/append-only/diff/shell syntax без исполнения. R4 не опубликован/не разрешён/не исполнен.
+
+Откат только обратным документальным diff после сравнения с копиями/поздней работой, журнал дополнять. Новые backup/syntax artifacts удалять лишь при отсутствии поздних потребителей и сохранённом evidence. Source-pin не разрешает запуск; R1/R2/R3 сохранять stopped, защиту не отключать. Push выполняет Олег; R4 и основная beta требуют отдельных допусков.
+
+
+## 2026-10-07T11:30:45+03:00 (Europe/Moscow) — Проверена изоляция E2-08 в R4 и подготовлен отдельный main-план
+
+По текущему «залил и разрешаю» live beta774b00224a13a96549f96bff9c5eed0286c04de3 проверена напрямую. Сервер получил source409c71f65db53873183c6ffd8d059561c05185d2 только Git fast-forward/new detached release. R4 окно07.10.2026 11:02:03–11:21:17 +03:00; preflight/prepare/bootstrap/configure/test_database PASS. 83 PostgreSQL tests/815.835с/0skips/exit0, actual SQL web LOGIN/SQL/RLS/HTTP scenario PASS (10 privilege denials плюс isolation probes), старая ссылка отозвана после regrant. Network6/6 до backup и6/6 послеrestore; static no-network/no-secret container10tests1.998с PASS.
+
+Серверные изменения: beta/app/repository; beta/app/releases/409c71f65db53873183c6ffd8d059561c05185d2; новый beta/rehearsals/e2-08-20261007-01a1105a-r4 с secrets/db_bootstrap_password,pg_bootstrap_password,db_migrator_password,db_web_password,django_secret_key,mfa_encryption_key,isolation_signing_key (только новые synthetic; значения/отпечатки ключей не выводились),state/manifest.json,state/suite-events.jsonl,baseline.json,preserved-rehearsal.json,operator-output/backups и backups/isolation-after.dump. Project marketplace-e208-20261007-01a1105a-r4: postgres/controller/web/private network/data volume; БДmw_beta/test_mw_beta/mw_e208_01a1105a_r4_restore; SQL bootstrap/migrator/web, RLS schema/policies/ACL/key. Точные ID/StartedAt/FinishedAt — docs/E2-08_ISOLATED_R4_RESULT.md.
+
+Dump292050bytes0600 SHA256d32338679b5ba31e3b5db3ab560605a10d5a398f53c714e73471939911b9b4b4, closed restore exit0/webCONNECTfalse; public rows/private key in-memory comparison, policies/private function ACL comparison, permanent Grant revoke/quarantine PASS. Полное table/column ACL сравнение восстановленной БД этим helper не выполнялось — ограничение зафиксировано и включено в main-план. Исходная БД не заменялась. После повторного web smoke verifier isolation/unchanged main/all previous rehearsal PASS; R4 stopped, OOM=false, ресурсы сохранены.
+
+Локально изменены только документы: `CHANGELOG.md`, `SYSTEM_ISOLATION_CHECKS.json`, `SYSTEM_PLAN.md`, `docs/E2-08_ISOLATED_R4_RESULT.md`, `docs/E2-08_ISOLATION.md`, `docs/E2-08_MAIN_ROLLOUT.md`, `docs/E2-08_SERVER_PLAN.md`. Новые tracked docs/E2-08_ISOLATED_R4_RESULT.md и docs/E2-08_MAIN_ROLLOUT.md. Исходные копии четырёх документов по относительным путям в .change-backups/E2-08-20261007-r4-result/, hashes в manifest.json; пятая копия docs/E2-08_ISOLATION.md там же до изменения, hash будет в supplementary manifest. Новые локальные main-plan-blocks.sh/main-plan-fragment.py — извлечённые блоки для bash-n/AST, не исполнение. Все backup/syntax artifacts ignored. Код/backend/deploy не менялись.
+
+Main-план точный APP_REV409c71f (уже опубликован), новые checkpoint e2-08-main-20261007-01a1105a/restore mw_e208_main_restore_20261007_01a1105a/key config/secrets/isolation_signing_key, explicit collision/empty-domain gate, fresh backup/full ACL-restore comparison, atomic RLS apply, штатный security overlay, actual-role/HTTP/CSRF checks,20мин webstop/45мин окно. Он не исполнен/не разрешён: существующие SQL/Django/MFA secret mounts потребляют только штатные процессы после нового допуска, агент содержимое не читает. Основная beta остаётся cf6f4cc; E2-08/E2-06 «На проверке». Новых installs/push/production/Caddy/FBS/WB/Finkos/K3/реальных аккаунтов нет.
+
+Откат: R4 уже остановлен, все новые/старые DB/roles/keys/dump/evidence сохранить; не repeat/reuse, не DROP/down-v/prune/restore поверх mw_beta и не отключать RLS/Grant/MFA. Локально сравнить копии/позднюю работу и отменить только документальный diff, журнал дополнить. Новые документы/backup/syntax artifacts удалять лишь после проверки поздних потребителей и сохранения evidence. Main web не откатывать/не перезапускать до отдельного разрешения нового плана.
+
+Проверки документации завершены: JSON, пять исходных backup hashes (manifest.json+supplementary-manifest.json), append-only SYSTEM_PLAN/CHANGELOG, точные семь изменённых документов, отсутствие backend/deploy diff, git diff --check, AST опубликованного операторского фрагмента и bash -n main-плана PASS. Фрагменты не исполнялись, main-действий не было.
+
+
+## 2026-10-07T12:47:04+03:00 (Europe/Moscow) — Внедрена изоляция E2-08 в основной beta и сохранён протокол
+
+Текущее «залил, разрешил» исполнено для отдельного main-плана. Проверена live beta1d3076a0825cf90259d16333e3cc24668fa33e81, сервер получил её Git fast-forward; runtime закреплён на опубликованном/проверенном R4 APP_REV409c71f65db53873183c6ffd8d059561c05185d2. Preflight09:25:31Z, stop web09:36:37Z, atomic migration commit verified09:41:23Z, новый webStartedAt09:43:33.3431035Z, ready+SQL/HTTP09:44:38Z, финальный metadata09:45:55Z/read-back09:47:00Z. Stop→проверенный ready8мин01с, этап21мин29с. Установок/build/pull/push не было.
+
+Серверные изменения: beta/app/repository; новый beta/backups/database/e2-08-main-20261007-01a1105a (containers.before.json,database.before.json,acl.before.json,before.dump,result.json,migration.after.json,result.final.json,containers.after.json); новая закрытая БДmw_e208_main_restore_20261007_01a1105a owner mw_beta_migrator; новый beta/config/secrets/isolation_signing_key; в mw_beta schema mw_isolation/key/functions,27 FORCE/RLS tables/policies,11 definer trigger functions без PUBLIC EXECUTE,одна data_isolation migration и минимальный ACL. Пересоздан только marketplace-beta-web-1: ID4c30e68d246015c013aa071f4a8dc6af7088abdb9c9329ef22509db9cebadaa2/source409c71f через security overlay, прежний image/UID/limits/mounts плюс isolation key. Оба PostgreSQL и все старые стенды сверены неизменными; R1–R4 stopped. Никаких production/main branch/Caddy/FBS/WB/Finkos/UI/worker/integrations изменений.
+
+Backup204905bytes0600 SHA256b24f013c801fbd148f9e8f398fde460e7bee5751c6d57d4a517d4e1b641190f9, dump/restore exit0, webCONNECT/TEMPfalse. Полное сравнение35public tables/строк/table-column-schema-default-function ACL/owners и остальной схемы PASS. Первое сравнение CHECK остановилось: ровно3 определения имеют другую cast-форму после pg_restore; доказана эквивалентность4 точных константных массивов/типов и полных нормализованных определений, затем продолжен текущий разрешённый переход. Metadata aliases/private и Docker Name/Ports были неверно сопоставлены операторскими проверками; точное сравнение тех же полей повторено успешно. Post-migration comparator сначала не учитывал ожидаемый revoke PUBLIC EXECUTE: подтверждены ровно11 удалений без добавлений; другие ACL/данные совпали. Никакие политики/данные ради проверок не ослаблялись. Все первичные ошибки отражены в docs/E2-08_MAIN_RESULT.md; промежуточный result.json сохранён, итог result.final.json.
+
+Основная БД domain-empty, старые строки сохранены: migrations38→39, anonymous sessions7→8 от GET MFA login. Реальная web LOGIN/27table contract,23unsigned reads,4forged-context rollback/reuse,9SQL42501 и9networkHTTP/2CSRF PASS. Это новая main проверка E2-08; положительный multi-tenant/конкурентный lifecycle относится к R4 на том же APP_REV и в main повторно не заявляется. Новый32bytekey создан закрытым O_EXCL процессом; значение/отпечаток не выводились. Existing DB/Django/MFA secrets потребляли только разрешённые штатные процессы. Из-за log_min_error_statement=error key INSERT передан server-bound psycopg.Cursor после проверки parameter-error-logging0/log_statementnone/duration logging-1; глобальные settings/SQL-права не менялись. Реальные секреты агентом не просматривались, K3/Telegram не выполнялись.
+
+Точные локальные файлы: CHANGELOG.md, SYSTEM_ISOLATION_CHECKS.json, SYSTEM_PLAN.md, SYSTEM_STARTUP.md, SYSTEM_STARTUP_CHECKS.json, docs/RUNBOOK.md, docs/E2-08_MAIN_ROLLOUT.md, docs/E2-08_ISOLATION.md, новый docs/E2-08_MAIN_RESULT.md. До изменений8 исходных копий по относительным путям в .change-backups/E2-08-20261007-main-result/, hashes в manifest.json. Новые syntax-only fragments будут перечислены ниже. Backend/deploy/application код не менялся. E2-08 «На проверке» по непокрытым критериям отсутствующих business cache-hit/worker/реального файлового и готового экспорта; main rollout завершён. E2-06/E2-07 без изменения; финансовые/брендовые/UI/D3 задачи не начинались.
+
+Откат сервера — только остановка web при разрешённом задании с сохранением schema/RLS/ACL/key/dump/restore/старых стендов. Не запускать cf6f4cc/pre-RLS, не reverse/live restore/disable RLS, не DROP/down-v/prune или повторять provisioning по занятым именам. Восстановление/очистка/новый restart требуют отдельного конкретного плана и допуска. Локально сначала сравнить backups/позднюю работу, затем отменить только этот документальный diff; журнал дополнить. Новый отчёт и ignored backup/validation artifacts удалять лишь после сохранения evidence и проверки отсутствия поздних потребителей. Локальный commit Oleg, push только Олег.
+
+Проверки документации завершены: JSON,8backup hashes,append-only SYSTEM_PLAN/CHANGELOG,точный source pin/неизменные статусы,8tracked документов (включая новый отчёт),отсутствие backend/deploy diff,git diff --check,Python AST иbash -n PASS. Bash sandbox сначала отказал на MSYS NamedObjects; повторная отдельно разрешённая локальная syntax-only проверка exit0, shell-блоки не исполнялись. Новые ignored artifacts: .change-backups/E2-08-20261007-main-result/manifest.json,main-plan-fragment.py,main-runtime-blocks.sh. SYSTEM_STARTUP_CHECKS.json уже игнорируется .gitignore: обновлён локально и сохранён backup, принудительно в commit не добавляется; весь текущий runtime/result также записан в tracked SYSTEM_ISOLATION_CHECKS.json и docs/E2-08_MAIN_RESULT.md.
+
+
+## 2026-10-07T13:17:17+03:00 (Europe/Moscow) — Составлена карта финансовой видимости E2-09 для согласования
+
+Причина: до реализации E2-09 требуются фактическая карта потребителей и явные бизнес-решения. Новый docs/E2-09_FINANCIAL_VISIBILITY.md описывает отсутствие финансовых моделей/формул, действующие detail/list/UUID-search/change/synthetic-export, точные границы Grant/MFA/SQL/RLS, default SELECT, предложенные правила и минимальный сценарий с настоящими потребителями полей/производных/итогов. Предложения не объявлены согласованными или реализованными. SYSTEM_PLAN.md: только E2-09 переведена в «На проверке» для рассмотрения предложения и добавлен фактический результат с перечнем отсутствующих проверок. E2-06/E2-07/E2-08 не изменены. CHANGELOG.md дополнен этой записью.
+
+Точные изменённые файлы: SYSTEM_PLAN.md, CHANGELOG.md; новый файл docs/E2-09_FINANCIAL_VISIBILITY.md. Исходные побайтовые копии двух существующих файлов сохранены до изменения в .change-backups/E2-09-20261007-01a115d9-audit/SYSTEM_PLAN.md и CHANGELOG.md; timestamp и SHA256 — manifest.json там же. Эти три новых локальных backup-артефакта исключены из Git. Backend/deploy/frontend, зависимости, runtime и сервер не менялись.
+
+Проверки: исходная beta чистая; прямой git ls-remote подтвердил опубликованную beta aac9cbd32eb5e9c846ece90a0ad75c4aca74a57b (первый sandbox-вызов DNS FAIL, разрешённый read-only повтор PASS). Прочитаны актуальные инструкции/проектные документы и протоколы, локальные модели/потребители/Grant/session/MFA/SQL/RLS; финансовых моделей и формул не найдено. Backend venv доступен; pip check PASS, manage.py check --settings=config.isolation_local_checks PASS. Docker/psql отсутствуют в PATH. Один вывод документального текста через Python сначала завершился ошибкой cp1251; повтор с stdout UTF-8 прочитал текст, файлы не менялись. Финансовой реализации и её тестов ещё нет; предыдущие E2-07/E2-08 PASS не перенесены. Проверки backup hashes, документального diff, сохранности старого журнала и статусов выполняются перед локальным коммитом автора Oleg. Push только Олег; SSH и иные серверные действия не выполнялись.
+
+Безопасный откат: сравнить текущие файлы с копиями и поздними изменениями, отменить только документальный diff E2-09; CHANGELOG дополнять, запись не стирать. Новый docs/E2-09_FINANCIAL_VISIBILITY.md удалять лишь после проверки отсутствия поздних правок/ссылок/потребителей. Backup-файлы/manifest удалять только после сохранения нужного evidence и проверки отсутствия дальнейших потребителей; общий .change-backups не удалять. Не reset --hard/clean. Серверный откат не требуется, сервер не опрашивался. Продолжение реализации ожидает согласования семи бизнес-решений из документа, а не нового разрешения на уже выполненный аудит. Изолированные PostgreSQL-проверки и основной rollout впоследствии требуют разных опубликованных планов и отдельных разрешений.
+
+Итоговые проверки подготовки: две исходные backup-копии совпали по SHA256; старый CHANGELOG сохранён побайтным префиксом; прежний SYSTEM_PLAN сохранён за исключением строки статуса E2-09 и нового приложения; E2-06/E2-07/E2-08 неизменны. Первая git diff --check отметила CRLF последней добавленной строки двух документов; окончания только нового текста нормализованы, история не переписана. Повторный diff --check и проверка точного состава трёх документов выполняются перед commit; backend/deploy/frontend diff отсутствует.
+
+
+## 2026-10-07T13:55:36+03:00 (Europe/Moscow) — Добавлена задача экрана управления доступом с галочками
+
+По прямому запросу Олега в SYSTEM_PLAN.md добавлена E5-13 на этапе 5 рядом с E5-01, статус «Не начато». Зафиксированы матрица таблиц/отчётов, выбор пользователя/организации/кабинетов, независимые разрешения и финансовая видимость, ограничения делегирования/самоповышения, свежее MFA, немедленный отзыв для сессий и необратимый отзыв ссылок, наследование ограничений представлениями/графиками/итогами, браузерная проверка синтетических аккаунтов. E5-13 добавлена в зависимости E5-10, общий объём обновлён до 102 задач и 13 задач этапа 5. Существующие ID и статусы сохранены; D3/реальные сотрудники остаются E6-03. Реализация UI и backend этим изменением не выполнялась.
+
+Точные изменённые файлы: SYSTEM_PLAN.md, CHANGELOG.md. До правок сохранены .change-backups/E5-13-20261007-01a115d9-plan/SYSTEM_PLAN.md и .change-backups/E5-13-20261007-01a115d9-plan/CHANGELOG.md; исходные SHA256 и время — .change-backups/E5-13-20261007-01a115d9-plan/manifest.json. Все три новых backup-артефакта исключены из Git. Проверяются уникальность/число ID, существование зависимостей и отсутствие цикла у нового пути E5-13 → E5-10, сохранность прежних статусов, backup hashes, append-only CHANGELOG и git diff --check. Программные тесты не нужны для этой документальной правки; сервер, зависимости, код и другие проекты не затронуты. Локальный commit автора Oleg; push выполняет Олег.
+
+Откат: сначала сравнить текущие файлы с указанными копиями и поздней работой, затем отменить только добавление E5-13, её зависимость и изменение счётчиков/документальной записи; CHANGELOG дополнять, историю не стирать. Backup-файлы и manifest удалять только после проверки отсутствия поздних потребителей и сохранения нужных доказательств. Не reset --hard/clean; серверный откат не требуется.
+
+Проверки завершены: 102 уникальных ID, 13 задач этапа 5, прежние статусы сохранены, зависимости существуют, цикл из E5-10 отсутствует, обе backup-копии совпали по SHA256, старый журнал сохранён побайтным префиксом, git diff --check PASS. Изменены только два перечисленных документа.
+
+
+## 2026-10-07T14:52:34+03:00 (Europe/Moscow) — Реализован локальный финансовый доступ E2-09
+
+Причина: после согласования модели логических таблиц подготовить проверяемую защиту финансового блока через существующие HTTP/Grant/RLS. Реализованы отдельный ресурс synthetic_finance, независимые права в пересечении областей, closed financial table и фиксированные SQL read/write, скрытие полей/формул/итогов, защита входов, финансовая привязка синтетической ссылки с необратимым отзывом, явный операторский bootstrap первого MFA-owner и запрет platform/support. Шаблоны/обычные действия не получают финансовые права. UI E5-13 только в плане. Добавлены новые проверки и guard-ограниченный новый изолированный стенд, backup/restore checker, финансовый контракт/schema/ACL/server plan. Никакого выполнения сервера, установки, push или доступа к реальным секретам.
+
+Точные изменённые существующие файлы:
+
+- CHANGELOG.md
+- SYSTEM_PLAN.md
+- backend/access_control/management/commands/manage_access_operator.py
+- backend/access_control/models.py
+- backend/access_control/operator.py
+- backend/access_control/services.py
+- backend/access_control/tests/test_http.py
+- backend/access_control/urls.py
+- backend/access_control/views.py
+- backend/config/urls.py
+- backend/data_isolation/apps.py
+- backend/data_isolation/tests/test_http.py
+- backend/data_isolation/tests/test_migrations.py
+- backend/tools/access_web_grants.py
+- backend/tools/isolation_sql_probe.py
+- backend/tools/isolation_web_contract.py
+- docs/E2-09_FINANCIAL_VISIBILITY.md
+
+Точные новые файлы:
+
+- SYSTEM_FINANCIAL_CHECKS.json
+- backend/access_control/financial.py
+- backend/access_control/financial_guards.py
+- backend/access_control/financial_migration_operations.py
+- backend/access_control/migrations/0003_financial_schema.py
+- backend/access_control/tests/test_financial.py
+- backend/access_control/tests/test_financial_migrations.py
+- backend/access_control/tests/test_financial_preparation.py
+- backend/access_control/tests/test_financial_transactions.py
+- backend/data_isolation/financial_sql.py
+- backend/data_isolation/migrations/0002_financial_operations.py
+- backend/tools/financial_django_runner.py
+- backend/tools/financial_rehearsal.py
+- backend/tools/financial_restore_check.py
+- backend/tools/financial_sql_probe.py
+- backend/tools/financial_test_runner.py
+- backend/tools/financial_web_contract.py
+- backend/tools/verify_financial_web_runtime.py
+- beta/deploy/compose.financial-rehearsal.json
+- beta/deploy/prepare_financial_rehearsal.py
+- docs/E2-09_SERVER_PLAN.md
+
+Резервные копии существующих файлов до изменений: .change-backups/E2-09-20261007-01a115d9-implementation/<тот же относительный путь>; полный перечень и исходные SHA256 в manifest.json. Для backend/tools/isolation_sql_probe.py — дополнительный sql-probe-manifest.json в том же корне. SYSTEM_PLAN.md, CHANGELOG.md и карта E2-09 также сохранены до изменений. Backup-артефакты/manifest исключены из Git.
+
+Проверено: 115 актуальных HTTP/context тестов, в том числе 24 новых финансовых, PASS без skips, 194.690с, SQLite. Ещё 6 preparation-тестов PASS, 0.530с; Django check, makemigrations --check --dry-run PASS. Промежуточный поднабор50 PASS не прибавляется к покрытию115. Broad discovery завершился ошибкой legacy E2-06 test_role_scenario после34/75.204с: вызываемый issue_export_probe намеренно запрещён при ACCESS_CONTROL_ENABLED со времени E2-07. Старый обход не возвращён; несовместимый режим исключён из актуального server runner. На разработке исправлены SQLite trigger-preservation при rebuild и ожидания новых archive/export тестов; итоговый набор прошёл. Подробности/команды — SYSTEM_FINANCIAL_CHECKS.json. Git live remote beta=aac9cbd32eb5e9c846ece90a0ad75c4aca74a57b повторно проверен read-only после sandbox DNS failure.
+
+PostgreSQL schema/ACL/RLS/functions, настоящий web LOGIN, конкуренция/rollback/reuse и backup/restore нового кода не запускались. План фиксирует новый project/root/network/volume/containers/restore, лимиты/коллизии, новые synthetic secrets и штатные mounts, точную schema/ACL дельту, сравнение и quarantine; full source SHA закрепляется отдельным документальным коммитом после исходников. E2-09/E2-06/E2-08 остаются «На проверке». Отсутствующие cache/worker/storage/реальный готовый экспорт/UI/интеграции/D3 не создавались и не проверены.
+
+Безопасный откат: сравнить текущие файлы, backup и более позднюю работу; обратным патчем отменять только E2-09, не весь рабочий каталог. Новые перечисленные файлы удалять только если после сравнения нет поздних зависимостей/данных/результатов; backup/evidence хранить до отдельного решения. CHANGELOG дополнять, историю не стирать. На заполненной финансовой схеме reverse запрещён; не возвращать pre-finance/pre-RLS runtime и не отключать Grant/MFA/RLS. Будущий серверный отказ — остановка только новых процессов, сохранение всех БД/ключей/dump/restore, без DROP/down-v/prune. Основная beta сейчас не менялась; её rollout потребует отдельного плана/разрешения.
+
+Финальная локальная проверка: Python AST/JSON/git diff --check,17 backup SHA256, полный состав38 изменённых/новых файлов, append-only SYSTEM_PLAN/CHANGELOG и неизменные строки статусов PASS. Два shell-блока серверного плана прошли локальный bash -n; первый старт MSYS блокировался песочницей, повторная syntax-only проверка успешна, команды не исполнялись. Исправлена только кодировка UTF-8 в одноразовом валидаторе Windows, не данные проекта.
+
+Staged-проверка выявила CRLF в новом SYSTEM_FINANCIAL_CHECKS.json: окончания строк приведены к LF, содержание сохранено; повторный staged diff --check обязателен перед commit. Запись Git index потребовала локальной sandbox escalation; публикация не выполнялась.
+
+
+## 2026-10-07T14:58:31+03:00 (Europe/Moscow) — Закреплён исходный коммит изолированной проверки E2-09
+
+Причина: после локального commit кода faed9681ff4540cb49bc46f147c738e516b6dc2e сделать будущий серверный план воспроизводимым. Изменены только docs/E2-09_SERVER_PLAN.md (два точных source pin), SYSTEM_FINANCIAL_CHECKS.json (source_commit и время), SYSTEM_PLAN.md и CHANGELOG.md (добавлены записи). Runtime/backend/deploy этим коммитом не меняются. Предыдущая попытка commit остановилась из-за отсутствия локального user.email; успешный commit использовал имя Oleg и адрес предыдущего коммита без вывода адреса и без изменения глобальной/локальной конфигурации. Push не выполнялся.
+
+До правок сохранены четыре файла в .change-backups/E2-09-20261007-01a115d9-source-pin/<тот же путь>; новый manifest.json содержит SHA256 и время. Все эти backup-артефакты ignored. Проверки: полный SHA совпадает с HEAD кода, только четыре документальных файла, JSON/schema-plan/source совпадают; backup hashes, append-only журнал/план, отсутствие смены статусов и git diff --check. Программные тесты повторно не нужны: runtime diff отсутствует. Ранее115+6 локальных проверок не заменяют PostgreSQL.
+
+Откат: сверить текущие четыре документа с backup и более поздней работой; отменить только ошибочный pin/связанную запись, сохранив код/чужую работу. CHANGELOG дополнять. Backup/manifest удалять только после проверки поздних зависимостей и сохранения необходимых доказательств. Не reset --hard/clean и не откатывать runtime/БД этим документальным изменением. Публикация Олегом, отдельное разрешение изолированного плана и отдельный будущий main rollout по-прежнему необходимы.
+
+
+## 2026-10-07T15:22:20+03:00 (Europe/Moscow) — Зафиксирована остановка E2-09 R1 и подготовлен новый R2
+
+Причина: выполнить отдельно разрешённый изолированный план после push, остановиться при первом отказе и подготовить исправленный проверяемый повтор без переиспользования ресурсов. Серверный интервал: preflight12:04:14Z, git release12:04:56Z, postgres/bootstrap/controller12:06:08–13Z, fresh configure12:06:51Z exit0, test DB12:07:28Z, suite12:07:53Z. Ошибочный ad-hoc monitor ожидал точно15s/5s, хотя config.settings задаёт более строгие5s/2s; по exit1 выполнена остановка только новых контейнеров. Suite:20 tests/210.89с, ERROR в financial scope test setUp/login, exit1/223с во время shutdown; это не20 PASS и не доказанный дефект финансового доступа. PG stopped12:11:40.736837088Z, controller12:11:55.478633792Z. Параллельный docker stop завершил БД раньше runner; для R2 остановка последовательная.
+
+Изменения сервера: только Git fetch beta в штатном repository, новый detached release faed9681ff4540cb49bc46f147c738e516b6dc2e, новый root /home/adm_user/marketplace-workspace/beta/rehearsals/e2-09-20261007-01a115d9-r1, контейнеры marketplace-e209-20261007-01a115d9-r1-postgres/controller, сеть того же префикса-private, volume-data, mw_beta/test_mw_beta и bootstrap/migrator/web роли только этого кластера. В root созданы secrets/pg_bootstrap_password, secrets/db_bootstrap_password, secrets/db_migrator_password, secrets/db_web_password, secrets/django_secret_key, secrets/mfa_encryption_key, secrets/isolation_signing_key, state/manifest.json, state/suite-events.jsonl, baseline.json, preserved-rehearsal.json и пустые каталоги backups/operator-output. Эти данные остаются на сервере; секреты в Git/терминал не копировались. Web/dump/restore не создавались.12:14:46Z read-only metadata подтвердили неизменность main runtime409c71f… и прежних E2-06/E2-07/E2-08 стендов. Чтение закрытого safe events сначала отказало adm_user; затем выполнено read-only sudo без chmod/чтения secret-файлов. Все R1 ресурсы остановлены и сохранены, не удалены и не переиспользованы.
+
+Локально новый runtime_limits валидирует положительные значения <= лимитам, отклоняет unlimited/превышения/неполный контекст; вызывается до suite, печатает только несекретные числа. E209 профиль перенесён на новый R2; подготовка защищает также остановленные R1 postgres/controller, restore получает новое имя. Финансовые функции/Grant/потребители и штатные Django таймауты не менялись. Отчёт сохраняет ошибки и непроверенные критерии, R2 plan требует отдельной публикации/разрешения.
+
+Точные изменённые существующие файлы:
+
+- CHANGELOG.md
+- SYSTEM_FINANCIAL_CHECKS.json
+- SYSTEM_PLAN.md
+- backend/access_control/tests/test_financial_preparation.py
+- backend/data_isolation/apps.py
+- backend/tools/financial_rehearsal.py
+- backend/tools/financial_restore_check.py
+- beta/deploy/compose.financial-rehearsal.json
+- beta/deploy/prepare_financial_rehearsal.py
+
+Точные новые файлы:
+
+- backend/tools/financial_runtime_limits.py
+- docs/E2-09_ISOLATED_R1_RESULT.md
+- docs/E2-09_R2_SERVER_PLAN.md
+
+До изменений сохранены9 существующих файлов в .change-backups/E2-09-20261007-01a115d9-isolated-r1-result/<тот же путь>; SHA256/время в manifest.json и r2-preparation-manifest.json. Новые backup-артефакты ignored. Локально9 preparation-тестов PASS без skipped за0.795с, Django check PASS; проверяются AST/JSON/source diff/backup hashes/append-only/statuses/bash -n. Прежние115 тестов относились к неизменённому финансовому коду; не выдаются за PostgreSQL R1/R2. Полный PG suite, actual web LOGIN, HTTP/upgrade/concurrency/backup-restore/main rollout ещё не проверены. E2-09/E2-06/E2-08 «На проверке».
+
+Безопасный откат серверного этапа выполнен остановкой только R1; сохранить все БД/роли/ключи/volume/network/release/evidence. Не down-v/prune/DROP/перезапись/повтор. Локальный откат: сравнить перечисленные файлы с backup и поздней работой, отменить только R2-подготовку обратным патчем; не стирать фактический R1-результат, CHANGELOG дополнять. Новые helper/plan удалять только если нет поздних потребителей/публикаций, отчёт/evidence сохранять; backup/manifest удалять только после отдельного решения о сохранности. Никаких ослаблений Grant/MFA/RLS/финансового доступа, main/Finkos/Caddy/FBS/WB API/K3/установок/push.
+
+Дополнительно актуализирована docs/E2-09_FINANCIAL_VISIBILITY.md: R1 fresh configure подтверждён, полный suite не подтверждён, следующий план R2. Её исходная копия сохранена в том же backup-корне по относительному пути, SHA256/время в новом visibility-manifest.json; всего10 исходных файлов сохранено. Карта не объявляет полный PostgreSQL PASS.
+
+Завершены локальные проверки R2:9 preparation tests PASS; AST/JSON,10 backup SHA256, append-only журнал/план, неизменные статусы и финансовый код, полный состав файлов, git diff --check PASS. Два shell-блока нового плана прошли bash -n (только синтаксис, без выполнения). Новый runtime_limits при нарушении числовых пределов сохраняет только фиксированную пятёрку чисел (лимиты/счётчик), чтобы отказ не терял несекретную причину; строки данных/учётные значения не выводятся.
+
+
+## 2026-10-07T15:26:52+03:00 (Europe/Moscow) — Закреплён исходный коммит нового E2-09 R2
+
+Причина: сделать подготовленный повтор проверяемым после фиксации исходников b7e0d66c6ad632544a0db73d7e38d59e0d54a511. Изменены только docs/E2-09_R2_SERVER_PLAN.md, SYSTEM_FINANCIAL_CHECKS.json, SYSTEM_PLAN.md, CHANGELOG.md: новый полный source SHA, время и связь с ещё не разрешённым R2. Серверный source R1 faed968/его результат сохранены исторически, runtime/core financial code не меняются.
+
+До изменений сохранены четыре файла в .change-backups/E2-09-20261007-01a115d9-r2-pin/<тот же путь>; новый manifest.json содержит SHA256/время. Backup-артефакты ignored. Проверяются четыре hashes, полный source pin, JSON, append-only журнал/план, неизменные статусы, отсутствие backend/deploy diff и git diff --check. Программные тесты повторно не нужны для документальной привязки;9 локальных preparation PASS не являются PostgreSQL R2.
+
+Откат: сравнить текущие документы с backup/поздней работой и отменять только ошибочную привязку обратным патчем, журнал дополнять; не стирать R1-результат/исходники/чужую работу. Backup/manifest удалять только после проверки поздних зависимостей и сохранения доказательств. Основная beta и stopped R1 не трогаются. Push выполняет Олег; отдельное разрешение R2 необходимо по согласованному правилу остановки и запрету повторного использования частичного запуска.
+
+
+## 2026-10-07T16:14:41+03:00 (Europe/Moscow) — Зафиксирован изолированный E2-09 R2 и подготовлена диагностика R3
+
+Причина: выполнить отдельно разрешённый Олегом R2 после публикации0e0bd7d и честно зафиксировать остановку restore. Серверный immutable source b7e0d66c6ad632544a0db73d7e38d59e0d54a511 получен Git fetch/worktree. Только новый marketplace-e209-20261007-01a115d9-r2: создан root/release, postgres/controller/web, private network/data volume, mw_beta/test_mw_beta/restore и три роли/7synthetic secrets/state/dump. Точные пути/IDs/images/UTC-времена в docs/E2-09_ISOLATED_R2_RESULT.md. Внутри нового кластера применены2 финансовые миграции/минимальный ACL, синтетические fixtures, suite/SQL/HTTP, dump+restore.134 PG tests PASS0 skipped1325.015с, real web LOGIN и6 network checks PASS. Dump623353bytes0600 SHA256eea747cc7161b475ca2ee4cb0aac33bffa5e6f55695fe20d4664579695ea600c. Restore verification exit1 в13:03:19Z; этап/причина неизвестны, сравнение/quarantine не подтверждены. При первой ошибке остановлены web/controller, затем postgres13:03:55Z; повторов не было. Финальная metadata13:05:10Z — main409c71f… и все прежние стенды неизменны. Все ресурсы R2 сохранены, старые БД/ключи не читались.
+
+Изменены существующие файлы:
+
+- SYSTEM_FINANCIAL_CHECKS.json
+- SYSTEM_PLAN.md
+- CHANGELOG.md
+- docs/E2-09_FINANCIAL_VISIBILITY.md
+- backend/tools/financial_restore_check.py
+- backend/tools/financial_rehearsal.py
+- backend/data_isolation/apps.py
+- beta/deploy/prepare_financial_rehearsal.py
+- beta/deploy/compose.financial-rehearsal.json
+- backend/access_control/tests/test_financial_preparation.py
+
+Новые файлы:
+
+- docs/E2-09_ISOLATED_R2_RESULT.md
+- docs/E2-09_R3_SERVER_PLAN.md
+- backend/tools/financial_restore_evidence.py
+
+Локально: новый R3 profile с уникальными ресурсами/restore, protected metadata R2, безопасные checkpoints restore (фиксированные event/stage/index; O_EXCL0600/fsync; никаких SQL/значений/исключений). Строгие metadata/data/ACL сравнения и финансовые права/миграции не менялись. Причина R2 не установлена и не объявлена исправленной. Все10 исходных файлов до изменений сохранены в .change-backups/E2-09-20261007-01a115d9-isolated-r2-result/<тот же путь>, SHA256 в новом manifest.json; backup ignored, не коммитится.
+
+Проверки:11 preparation-тестов PASS0.424с без skipped, без БД/сети. Первоначальная локальная попытка дала2 Windows sandbox TemporaryDirectory PermissionError; тот же набор вне sandbox прошёл. AST/JSON, неизменность METADATA SQL, backup hashes, append-only журнала/плана, сохранение E2-06/E2-08 статусов, git diff --check и bash -n двух R3-блоков проверяются до коммита. Это не PostgreSQL R3; E2-09 «На проверке». Нужны restore equivalence/quarantine и отдельный main rollout; отсутствующие cache/worker/storage/готовый экспорт не закрываются.
+
+Безопасный откат сервера уже выполнен остановкой только R2. Сохранить его БД/roles/keys/dump/restore/release/volume/network/evidence и все прежние ресурсы; не restart/reuse/delete/down-v/prune/DROP. Локально сравнить текущие файлы с backup и поздней работой, отменять только R3-подготовку обратным патчем. Фактический отчёт R2/журнал не стирать. Новый helper/план удалять только при отсутствии поздних потребителей/публикаций; новые backup/manifest сохранять до отдельного решения. Не downgrade populated finance/RLS, не отключать Grant/MFA/guards. Для R3 нужны новый source pin, публикация Олегом и отдельное разрешение; для основной beta — собственный план и разрешение. Push/установки/main/Caddy/FBS/WB API/Finkos/K3 не выполнялись.
+
+Завершены локальные проверки R3:11 preparation tests PASS0.424с;10 backup SHA256, Python AST/JSON, неизменный METADATA SQL, append-only журнал/план и прежние статусы PASS. Два shell-блока R3 прошли bash -n (синтаксис без исполнения); git diff --check PASS. Состав изменений проверен, финансовый business/SQL/migration код не изменён.
+
+
+## 2026-10-07T16:16:28+03:00 (Europe/Moscow) — Закреплён исходный коммит изолированного E2-09 R3
+
+Причина: сделать новый диагностический план исполнимым из точного опубликованного source 88347474f2e8ac6064e893127280dbb3371480d6. Изменены только docs/E2-09_R3_SERVER_PLAN.md, SYSTEM_FINANCIAL_CHECKS.json, SYSTEM_PLAN.md, CHANGELOG.md. Полный SHA/время закреплены; R2-результат и финансовые проверки не переопределяются.
+
+До изменения сохранены4 файла в .change-backups/E2-09-20261007-01a115d9-r3-pin/<тот же путь>, новый manifest.json с SHA256/временем ignored. Проверки: JSON, четыре backup hashes, точный source pin, append-only журнал/план, неизменные статусы, отсутствие code/deploy diff и git diff --check. Программные тесты повторно не нужны для документации;11 preparation PASS не PostgreSQL R3.
+
+Откат: сравнить с backup/поздней работой и отменить только ошибочную привязку обратным патчем; журнал дополнять, факт R2 и чужую работу сохранять. Новые backup/manifest удалять только после отдельного решения о сохранности. Сервер не вызывался после финальных read-only проверок R2; stopped R1/R2 и main не менялись. Олег проверяет и публикует beta сам, новый изолированный R3 требует отдельного разрешения из-за остановки R2; main rollout — ещё один самостоятельный план/допуск.
+
+
+## 2026-10-07T16:57:57+03:00 (Europe/Moscow) — Зафиксирована остановка E2-09 R3 и подготовлен новый R4
+
+Причина: выполнить отдельно разрешённый Олегом изолированный R3 после публикации bb272948, сохранить фактический failfast и подготовить локальное устранение подтверждённого lock-scope дефекта в проверяемом восстановлении владельца. Сервер получил только Git source88347474f2e8ac6064e893127280dbb3371480d6. Созданы только новый marketplace-e209-20261007-01a115d9-r3 root/release/postgres/controller/network/data volume, mw_beta/test_mw_beta/роли/7synthetic secrets/state; точные пути/ID/images/UTC в docs/E2-09_ISOLATED_R3_RESULT.md. Fresh migrations/ACL/лимиты PASS, но suite ERROR SecurityConcurrencyTests.test_same_operator_permit_has_one_successful_consumer:130 учтённых тестов1309.324с,runner1323с/exit1 в13:46:37Z. Ни130 PASS, ни точный SQLSTATE/причина не заявляются. Controller остановлен13:47:14.984Z, затем PG13:47:15.467Z; повторов нет. Web/scenario/dump/restore не создавались/не выполнялись. Metadata13:48:09Z подтвердила прежний main409c71f… и сохранность R1/R2/старых стендов. Все R3-ресурсы сохранены.
+
+Изменены существующие файлы:
+
+- SYSTEM_FINANCIAL_CHECKS.json
+- SYSTEM_PLAN.md
+- CHANGELOG.md
+- docs/E2-09_FINANCIAL_VISIBILITY.md
+- backend/account_security/services.py
+- backend/account_security/tests/test_transactions.py
+- backend/tools/financial_django_runner.py
+- backend/tools/financial_test_runner.py
+- backend/access_control/tests/test_financial_preparation.py
+- backend/tools/financial_restore_check.py
+- backend/tools/financial_rehearsal.py
+- backend/data_isolation/apps.py
+- beta/deploy/prepare_financial_rehearsal.py
+- beta/deploy/compose.financial-rehearsal.json
+
+Новые файлы:
+
+- docs/E2-09_ISOLATED_R3_RESULT.md
+- docs/E2-09_R4_SERVER_PLAN.md
+- backend/tools/financial_test_diagnostics.py
+
+До изменений14 исходных файлов сохранены в .change-backups/E2-09-20261007-01a115d9-isolated-r3-result/<тот же путь>; новый manifest.json содержит SHA256/время; backup ignored. Локально подтверждён отдельный дефект: password proof consume_operator_recovery находился в transaction.atomic после select_for_update. Новый тест сначала FAIL0.405с, затем после минимального переноса proof до lock PASS. Под lock повторно сверяются текущий hash/available/owner/state/permit; одноразовость, MFA, границы/права не расширены, hashers/CPU/timeouts не ослаблены. Это не доказанное объяснение R3 SQL error. Новые3 теста включают смену пароля/блокировку между proof и lock;38 security/lock-scope PASS69.087с и82 financial/Grant/isolation PASS120.594с,0 skips,SQLite. PostgreSQL concurrency нового кода не проверена.13 preparation/redaction PASS0.446с,без БД/сети; локальный запуск вне Windows sandbox из-за подтверждённого TemporaryDirectory ограничения.
+
+R4 подготовлен с новыми именами и сохранением R3 postgres/controller. Runner добавляет только фиксированную allowlisted категорию SQLSTATE/ASSERTION/OTHER, не сообщение/type/SQL/данные; неизвестные строки отбрасываются. Прежние restore checkpoints/строгое сравнение, исходный конкурентный тест и полный suite сохранены. R4 не разрешён/не запускался. Причина restore R2 остаётся неизвестной. E2-09/E2-06/E2-08 «На проверке», отсутствующие cache/worker/storage/готовый экспорт не закрываются. UI E5-13, экспорт E5-07, реальные сотрудники/D3 E6-03 отдельно.
+
+До коммита проверяются AST/JSON,14 backup hashes, append-only журнала/плана, прежние строки статусов, неизменные финансовые SQL/миграции/сравнения, git diff --check, bash -n двух R4-блоков. Безопасный серверный откат выполнен остановкой только R3; сохранить DB/roles/keys/volume/network/release/evidence и все прежние dump/restore/checkpoint. Не reuse/delete/restart/down-v/prune/DROP. Локально сравнить файлы с backup/поздней работой и применять только обратный патч, фактический отчёт/журнал не стирать; новые helper/план удалять только без поздних потребителей/публикаций, backup/manifest сохранять до отдельного решения. Не отключать Grant/MFA/RLS/финансовые ограничения и не downgrade populated схему. Push выполняет Олег; R4 требует публикации source/pin и отдельного допуска, main rollout — своего плана/разрешения. Другие проекты/main/Caddy/FBS/WB API/Finkos/K3/установки не затронуты.
+
+Завершены проверки R4-подготовки:38 security tests PASS69.087с,82 financial/Grant/isolation tests PASS120.594с (SQLite),13 preparation/redaction PASS0.446с без БД. AST/JSON,14 backup SHA256, append-only/statuses, неизменные financial SQL/migrations/limits/restore METADATA, git diff --check PASS. Оба R4 shell-блока прошли bash -n без исполнения. Это не PG R4 и не устранение неизвестной причины restore R2.
+
+
+## 2026-10-07T16:59:55+03:00 (Europe/Moscow) — Закреплён source изолированного E2-09 R4
+
+Причина: конкретный план после коммита кода 453d04139be185f04d6db779c6a40b10a21fc5bb. Изменены только docs/E2-09_R4_SERVER_PLAN.md, SYSTEM_FINANCIAL_CHECKS.json, SYSTEM_PLAN.md, CHANGELOG.md: полный source SHA и время. До изменений сохранены4 файла в .change-backups/E2-09-20261007-01a115d9-r4-pin/<тот же путь>; новый manifest.json с SHA256/временем ignored. Проверяются четыре hashes, JSON/source pin, append-only журнал/план, неизменные статусы, document-only diff и git diff --check. Программные тесты повторно не нужны для pin;38+82 SQLite/13preparation PASS не PostgreSQL R4.
+
+Откат: сравнить с backup и поздними изменениями, отменить только ошибочную привязку обратным патчем; журнал дополнять, фактический R3-результат/чужую работу сохранять. Backup/manifest удалять только после отдельного решения о сохранности. После финального metadata/evidence readback R3 сервер не запрашивался, stopped R1/R2/R3/main не менялись. Push выполняет Олег; новый R4 требует отдельного разрешения, main rollout — отдельного плана/допуска.
+
+
+## 2026-10-08T10:09:28+03:00 (Europe/Moscow) — Зафиксирован SSH timeout перед E2-09 R4
+
+Причина: сохранить фактический результат текущего разрешённого подключения без ложного серверного PASS. Live remote beta7cc45f4730b07b01c0f47904ed488f97e12eb31b подтверждён, локальная beta clean. Единственный SSH BatchMode/ConnectTimeout10 завершился timeout during banner exchange/exit1 до авторизации/remote command; server preflight/fetch/worktree/ресурсы/миграции/тесты не выполнялись. Повтора/сетевых обходов/SSH-настроек/серверной остановки нет. Причина недоступности не установлена. Основная beta и прежние стенды сейчас не проверялись; новых результатов PG/restore нет.
+
+Изменены SYSTEM_FINANCIAL_CHECKS.json, SYSTEM_PLAN.md, CHANGELOG.md. Новый файл docs/E2-09_R4_CONNECTION_RESULT.md. До изменений три оригинала сохранены в .change-backups/E2-09-20261008-01a115d9-r4-connection/<тот же путь>, новый manifest.json с SHA256/временем ignored. Проверки: JSON,3 hashes, append-only журнал/план, неизменные статусы, document-only diff и git diff --check. Код не менялся, повтор программных тестов не нужен; прежние38/82/13 PASS не новая серверная проверка.
+
+Откат: сравнить документы с backup и поздними изменениями, отменять только ошибочную запись обратным патчем; фактический timeout/журнал сохранять. Новый отчёт удалять только без поздних ссылок/публикаций и с сохранением evidence; backup/manifest — после отдельного решения. Серверный откат не требуется: удалённая команда не стартовала. Следующая попытка того же R4/source требует нового разрешения по правилу первого таймаута и fresh collision preflight. Push — Олегом. Main/Finkos/Caddy/FBS/WB API/K3/зависимости не затронуты.
+
+
+## 2026-10-09T13:07:27+03:00 — Переработан визуальный характер интерактивного макета
+
+По запросу Олега «слишком в стиле ии … сделай прям что-то уникальное» подготовлена редакция рабочего реестра: графитовая номерная навигация, белая рабочая поверхность и угольная тёмная тема, заголовки Georgia, моноширинные числовые столбцы, терракотовый акцент, строгие края и разделители вместо одинаковых карточек. Сокращены абстрактные подписи. В закупках личные виды и представление собраны в одну полосу, редкие действия перенесены в «Ещё» (доступно и в личных расчётах), пояснение состояния раскрывается через «Подробнее». Виджеты не обрезают свои строки. Улучшен контраст клавиатурного фокуса в боковом меню. Личные цвета, плотность, сетка, темы и добровольное применение общих пресетов сохраняют прежнюю модель. Пользовательские сохранённые данные не мигрировались; обработчики переключения представлений и меню адаптированы к новой разметке.
+
+Изменены точные файлы: docs/design/prototype.html, docs/design/grid-app.js, docs/design/workbench-app.js, docs/design/README.md, docs/design/checksums.sha256, CHANGELOG.md. Новый исходник: docs/design/register-style.css. Исходные версии шести существующих файлов сохранены в .change-backups/2026-10-09/design-character-20261009-125256/<relative-path>; исходный HEAD и hashes — before-manifest.json. Непосредственно перед этой записью актуальный журнал дополнительно сохранён как .change-backups/2026-10-09/design-character-20261009-125256/CHANGELOG.before-append.md. Новый after-manifest.json перечисляет конечные hashes исходников и точные пути новых локальных артефактов. Артефакты находятся в output/playwright/design-character-20261009/ (снимки до/после, промежуточные снимки, browser checks, qa-results.json, server logs/identity, cleanup.json) и двух CLI snapshot-файлах, перечисленных в manifest. Эти данные и бэкапы остаются вне Git.
+
+Проверка: независимый просмотр направления и read-only ревью изменений, синтаксис двух изменённых JS, diff --check с учётом CRLF, 17 дизайн-SHA-256. В установленном Edge открыты восемь разделов, пять представлений закупок; проверены фокус после выбора режима, Escape, пояснения состояния, заметки, изменение количества/отмена/освобождение черновика, создание общего пресета и применение менеджером без авторских кнопок. Проверены обе темы и восстановление после reload с сохранением оттенка колонки, плотность (33/46 px), отключение линий, пять строк виджета, мобильная навигация и меню в расчётах. На ширинах 360/390/768/1024/1366/1440 px нет переполнения страницы; диалог пресетов при360px имеет ширину340px. В проходе по восьми разделам нет page errors и console warnings/errors. Печатный media-режим белый, новые контролы скрыты. Визуально просмотрены светлая/тёмная темы, таблица товаров, личное рабочее место, мобильный экран и пресеты. Первые прогоны автоматизации остановились на диалоге подтверждения и неоднозначном close-локаторе; после уточнения сценария проверки завершены, эти остановки не объявляются дефектами приложения.
+
+Границы: локальный HTML/CSS/JS макет с синтетическими данными; новые зависимости, плагины, шрифты из сети и внешние ресурсы не добавлены. Backend/frontend runtime, production, основной план и посторонний код не менялись. Полный аудит доступности, физическая печать, другие браузеры и реальные серверные права не проверялись; замечания логического ревью02.10 остаются открытыми. Собственный Edge-session mw-character-20261009 закрыт; Python PID30368 остановлен после сверки идентичности, порт18771 закрыт. Коммит и push не выполнялись.
+
+Безопасный откат: сравнить before/after manifest с текущими файлами и поздней работой, затем применить только обратный diff этой редакции к пяти существующим design-файлам. Убрать подключение нового register-style.css перед удалением самого файла; удалять его и новые локальные артефакты лишь при совпадении hashes и отсутствии поздних изменений/потребителей. Журнал дополнить записью отмены, не заменять целиком и не удалять старые/чужие записи. Общие output/.playwright-cli каталоги не удалять, reset --hard/clean не использовать. Демо-данные проверки изолированы адресом127.0.0.1:18771; другие профили/адреса браузера не очищать.
+
+
+## 2026-10-09T13:23:10+03:00 — Пересобран макет в компоновку рабочей книги
+
+Причина: Олег полностью отклонил предыдущее визуальное направление и указал на шаблонную композицию приложения. Убрана боковая панель и декоративное оформление реестра. Разделы перенесены в нижнюю полосу листов со стрелками прокрутки и aria-current; на телефоне навигация постоянно доступна. Верхняя строка содержит компанию, справку, тему и профиль. Название закупок и состояние объединены в одну компактную полосу. История перенесена в «Ещё», добавление позиции — в рабочие инструменты, в режиме расчётов оно доступно через «Ещё». Применена обычная системная типографика, нейтральные светлая/тёмная темы, номера строк закупок и небольшие цветовые отметки статусов. Таблица на1440px начинается на157px вместо297px у отвергнутого варианта. Данные/права/пресеты/схема localStorage не менялись; логика навигации адаптирована к листам вместо мобильной боковой панели. Настройки товарного вида доступны через его собственную кнопку.
+
+Изменены точные файлы: docs/design/prototype.html, docs/design/grid-app.js, docs/design/workbench-app.js, docs/design/README.md, docs/design/checksums.sha256, CHANGELOG.md. Добавлен docs/design/sheet-style.css. Собственный незафиксированный docs/design/register-style.css из отклонённого направления удалён после копирования; его подключение и checksum заменены. Перед изменениями все семь существующих файлов, включая удалённый стиль и журнал, сохранены в .change-backups/2026-10-09/workbook-shell-20261009-131119/<relative-path>. Исходный HEAD и hashes — before-manifest.json, актуальный журнал перед этой записью — CHANGELOG.before-append.md. После проверки подготовлен after-manifest.json с точными файлами/hashes исходников и новых локальных артефактов. Артефакты: output/playwright/workbook-shell-20261009/ (снимки/QA/протоколы browser-проверок/логи/identity/cleanup) и .playwright-cli/page-2026-10-09T10-16-37-454Z.yml. Более ранние бэкапы, проверочные снимки и записи журнала сохранены.
+
+Проверка: Node --check двух изменённых JS; diff --check с учётом CRLF;17 дизайн-SHA-256. Независимое read-only ревью нашло риск перекрытия номера выбранной строки checkbox и мобильного статуса действиями: оба исправлены и проверены. Edge: все восемь разделов и пять представлений, aria-current, нижняя навигация и её прокрутка, Escape/фокус, история, изменение/отмена количества и освобождение черновика, настройки/добавление в расчётах, создание общего пресета и добровольное применение менеджером без авторских контролов. Проверены обе темы с восстановлением после reload и неизменностью цвета колонки; плотность33/46px, отключение линий, скрытие номера выбранной строки. На360×800,390×844,768×700,1024×768,1024×600,1366×768,1440×1000 нет переполнения страницы, низ навигации совпадает с высотой окна, inert отсутствует. Мобильные кнопки черновика не перекрывают статус, popup действий доступен, ширина пресетов340px при viewport360px. Ошибок JS и console warnings/errors в записанных проходах нет. Печатный media-режим белый и скрывает навигацию. Снимки обеих тем/мобильного ввода/товаров/личного рабочего места просмотрены.
+
+Ограничения: только локальный макет на синтетических данных; это не реализация совместной работы и серверных прав. Замечания логического ревью02.10 не объявляются исправленными. Физическая печать, остальные браузеры и полный аудит доступности не выполнялись. Новые зависимости, плагины, внешние ресурсы, backend/frontend runtime, production и посторонние файлы не затрагивались. Собственный Edge-session mw-workbook-20261009 закрыт; Python PID13036 остановлен после сверки идентичности, порт18772 закрыт. Вкладка file:// пользователя не управлялась. Коммит и push не выполнялись.
+
+Безопасный откат: сравнить текущие hashes с before/after manifest и поздними правками, применить только обратный diff данной компоновки к пяти существующим design-файлам. При возврате к предыдущей редакции восстановить именно её register-style.css из backup вместе с соответствующим подключением, удалять новый sheet-style.css только после удаления его ссылок и проверки отсутствия поздних правок. Новые неизменённые QA-артефакты удалять лишь после сверки hashes и отсутствия потребителей; общие каталоги output/.playwright-cli не удалять. Журнал дополнить отменой, не заменять целиком. Без reset --hard/clean. Демо-состояние проверки изолировано адресом127.0.0.1:18772; другие адреса/профили браузера не очищать.
+
+## 2026-10-09T13:33:15+03:00 — Перенос меню наверх и добавление логотипа главной
+
+По запросу Олега меню восьми разделов перенесено из нижней полосы под верхнюю строку компании и профиля. Добавлен компактный встроенный SVG-логотип с кнопкой «На главную»: он открывает «Моё рабочее место» через существующий обработчик, без перезагрузки. Кнопка доступна мышью и клавиатурой. Сохранены прокрутка меню на телефоне, активный раздел, светлая/тёмная темы и настройки таблиц. Мобильная подсказка статуса смещена под её кнопку с учётом высоты верхнего меню; нижний отступ уведомлений уменьшен после удаления нижней полосы.
+
+Изменены: docs/design/prototype.html, docs/design/sheet-style.css, docs/design/README.md, docs/design/checksums.sha256, CHANGELOG.md. Перед изменениями каждый файл сохранён в .change-backups/2026-10-09/top-navigation-20261009-132850/<relative-path>; before-manifest.json содержит исходные hashes и HEAD, CHANGELOG.before-append.md — журнал непосредственно перед добавлением этой записи. Ранее сделанные незакоммиченные изменения сохранены. JavaScript, runtime frontend/backend и модель данных не изменялись в этом дополнении.
+
+Проверка: независимое read-only ревью структуры; Edge — все восемь разделов, один aria-current, логотип мышью/Enter/Space и фокус main, главная для обоих профилей, скрытая команда у менеджера. При 320×700, 360×800, 390×844, 768×700, 1024×600 и 1440×1000 нет переполнения страницы или перекрытия логотипа/компании действиями. Меню расположено сразу под шапкой; мобильные стрелки достигают последнего раздела. Просмотрены снимки обеих тем и мобильного черновика. Изменение количества 80→81 сохранилось после главной/возврата без reload, затем после reload; тёмная тема восстановилась. Подсказка: низ кнопки136.3px, верх текста143px, правая граница302px при ширине360px. Печатный media-режим скрывает шапку и меню. В записанных проходах нет ошибок JavaScript, в навигационном проходе нет console warnings/errors. Первый сценарий остановился из-за неоднозначного проверочного локатора «Закупки» (меню и кнопка главной); после ограничения локатора навигацией сценарий завершился, код приложения по этой причине не менялся. Проверены17 SHA-256 и git diff --check с учётом CRLF.
+
+Новые локальные артефакты: output/playwright/top-navigation-20261009/checks-layout.txt, output/playwright/top-navigation-20261009/checks-navigation.txt, output/playwright/top-navigation-20261009/checks-draft.txt, output/playwright/top-navigation-20261009/qa-results.json, output/playwright/top-navigation-20261009/desktop-light.png, output/playwright/top-navigation-20261009/desktop-dark.png, output/playwright/top-navigation-20261009/mobile-light.png, output/playwright/top-navigation-20261009/mobile-dark.png, output/playwright/top-navigation-20261009/mobile-draft.png, output/playwright/top-navigation-20261009/server-identity.json, output/playwright/top-navigation-20261009/server-stdout.log, output/playwright/top-navigation-20261009/server-stderr.log, output/playwright/top-navigation-20261009/cleanup.json, .playwright-cli/page-2026-10-09T10-29-38-646Z.yml. Итоговые hashes изменённых исходников и артефактов перечислены в after-manifest.json внутри указанного backup. Артефакты и резервные копии остаются вне Git.
+
+Границы: только локальный макет, без новых зависимостей, внешних ресурсов и production. Полная повторная проверка всех настроек/пресетов не выполнялась: в этом дополнении менялась навигационная оболочка. Замечания логического ревью02.10 не объявляются исправленными. Автоматизация проверяла HTTP-копию, вкладка file:// пользователя не управлялась. Собственный Edge-session mw-topnav-20261009 закрыт, Python PID26972 остановлен после сверки команды и времени создания, порт18773 закрыт. Коммит/push не выполнялись.
+
+Безопасный откат: сверить текущие файлы с before/after manifest и поздней работой, затем применить только обратный diff этого переноса к prototype.html, sheet-style.css, README.md и checksums.sha256. Журнал дополнить записью отмены, не заменять целиком. Новые перечисленные QA-артефакты можно удалить по одному лишь при совпадении hashes и отсутствии поздних изменений/потребителей; общие каталоги output/.playwright-cli и чужие файлы не удалять. Без reset --hard/clean. Демо-состояние проверки изолировано адресом127.0.0.1:18773; другие адреса и профили браузера не очищались.
+
+## 2026-10-12T10:45:28.4560377+03:00 — Переработка композиции макета и верхней навигации
+
+По запросу Олега переработан весь экран с сохранением верхнего меню. Две верхние полосы объединены в одну на широком экране; на телефоне разделы остаются во второй строке шапки. Убраны клеточные рамки меню, добавлены смысловые интервалы и короткая вертикальная отметка текущего раздела. Логотип по-прежнему открывает главную без reload. Стрелки показываются только при переполнении, доступная ширина измеряется по контейнеру и обновляется ResizeObserver. Изменены типографика, боковые отступы, иерархия заголовков, белые панели инструментов и приглушённая зелёно-серая палитра двух тем. На телефоне добавление позиции показывается компактным плюсом с сохранённым доступным названием; поиск расширен. Пользовательская раскраска, плотность, данные и модель пресетов не менялись.
+
+Изменены: docs/design/prototype.html, docs/design/sheet-style.css, docs/design/grid-app.js, docs/design/README.md, docs/design/checksums.sha256, CHANGELOG.md. Исходное содержимое каждого файла до правок сохранено в .change-backups/2026-10-12/workspace-composition-20261012-103050/<relative-path>; before-manifest.json содержит HEAD/hashes, CHANGELOG.before-append.md — журнал перед добавлением записи. Ранее незакоммиченная работа сохранена. Итоговые hashes и точный перечень артефактов — after-manifest.json в том же backup.
+
+Проверка: независимое read-only ревью начальной и новой композиции; Node --check изменённого JS, git diff --check с учётом CRLF,17 SHA-256. Edge: восемь разделов и пять представлений, один aria-current, главная с клавиатуры и фокус main, сохранение введённого количества в черновике после главной/возврата, отмена81→80, освобождение черновика, мобильная форма добавления. Цвет колонки сохранён после reload; фактические высоты compact/normal/comfortable33/38/46px; линии отключаются. Общий пресет создан руководителем и доступен менеджеру, до ручного применения его цвет оставался исходным, после изменился; авторские контролы отсутствуют. Проверены обе темы и восстановление тёмной, печатный media-режим белый без шапки. На320/360/390/768/1024/1366/1440px нет переполнения страницы/перекрытия компании и профиля, диалог пресетов340px при экране360px. Просмотрены снимки закупок, товаров, рабочего места, мобильного ввода и пресетов. В проходах взаимодействий и мобильной навигации нет JS/console errors/warnings. Мобильная таблица начинается на330px вместо367px первого прохода этой редакции; это не сравнение с более плотной редакцией09.10.
+
+Выявленный при проверке дефект нового меню устранён: временное скрытие стрелок сдвигало край прокрутки, а измерение ширины через сумму дочерних элементов давало неверный результат при переходе360→1024px. Теперь используется фактическая ширина контейнера с ResizeObserver. Финальный отдельный проход на360/1024/1440/320px подтвердил полную видимость последнего пункта, достижение максимума, возврат scrollLeft к0 и отсутствие JS errors. Неуспешные и диагностические проходы сохранены рядом с финальным; они не объявлены успешными.
+
+Новые локальные артефакты (вне Git):
+
+- output/playwright/workspace-composition-20261012/checks-density.txt
+- output/playwright/workspace-composition-20261012/checks-final.txt
+- output/playwright/workspace-composition-20261012/checks-first.txt
+- output/playwright/workspace-composition-20261012/checks-interactions.txt
+- output/playwright/workspace-composition-20261012/checks-mobile.txt
+- output/playwright/workspace-composition-20261012/checks-scroll-detail.txt
+- output/playwright/workspace-composition-20261012/checks-scroll-final.txt
+- output/playwright/workspace-composition-20261012/checks-scroll-fix.txt
+- output/playwright/workspace-composition-20261012/cleanup.json
+- output/playwright/workspace-composition-20261012/desk-light.png
+- output/playwright/workspace-composition-20261012/first-1440.png
+- output/playwright/workspace-composition-20261012/first-360.png
+- output/playwright/workspace-composition-20261012/mobile-dark.png
+- output/playwright/workspace-composition-20261012/mobile-draft.png
+- output/playwright/workspace-composition-20261012/mobile-light.png
+- output/playwright/workspace-composition-20261012/presets-mobile-dark.png
+- output/playwright/workspace-composition-20261012/preview-dark.png
+- output/playwright/workspace-composition-20261012/preview-light.png
+- output/playwright/workspace-composition-20261012/preview-mobile-dark.png
+- output/playwright/workspace-composition-20261012/preview-mobile-light.png
+- output/playwright/workspace-composition-20261012/products-light.png
+- output/playwright/workspace-composition-20261012/purchases-dark.png
+- output/playwright/workspace-composition-20261012/purchases-light.png
+- output/playwright/workspace-composition-20261012/qa-results.json
+- output/playwright/workspace-composition-20261012/scroll-cleanup.json
+- output/playwright/workspace-composition-20261012/scroll-server-identity.json
+- output/playwright/workspace-composition-20261012/scroll-server-stderr.log
+- output/playwright/workspace-composition-20261012/scroll-server-stdout.log
+- output/playwright/workspace-composition-20261012/server-identity.json
+- output/playwright/workspace-composition-20261012/server-stderr.log
+- output/playwright/workspace-composition-20261012/server-stdout.log
+- output/playwright/workspace-composition-20261012/verify-cleanup.json
+- output/playwright/workspace-composition-20261012/verify-server-identity.json
+- output/playwright/workspace-composition-20261012/verify-server-stderr.log
+- output/playwright/workspace-composition-20261012/verify-server-stdout.log
+- .playwright-cli/page-2026-10-12T07-34-30-530Z.yml
+- .playwright-cli/page-2026-10-12T07-41-34-303Z.yml
+- .playwright-cli/page-2026-10-12T07-42-43-023Z.yml
+
+Границы: локальный HTML/CSS/JS макет с синтетическими данными. Нет новых зависимостей, внешних ресурсов, изменений runtime frontend/backend, production, коммита или push. Замечания логического ревью02.10 не объявляются исправленными. Физическая печать, полный аудит доступности и другие браузеры не проверялись. Проверка выполнялась через127.0.0.1:18774; вкладка file:// пользователя не управлялась. Все три собственные browser sessions закрыты; каждый Python server остановлен после сверки PID/команды/времени создания, порт закрыт. Подробности в cleanup.json, verify-cleanup.json и scroll-cleanup.json.
+
+Безопасный откат: сравнить текущие файлы с before/after manifest и поздней работой, применить только обратный diff этой редакции к пяти design-файлам. Не возвращать весь репозиторий и не удалять более ранний sheet-style.css. Журнал дополнить записью отмены, не заменять целиком. Перечисленные новые QA-файлы можно удалять по одному только при совпадении hashes и отсутствии поздних правок/потребителей; общие каталоги output/.playwright-cli, старые артефакты и чужую работу не удалять. Без reset --hard/clean. Другие адреса и профили браузера не очищать.
+
+## 2026-10-12 12:27:53 +03:00 — Добавление выбора организаций и кабинетов в визуальный макет
+
+По уточнению Олега добавлен выбор любых доступных кабинетов WB/Ozon вместе: несколько кабинетов одной организации либо общий просмотр разных организаций. Вторая договорённость: вместе смотреть, редактировать внутри одной организации. Принадлежность товарных и закупочных строк к организации/кабинету сохраняется в таблице и CSV; одинаковые артикулы не склеиваются автоматически. Логотип по-прежнему возвращает на главную. Изменения сделаны поверх существующей незакоммиченной композиции; прежняя работа сохранена.
+
+Новый organization-scope.js задаёт синтетические 2 организации/5 кабинетов/54 товарные строки, выбор с подтверждением и отменой, ограничение демо-профиля и сохранение предпочтения. Товары/обзор/операции/рабочее место используют выбранную область. Закупки разделяют общие версии, черновики, историю, заметки и личные настройки по организациям; общий просмотр собирает только опубликованные версии (24 начальные позиции). Для редактирования есть переход в организацию. В общем просмотре защищены данные и создание личных полей, оформление/сортировка/группы остаются доступны. Командные пресеты относятся к одной организации и применяются добровольно; в общем просмотре доступны личные пресеты. Тема сохраняется для профиля при смене области. Старые ключи основной организации сохранены; её прежний фильтр WB · Север может стать пустым из-за нового распределения синтетических кабинетов.
+
+Изменённые существующие файлы:
+- docs/design/prototype.html
+- docs/design/grid-app.js
+- docs/design/workbench-app.js
+- docs/design/appearance-presets.js
+- docs/design/sheet-style.css
+- docs/design/README.md
+- docs/design/WORKSPACE_V3.md
+- docs/design/checksums.sha256
+- CHANGELOG.md — эта добавленная запись.
+
+Новый код: docs/design/organization-scope.js. Новые зависимости, основной frontend/backend, SYSTEM_PLAN.md, права реальных аккаунтов, интеграции и production не изменялись. Коммит/push не выполнялись. Организация соответствует области доступа существующей архитектуры, а не юридическому лицу.
+
+Исходное содержимое и hashes перед изменением сохранены в .change-backups/2026-10-12/organizations-root-20261012-120850/ (семь соответствующих design-файлов, checksums и CHANGELOG; точный состав в before-manifest.json), а workbench-app.js — в .change-backups/2026-10-12/organizations-workbench-120827/docs/design/workbench-app.js. Дополнительный снимок workbench перед сокращением повторных пояснений: .change-backups/2026-10-12/organizations-workbench-polish-121507/docs/design/workbench-app.js. Итоговые hashes кода/документов и новых QA-файлов: .change-backups/2026-10-12/organizations-root-20261012-120850/after-manifest.json. Каталог .change-backups не коммитить.
+
+Проверка установленным Edge через http://127.0.0.1:18776/docs/design/prototype.html:
+- Раздельные черновики двух организаций (777 и 333) сохранились при возврате; общий просмотр показывает 24 опубликованные позиции без этих правок и без редактируемых ячеек. Общего shared:combined хранилища не создаётся. Свидетельство: checks-drafts.txt.
+- Все кабинеты дают 54 товарные строки, WB — 33, Ozon — 21, WB · Магазин + Ozon · Север — 21. Выбор восстанавливается после reload; пустой нельзя применить, отмена не меняет срез, создание личного поля в общем режиме недоступно. Свидетельство: checks-final-counts-presets.txt.
+- Общий пресет Атласа виден менеджеру Атласа, не виден в Севере и общем просмотре; в общем просмотре только личный пресет. Менеджеру показаны 3 кабинета основной организации. Группировка по организации сохраняет 54 строки в двух группах, Escape возвращает фокус переключателю. Свидетельства: checks-final-counts-presets.txt, checks-group-focus.txt.
+- CSV содержит 21 строку выбранной пары кабинетов и колонки источника; export-check.json, combined-export.csv. Итоги рабочего места соответствуют 24 опубликованным закупкам; обзор использует выбранный каталог.
+- Вручную просмотрены снимки светлой/тёмной тем, мобильного выбора и общего просмотра. Проверены ширины 320, 390, 768, 1024 и 1440 px: нет горизонтального переполнения страницы/перекрытия переключателя действиями, диалог помещается при 320×700. Тёмная тема восстановилась после reload и смены организации. Печатный media-режим сохраняет подпись области. Свидетельство: checks-layout-final.txt.
+- Завершающий проход страницы без JS/console errors/warnings. Лог .playwright-cli/console-2026-10-12T09-16-27-383Z.log содержит предупреждения самого edge://downloads-hub о CSS preload, а не макета. Промежуточные checks-catalog.txt, checks-catalog-presets.txt и checks-layout.txt завершались ошибками локаторов сценария; исправленные проверки прошли. В checks-catalog-final.txt нули количества строк и false пустого выбора получены неверными селекторами/подготовкой, не являются результатом приложения; достоверные значения записаны в checks-final-counts-presets.txt.
+- node --check для organization-scope.js, grid-app.js, workbench-app.js, appearance-presets.js; отдельное статическое ревью смены контекста/guard/ключей без существенных замечаний. git diff --check с core.whitespace, допускающим CRLF (cr-at-eol), прошёл; без этого локального параметра Git отмечает CR в имеющихся Windows-строках. Настройки Git и окончания строк массово не менялись. Контрольные суммы пакета пересчитаны для 18 файлов.
+
+Собственная браузерная сессия mw-organizations-20261012 закрыта. Python-сервер остановлен после сверки PID, команды и времени запуска, порт 18776 закрыт (cleanup.json). Вкладка file:// пользователя не управлялась. Физическая печать, другие браузеры, масштаб реальных данных, серверная авторизация/изоляция и настоящая финансовая консолидация не проверялись и не реализованы этим макетом.
+
+Новые локальные QA-артефакты (hashes в after-manifest.json):
+- output/playwright/organizations-20261012/checks-catalog-final.txt
+- output/playwright/organizations-20261012/checks-catalog-presets.txt
+- output/playwright/organizations-20261012/checks-catalog.txt
+- output/playwright/organizations-20261012/checks-drafts.txt
+- output/playwright/organizations-20261012/checks-final-counts-presets.txt
+- output/playwright/organizations-20261012/checks-group-focus.txt
+- output/playwright/organizations-20261012/checks-layout-final.txt
+- output/playwright/organizations-20261012/checks-layout.txt
+- output/playwright/organizations-20261012/cleanup.json
+- output/playwright/organizations-20261012/combined-export.csv
+- output/playwright/organizations-20261012/combined-products-light.png
+- output/playwright/organizations-20261012/combined-purchases-final-dark.png
+- output/playwright/organizations-20261012/combined-purchases-final-light.png
+- output/playwright/organizations-20261012/combined-purchases-light.png
+- output/playwright/organizations-20261012/export-check.json
+- output/playwright/organizations-20261012/grouped-products.png
+- output/playwright/organizations-20261012/mobile-dark.png
+- output/playwright/organizations-20261012/selector-final-light.png
+- output/playwright/organizations-20261012/selector-light.png
+- output/playwright/organizations-20261012/selector-mobile-dark.png
+- output/playwright/organizations-20261012/selector-mobile-light.png
+- output/playwright/organizations-20261012/server-identity.json
+- output/playwright/organizations-20261012/server-stderr.log
+- output/playwright/organizations-20261012/server-stdout.log
+- .playwright-cli/page-2026-10-12T09-13-20-021Z.yml
+- .playwright-cli/demo-view-owner.csv
+- .playwright-cli/console-2026-10-12T09-16-27-383Z.log
+
+Безопасный откат: сначала сравнить текущие файлы с before/after manifest и поздними изменениями, затем применить только обратный diff текущего дополнения к перечисленным существующим файлам; для workbench исходной точкой служит backup 120827. Не заменять более позднюю/постороннюю работу. Удалять новый organization-scope.js только после отмены его подключения и всех вызовов интеграции. Новые QA-файлы можно удалять по одному при совпадении hashes и отсутствии поздних правок/потребителей. Не удалять общий output/.playwright-cli или прежний sheet-style.css, не применять reset --hard/clean. CHANGELOG не восстанавливать целиком: отмену записывать новой строкой. Локальные демо-состояния проверки относятся только к адресу 127.0.0.1:18776 и собственной сессии; другие браузерные профили/адреса не очищать.
+
+Уточнение перед завершением 2026-10-12 12:29:29 +03:00: при проверке diff обнаружено, что редактор перевёл grid-app.js из исходного CRLF в LF. Восстановлено исходное правило окончаний строк этого одного файла (CRLF, последняя строка LF), чтобы убрать посторонний diff; логика не менялась. Снимок непосредственно до исправления: .change-backups/2026-10-12/organizations-grid-eol-122900/docs/design/grid-app.js, рядом checksums.sha256 и CHANGELOG.md. Контрольные суммы обновлены; окончательный manifest для тех же 36 файлов теперь .change-backups/2026-10-12/organizations-grid-eol-122900/after-manifest.json, прежний after-manifest оставлен как промежуточный снимок. Для полного отката задачи по-прежнему используются исходные backups 120850/120827, а не промежуточный EOL-снимок. Проверены node --check, 18 SHA-256, 36 итоговых hashes и git diff --check с разрешением CRLF. Новых QA-артефактов эта корректировка не создала.
+
+
+## 2026-10-13 — закрытая beta на новом Selectel
+
+Основание: текущий запрос Олега на новые базы и ответ «Подготовить beta в закрытом режиме». Развёрнут текущий код без commit/push; местные изменения сохранены. Backend, новая отдельная PostgreSQL17.11, штатные Django migrations/roles/RLS/MFA, текущая заготовка frontend. Внешние исполнители и интеграции выключены, доступ через SSH. Пользователи/организации не созданы.
+
+Проверки: readiness200, защитные auth401/403/405, контракты прав, PITR/latest и финальный restore схем/прав/контрольных данных; контролируемый reboot, автозапуск/сохранность. Реальный рабочий запуск не выполнен. Документы и доказательства: ../selectel-preparation/RESULT-20261013.txt, RUNBOOK-20261013.txt, ACTIVATION-PLAN-20261013.txt, closed-20261013/. Telegram подготовлен с прежним ботом, доставка с сервера упирается в HTTPS timeout.
+
+Откат: остановить beta-web в закрытом compose на новом сервере; сохранить beta-data и зашифрованные копии, прежнюю площадку не менять. Восстановление только в новый том с проверкой перед сменой mapping. Для отката этой записи сравнить журнал с .change-backups/2026-10-13-selectel/CHANGELOG.before-closed-selectel.md, сохранить последующие записи и удалить только данный блок. Исходный код приложения не менялся.
+
+
+## 2026-10-13T13:06:50+03:00 — подготовка patch-обновления beta (начало)
+
+Сохранены исходники backend/Dockerfile, backend/requirements.in, backend/requirements.lock, beta/deploy/images.lock.json и текущий CHANGELOG.md в `C:/Users/krolo/Documents/marketplace-workspace/.change-backups/beta-update-20261013-130650`. Начальные местные изменения и SHA-256 перечислены в manifest.json. Подготовка Python 3.14.8 / Django 5.2.18; PostgreSQL major и защиты доступа сохраняются. Выкладка/commit/push запрещены. Результаты и новые файлы будут перечислены отдельной итоговой записью. Откат: сначала сравнить файлы с манифестом и сохранить поздние изменения, затем вернуть только собственный diff; журнал не перезаписывать.
+
+
+## 2026-10-13T13:31:41+03:00 — подготовка Python 3.14.8 / Django 5.2.18 для закрытой Selectel beta
+
+**Что и зачем.** Подготовлены patch-обновления существующих веток по официальным выпускам. Изменены backend/Dockerfile, backend/requirements.in, backend/requirements.lock, beta/deploy/images.lock.json; только Django version/hash и Python base digest. Прочие зависимости, app-код, схема и MFA/Grant/RLS сохранены. Добавлены tools/prepare_beta_patch_checks.py и docs/BETA_PATCH_20261013.md. Внешний новый отчёт: `C:\Users\krolo\Documents\selectel-preparation\BETA-UPDATE-20261013-133016.md` (побайтовый readback PASS).
+
+**Проверки.** Изолированная hash-locked установка/pip check PASS; переносимый Python3.14.8 + Django5.2.18:25 существующих тестов PASS,0 ошибок/пропусков, dummy DB без SQLite/PostgreSQL. Первый запуск имел5 ошибок конфигурации runner/Windows Temp; исправлено только окружение проверки. Linux amd64 wheels и Registry digests сверены.44 Django migration files одинаковы. TypeScript/Vite build PASS, Chrome stub PASS; favicon404 зафиксирован без попутного UI-исправления. Статическая проверка двух комплектов:513 manifest files/487 Python AST каждый, JSON/security properties и bash-n PASS; Docker execution NOT RUN. Архивы прочитаны обратно, манифесты совпали. Git diff CRLF-aware PASS.
+
+**Selectel только чтение.** Python3.14.7/Django5.2.17/PG17.11 остались установлены;161 Python source hash совпал. Реальная mw_beta_web:нет SUPERUSER/BYPASSRLS/CREATEDB/CREATEROLE/REPLICATION/migrator membership;28 FORCE RLS,financial contract PASS,pending migrations0. В конце ID/image/StartedAt beta-web/beta-db прежние,healthy. Выкладки, перезапусков, миграций, записей в постоянную БД, интеграций, реальных сообщений, commit/push не было.
+
+**Ограничения.** Docker/PG17 на ноутбуке отсутствуют; отдельный Linux endpoint не предоставлен. Linux image, PostgreSQL clean/upgrade/HTTP/SQL/restore и полный browser MFA не проверены. Это блокирует допуск к выкладке, не скрывается локальными tests. Подготовлены fresh-final/upgrade-final с отдельными ресурсами, limited LOGIN probes, locmem, internal network и безопасной остановкой; без исполнения. План обновляет только beta-web после согласования фактического image ID, backup/restore; автоматический reverse/live restore запрещён.
+
+**Файлы проверки.** `artifacts/beta-update-20261013-130650/`: датированные venv/portable runtime/wheels, read-only/server/registry/test evidence, local-check.py, fresh/upgrade/fresh-v2/upgrade-v2 (промежуточные), fresh-final/upgrade-final (окончательные), source/checks tar.gz, manifests. Полный точный перечень и SHA-256 — artifact-inventory.json, изменённые исходники — change-manifest.json. Browser: output/playwright/beta-patch-20261013.png, .playwright-cli/page-2026-10-13T10-14-09-584Z.yml и .playwright-cli/console-2026-10-13T10-14-09-376Z.log; frontend/dist пересобран как игнорируемый результат. Оба локальных HTTP-сервера и созданная Chrome-сессия остановлены. Новых глобальных инструментов нет.
+
+**Откат.** Исходные четыре файла и первоначальный CHANGELOG сохранены в `.change-backups/beta-update-20261013-130650/`; manifest.json содержит hashes прежних местных правок. Сначала сравнить актуальные файлы с change-manifest, сохранить позднюю работу, затем обратить только пять изменённых строк pins/hash (1+1+2+1) из backup. Журнал не заменять — дописать отмену. Новые tools/prepare_beta_patch_checks.py, docs/BETA_PATCH_20261013.md, внешний отчёт и перечисленные собственные артефакты можно удалить только при совпадении hashes/отсутствии поздних изменений, активных процессов и ссылок использования. frontend/dist восстанавливается npm build из сохранённых frontend исходников; исходники frontend не менялись. Старые docs/design и чужие artifacts не трогать; никакого reset-hard/clean/prune. Серверный безопасный fallback в будущем — stop только beta-web; возврат нынешнего защищённого image ID возможен лишь при проверенной совместимости схемы/данных; restore только в новый том и с отдельным разрешением.
+
+## 2026-10-13T16:26:39+03:00 — Комплект закрытой patch-выкладки beta на Selectel
+
+По новому разрешению Олега подготовлен минимальный комплект для замены только образа beta-web: Python 3.14.8/Django 5.2.18. Прикладной код и существующие местные правки не изменены. Исторические требования отдельного согласования выкладки заменены текущим прямым разрешением; полные повторные аудиты не выполняются.
+
+Новые внешние артефакты: C:/Users/krolo/Documents/selectel-preparation/rollout-20261013/beta/prepare-kit.py, post-deploy-probe.py, DEPLOY.txt, beta-patch-source-20261013.tar.gz, release-manifest.json, kit-verification.json. Архив взят из ранее подготовленного комплекта; 170 файлов сверены с текущей рабочей копией и содержимым архива. SHA-256 архива: 8fd362b9f25e6e7bb3cd0de6d2de2a616c56d07f1889456cff364157f9544b1e. Синтаксис нового read-only probe проверен. Probe проверяет versions, migration plan, роль, 28 FORCE RLS, штатный financial ACL contract и пять HTTP кодов без создания сессий/пользователей. Серверных команд на этапе подготовки комплекта не выполнялось; выкладка фиксируется отдельно по факту.
+
+Исходная копия журнала: C:\Users\krolo\Documents\marketplace-workspace\.change-backups\beta-closed-rollout-20261013-162639/CHANGELOG.md. Откат этой записи — только обратным добавлением с сохранением поздних записей. Новые внешние файлы допускается удалить после сверки их назначения и отсутствия поздней работы; prepared исходный архив проекта и прежние отчёты сохранять. При выкладке сохраняются прежний image ID, compose и штатная beta backup; схема/ключи/роли не меняются, предусмотрен возврат только прежнего beta-web image без отката соседних сервисов.
+
+
+## 2026-10-13T16:36:24+03:00 — подготовка отдельных коммитов макета и обновления beta
+
+По текущему прямому запросу Олега разрешены локальные коммиты всех подготовленных изменений. Они разделяются на макет docs/design (9 файлов, включая новые organization-scope.js/sheet-style.css, с соответствующими прежними записями журнала) и patch beta (backend/Dockerfile, backend/requirements.in, backend/requirements.lock, beta/deploy/images.lock.json, tools/prepare_beta_patch_checks.py, docs/BETA_PATCH_20261013.md и оставшиеся записи CHANGELOG.md). Сами исходники в этом шаге не изменялись; добавлена только эта запись. Проверены18 design checksums, node --check четырёх изменённых JS, Python AST, images JSON и git diff --check с учётом CRLF — PASS. Ранее зафиксированные границы PostgreSQL/Linux-проверок сохраняются; повторного runtime-аудита нет. Существующие поздние записи о Selectel сохраняются без переоценки серверного состояния. Push/выкладка/переписывание истории не выполняются.
+
+Копия журнала перед добавлением: `C:/Users/krolo/Documents/marketplace-workspace/.change-backups/commit-preparation-20261013-163624/CHANGELOG.md`; начальные hashes/HEAD в manifest.json. Откат коммитов — только отдельным обратным коммитом после сравнения актуального diff и сохранения поздней работы, без reset/clean; исторические записи журнала сохранять, отмену дописать. Игнорируемые .change-backups, artifacts, venv, wheels, browser outputs и внешние selectel-preparation файлы в Git не включаются.
+
+## 2026-10-13T16:46:07+03:00 — Закрытая patch-выкладка beta на Selectel завершена
+
+Факт установки подтверждён исполнителем серверной выкладки в текущем чате: beta-web работает на image sha256:780d0032018f5d0fb6d22bdf2720a52e439b19510c1c52c229f884a102dd5c37, Python 3.14.8/Django 5.2.18. Время заголовка — время этой записи; точное время переключения следует брать из серверного протокола, здесь оно не восстанавливается предположением. В рамках beta пересоздан только beta-web; PostgreSQL17.11, схема, роли, env, ключи, mounts и networks сохранены. Прикладной код и миграции не менялись. Все восемь постоянных контейнеров healthy; Airflow3.3.2 установлен отдельной частью централизованной выкладки.
+
+Минимальный post-deploy-probe внутри нового образа PASS: Python3.14.8/Django5.2.18, session_user=current_user=mw_beta_web в mw_beta; пять опасных role flags false,28 FORCE RLS,financial_web_contract/Django check PASS,pending migrations0,MFA/Grant/isolation включены,external integrations false; HTTP live200/ready200/anonymous session401/login GET405/platform status403. По ограничению пользователя повторный полный MFA lifecycle и полная матрица искусственных организаций не выполнялись; их успех не заявляется. Реальных пользователей/организаций не создавали, сообщения и обработчики/расписания не включали.
+
+Новые отчётные файлы: C:/Users/krolo/Documents/selectel-preparation/rollout-20261013/beta/RESULT.txt и ROLLBACK.txt. Подэтап документирования не выполнял SSH/повторных проверок, commit/push и изменений кода. Существующая параллельная запись журнала о подготовке коммитов сохранена. Копия актуального журнала перед добавлением: C:\Users\krolo\Documents\marketplace-workspace\.change-backups\beta-deployed-result-20261013-164607/CHANGELOG.md.
+
+Узкий откат — только services.beta-web.image в актуальном compose вернуть на sha256:f24a05184dc8a4e10247fd892abbe7bf4073712f8a23f86aa6097bbb15625d95 и пересоздать beta-web с --no-deps --pull never, предварительно сохранив поздние изменения. БД/схему/ключи/соседние сервисы не откатывать. Подробные условия и проверки — ROLLBACK.txt. Отчёты удалять только после проверки отсутствия поздней работы и использования; журнал сохранять, отмену дописывать.
+
+## 2026-10-13T18:12:05+03:00 — Разделение main/beta на Selectel и закрытый доступ владельца
+
+По текущему разрешению Олега окружения marketplace-workspace разделены на сервере 136.234.15.125: /srv/projects/marketplace-workspace/beta/repo получает ветку beta, commit 05e8318f453c6cfd2904ffdbec0e43ce45a365fa; /srv/projects/marketplace-workspace/main/repo получает ветку main, commit e076a561c71d41ca172eb9e0e70425013074faa2. Main содержит только исходный README, без сервиса и базы. Каждое окружение обновляется своей веткой через git pull --ff-only; проверка отсутствия новых изменений завершилась PASS. Автоматического слияния веток нет. Время заголовка — время записи результата, точные серверные события сохранены в материалах этапа.
+
+Действующий backend beta собран из Git в image sha256:71fb381a18766c1cc1cb218b06366de879fd1943b87b9a9a39f095bda3880676; frontend из той же beta — sha256:1aa66d2c10f46b14d243aa85f363c6a959766040cf740d16323cadd73027339c. PostgreSQL, backend и frontend — три healthy контейнера beta. Python 3.14.8/Django 5.2.18, постоянные данные, существующие права и защиты сохранены; общие инструменты платформы размещены отдельно от репозитория в /srv/platform. Подтверждены frontend200 и страница входа200 в браузере. Это не подтверждение завершённого MFA-входа: создан единственный локальный владелец oleg@example.invalid с пустой организацией «Закрытая beta», MFA обязателен и ожидает подключения Олегом; внешних кабинетов0. Пароль и MFA-секреты в журнал не включались и при документировании не читались. Рабочие обработчики, расписания и внешние действия не включались.
+
+Сохранность данных при разделении подтверждена исполнителем. PostgreSQL incremental backup и зашифрованная копия конфигураций завершились PASS. Артефакты, рецепт разделения, create-beta-owner.py и инструкция доступа находятся вне Git проекта в C:/Users/krolo/Documents/selectel-preparation/git-layout-20261013; точные новые image IDs — images.json. Запись основана на фактическом результате центрального исполнителя и локальном images.json; подэтап документирования не выполнял SSH, повторных проверок, изменения прикладного кода, commit/push. Все прежние и параллельные записи сохранены; остальные локальные файлы проекта не изменялись.
+
+Копия актуального журнала перед добавлением: C:\Users\krolo\Documents\marketplace-workspace\.change-backups\git-layout-completed-20261013-181205/CHANGELOG.md. Откат запуска — только прежний сохранённый immutable image через адресный helper при совместимой схеме и после сохранения поздних изменений конфигурации; он не откатывает БД, новые аккаунты или FBS data, не меняет Git checkout и не отключает MFA/Grant/RLS. Восстановление данных требует отдельного адресного плана, без live restore поверх постоянных томов. Для репозитория исправление/реверт проходит согласование и затем приходит обычным pull соответствующей ветки; reset/clean не использовать. Обратное документирование — новой записью, не заменой журнала из backup; внешние артефакты удалять только после проверки отсутствия использования и поздней работы.
+
+## 2026-10-14T10:49:11+03:00 — Публикация beta через HTTPS на Selectel
+
+По текущему разрешению Олега beta доступна по https://beta.136-234-15-125.sslip.io; личный вход — /auth/mfa/login/. Прикладной код на сервере остаётся из ветки beta, commit 05e8318f453c6cfd2904ffdbec0e43ce45a365fa. Штатный Django settings override размещён отдельно от Git в /srv/projects/marketplace-workspace/beta/config/publication/ и подключён read-only в /config-deploy через DJANGO_SETTINGS_MODULE/PYTHONPATH. Заданы точные разрешённые Host и HTTPS Origin; 127.0.0.1 сохранён для проверки готовности. Единственный доверенный proxy Caddy сохраняет Host и перезаписывает X-Forwarded-Proto; USE_X_FORWARDED_HOST остаётся false. Изменены настройки публикации beta-web и маршруты edge, без правок исходников приложения, миграций или ослабления MFA/Grant/RLS; внешние интеграции, исполнители и расписания остаются выключенными.
+
+Центральный исполнитель подтвердил минимальную проверку после публикации: GET формы входа200, корректная штатная wizard-форма с паролем даёт302 на /auth/mfa/setup/, cookies Secure, POST с чужим Origin403, frontend200. Первоначальный400 относился к неверным именам полей проверочного POST; исправлена проверка, серверная форма не менялась. Подключение TOTP и полный MFA-вход не выполнялись и не объявляются завершёнными; настройку личного фактора выполняет Олег. Frontend остаётся текущей страницей «Основа подготовлена», рабочий интерфейс аналитики и внешние кабинеты этим этапом не добавлены. Отдельный main из ветки main содержит README, приложение main не развёрнуто; по разрешению владельца https://main.136-234-15-125.sslip.io возвращает явную заглушку503, а не готовый сервис. Время заголовка — время записи результата, не восстановленное предположением время переключения.
+
+Материалы публикации находятся вне репозитория: C:/Users/krolo/Documents/selectel-preparation/publication-20261014/; относящиеся к beta новые файлы — beta/public_settings.py, beta/public_options.py, beta/test_public_options.py, beta/CONFIG-RECIPE.txt, beta/RESULT.txt; общие Caddyfile и check-public.cjs относятся к централизованной публикации. Локально проверены пять узких тестов настроек и два существующих теста runtime guard; реальные HTTP-результаты выше получены центральным исполнителем после изменения. Этот подэтап изменяет только CHANGELOG.md, не выполняет SSH, новых проверок, commit/push или изменения прикладного кода. Предыдущие и параллельные записи сохранены. Копия журнала непосредственно перед добавлением: C:\Users\krolo\Documents\marketplace-workspace\.change-backups\public-beta-20261014-104911\CHANGELOG.md.
+
+Откат публикации: сохранить поздние изменения конфигурации, закрыть только публичный маршрут beta (503), вернуть прежние settings module/PYTHONPATH и удалить только добавленные HTTP-env/mount по beta/CONFIG-RECIPE.txt; пересоздать только beta-web, сохранив закрытый доступ. БД, ключи, роли, созданные аккаунты и FBS data не откатывать. Прикладной Git checkout не менять; дальнейшие обновления поступают через git pull --ff-only соответствующей ветки. Для отмены записи добавить уточнение в журнал, не заменять его целиком из копии. Новые внешние файлы можно удалять только после отключения их использования и проверки отсутствия поздней работы; старые отчёты и резервные копии сохранять.
+
+
+## 2026-10-14T11:20:42+03:00 — Защита страницы ожидания main
+
+В рамках общей настройки Homer к существующему маршруту main.136-234-15-125.sslip.io в /srv/platform/gateway/Caddyfile добавлен парольный вход admin; содержимое заглушки 503 сохранено. Beta, пользовательские записи и исходники Marketplace не изменены. Caddy validate/reload, HTTPS и авторизованный ответ main 503 проверены; все контейнеры без перезапуска. Серверная копия: /var/backups/homer-public-access/20261014T081523Z. Откат: удалить только добавленный basic_auth в блоке main после сверки параллельных изменений, выполнить validate/reload. Полный отчёт: C:/Users/krolo/Documents/homer-setup/PUBLIC-ACCESS-RESULT.md. Копия локального CHANGELOG до добавления записи: C:\Users\krolo\Documents\marketplace-workspace\.change-backups\homer-main-auth-20261014-112042.md.
+
+
+## 2026-10-19T15:49:38+03:00 (Europe/Moscow) — E2-09 R4: актуализация плана под /srv/projects
+
+По текущему запросу Олега изменены только docs/E2-09_R4_SERVER_PLAN.md, SYSTEM_FINANCIAL_CHECKS.json, SYSTEM_PLAN.md и CHANGELOG.md. Уточнены repo/release/root, защищённые beta/main/платформа и прежние стенды, будущий preflight; старые команды заменены последовательностью с обязательной адаптацией helper/Compose и новыми source/image/lock pins. Исторические source/результаты сохранены; код и статусы задач не менялись. Новая структура сверена по локальным материалам 13–14.10 в selectel-preparation/git-layout-20261013 и прежнему журналу, без свежей серверной проверки. SSH/remote/Docker/БД/установки/commit/push отсутствуют. Существующие незакоммиченные записи журнала сохранены.
+
+Исходные копии четырёх файлов: `.change-backups/r4-plan-layout-20261019-154938/` с теми же относительными именами. Новые файлы только: `.change-backups/r4-plan-layout-20261019-154938/docs/E2-09_R4_SERVER_PLAN.md`, `.change-backups/r4-plan-layout-20261019-154938/SYSTEM_FINANCIAL_CHECKS.json`, `.change-backups/r4-plan-layout-20261019-154938/SYSTEM_PLAN.md`, `.change-backups/r4-plan-layout-20261019-154938/CHANGELOG.md`. Проверка PASS: JSON parsing, согласованность карты путей/запретов и SHA256 lock, сохранность исторических результатов/строк задач и побайтного префикса прежнего журнала. Diff всех четырёх файлов относительно исходных копий не имеет whitespace-ошибок. Общий git diff --check отмечает две прежние CRLF/whitespace-строки в незакоммиченных записях CHANGELOG от 13–14.10; они сохранены без изменений. Исполнение Compose/helper и PostgreSQL не проверялось: адаптация остаётся следующим этапом. Первая попытка локальной правки остановилась до копий/изменений из-за отсутствия tzdata в системном Python; повтор использовал явный UTC+03:00 без установки зависимости.
+
+Откат: сравнить текущие файлы с копиями, сохранить позднюю/постороннюю работу; убрать только эту актуализацию из плана/JSON/SYSTEM_PLAN. Полное восстановление допустимо лишь без поздних правок. CHANGELOG не заменять копией, отмену дописать. Копии удалять только после завершения нужного отката и проверки отсутствия дальнейшего использования; не коммитить. Серверного отката нет.
+
+
+## 2026-10-20T12:22:26+03:00 (Europe/Moscow) — Согласование инструкций со строгим серверным правилом
+
+По текущему поручению Олега локально изменены только инструкции и этот журнал: `docs/E2-09_R4_SERVER_PLAN.md`, `docs/E2-08_SERVER_PLAN.md`, `docs/E2-05_WEB_ROLE.md`, `docs/RUNBOOK.md`, `CHANGELOG.md`. Запрещены самостоятельные серверные действия и обходная доставка Git-файлов, включая предложение вручную залить маленькую правку; допустим только отдельно согласованный git pull из main. Удалены исполняемые рецепты архивной доставки, pull beta и fetch/worktree; контур beta, его пути, БД, службы и исторические результаты сохранены. Прежние планы заблокированы до локальной адаптации и отдельного согласования.
+
+Исходные побайтные копии каждого изменённого файла: `C:/Users/krolo/Documents/marketplace-workspace/.change-backups/strict-server-git-main-20261020-122226/` с теми же относительными путями; временная копия: `C:/Users/krolo/AppData/Local/Temp/strict-server-rules-marketplace-finkos-20261020-122226/marketplace-workspace/`. Резервные копии не коммитить. Проверка: сравнение с копиями, сохранение полного прежнего префикса журнала, локальный diff и проверка whitespace только затронутых файлов. Прикладной код, настройки Git, Vercel и серверы не изменялись; подключений к серверам, commit/push и выкладки не было.
+
+Откат: сначала сравнить текущие файлы с копиями и сохранить позднюю/постороннюю работу; отменить только добавленные изменения инструкций обратным diff. Журнал не заменять из копии: дописать запись об отмене. Серверного отката нет.
+
+
+## 2026-10-20T13:01:01+03:00 (Europe/Moscow) — Отмена старой доставки исходников E2-06
+
+По текущему поручению Олега локально изменены только docs/E2-06_SESSIONS_MFA.md, связанная ссылка docs/RUNBOOK.md и этот CHANGELOG.md. Удалён исполняемый source-delivery блок с fetch/pull beta и detached worktree; публикация согласованных коммитов и отдельно согласованная доставка Git-кода допустимы только через main и git pull. Явно запрещено даже предлагать вручную залить маленькое изменение Git-файла. При отсутствии main или несовместимости прежних baseline/helper/Compose запуск заблокирован до локальной адаптации и отдельного согласования. Исторические REV/результаты S1/S2, beta-пути/ресурсы и меры безопасности сохранены; работа сервера не проверялась и не объявляется подтверждённой. Исключения woo-store/Finkos не менялись.
+
+Побайтные копии всех трёх файлов перед правкой с теми же относительными именами: `C:/Users/krolo/Documents/marketplace-workspace/.change-backups/e206-main-rule-20261020-130101/`; дополнительные точные копии и manifest: `C:/Users/krolo/AppData/Local/Temp/marketplace-e206-main-rule-20261020-130101/`. Проверки: readback/SHA-256, diff относительно свежих копий, сохранение прежнего префикса журнала и неизменности текста вне адресного раздела/ссылки, локальная проверка whitespace. Прежние whitespace-строки журнала не исправлялись. Код, Git-настройки, память, серверы и API не изменялись; подключений, commit/push и выкладки не было. Резервные копии не коммитить.
+
+Откат: сначала сравнить текущие документы с копиями и сохранить позднюю/постороннюю работу; вернуть только эту адресную правку обратным diff. CHANGELOG не заменять из копии: отмену дописать новой записью. Серверного отката нет.
+
+## 2026-10-26T18:10:57+03:00 — BaseWork: локальная оболочка, этап 2
+
+Основание: текущее поручение Олега продолжить BaseWork по согласованному плану. Ветка `beta`, HEAD `05e8318f453c6cfd2904ffdbec0e43ce45a365fa`. Исходные восемь местных изменений документов сохранены.
+
+Реализованы рабочий стол, навигация семи согласованных приложений, прямые ссылки и история переходов, профиль, светлая/тёмная/системная темы, поиск, пустые уведомления, раздельные состояния загрузки, отсутствующей/истёкшей сессии, MFA, ошибки, запрета и недоступного модуля. До подключения API доступ явно неподтверждён. Проверочные пользователи и назначения существуют только в изолированных тестах с видимой маркировкой.
+
+Изменены:
+- `frontend/src/main.tsx` — подключена оболочка;
+- `frontend/index.html` — название и начальная тема;
+- `frontend/package.json` — команды тестов без изменения зависимостей;
+- `CHANGELOG.md` — эта запись добавлена в конец, прежнее содержимое сохранено побайтово.
+
+Добавлены:
+- `frontend/src/basework/BaseWork.tsx`;
+- `frontend/src/basework/Dialog.tsx`;
+- `frontend/src/basework/basework.css`;
+- `frontend/src/basework/model.ts`;
+- `frontend/src/basework/navigation.tsx`;
+- `frontend/src/basework/theme.ts`;
+- `frontend/src/basework/useBootstrap.ts`;
+- `frontend/tests/basework.test.mjs`;
+- `frontend/tests/serve-basework.mjs`.
+
+Проверено: 25 контрактных/маршрутных тестов PASS, 0 ошибок/пропусков; TypeScript и Vite build PASS. Chrome через штатное расширение: 60 проверок, включая 320/390/768/1440 px в двух темах, поиск, прямые адреса, refresh/back/forward, клавиатуру и фокус, 401/403/MFA/empty/error/timeout/unavailable. Сохранено 36 снимков. Проверено 18 сочетаний цвета текста/фона, минимум 4,73:1. Консоли проверенных вкладок без ошибок/предупреждений. Фикстурные пользователь/маршруты отсутствуют в готовой сборке.
+
+На проверке исправлены воспроизведённые дефекты фокуса/Tab/Escape, узкой таблицы и контраста. Общий `git diff --check` сохраняет два прежних предупреждения о пробелах в CHANGELOG; чужие строки не исправлялись. Проверка собственного frontend-диффа чистая.
+
+Доказательства: `C:/Users/krolo/Documents/BaseWork/artifacts/Этап-2-2026-10-26/`, итоговая сборка в `build-final/`, полный протокол в `Проверка.txt`. Прежний frontend/dist не использовался как каталог новой сборки. Vite создал только штатный локальный кеш разработки. В BaseWork обновлён README со ссылкой на результат; исходное поручение и историческое обследование сохранены.
+
+Границы: backend/SQL/миграции, действующие аккаунты/MFA/Grant/RLS/runtime guard, данные приложений и источники не изменялись. Серверные подключения, production, установки зависимостей/плагинов, реальные назначения, commit/push не выполнялись. Интеграция OIDC и реальный bootstrap API относятся к этапу 3 и последующим отдельным допускам.
+
+Резервные копии исходных `frontend/src/main.tsx`, `frontend/index.html`, `frontend/package.json` и уже изменённого `CHANGELOG.md`: `C:/Users/krolo/Documents/marketplace-workspace/.change-backups/BaseWork-stage2-20261026/` с сохранением относительных путей. Манифест SHA-256 и точный список новых файлов: `C:/Users/krolo/Documents/BaseWork/artifacts/Этап-2-2026-10-26/Изменённые файлы.json`.
+
+Откат: сначала сверить текущие хеши с манифестом и сохранить поздние изменения. При совпадении восстановить только три изменённых frontend-файла из указанных копий; девять новых файлов удалять только по точным путям манифеста, при совпадении их хешей и отсутствии поздней работы. При несовпадении применять только согласованный обратный дифф. CHANGELOG целиком не заменять: добавить запись об откате. Не использовать reset/clean и не затрагивать остальные семь исходно изменённых документов. Резервные копии и доказательства сохранять. Серверного отката нет: выкладка не выполнялась.
+
+## 2026-10-27T10:22:31+03:00 — BaseWork: визуальная сверка рабочего стола
+
+По замечанию Олега рабочий стол и шапка приведены ближе к согласованному макету `outputs/work-suite-v2-2026-10-25`: компактная верхняя навигация с иконками из макета, текущая дата по московскому времени, блок «Продолжить работу», сетка приложений и правая колонка встреч/справочника. Сохранены существующие маршруты, темы, диалоги и фильтрация прав. Дела, встречи, пользователь и назначения не выдумываются: отсутствующие источники и неподтверждённый доступ обозначены явно.
+
+Изменены `frontend/src/basework/BaseWork.tsx`, `frontend/src/basework/basework.css` и добавлена эта запись в `CHANGELOG.md`. Другие исходники и зависимости не менялись. Исправлено выявленное при проверке скрытие навигации и меню на промежуточных ширинах 1101–1399 px.
+
+Проверено: 25 существующих контрактных тестов PASS; итоговая TypeScript/Vite-сборка PASS в `C:/Users/krolo/Documents/BaseWork/artifacts/Визуальная-сверка-2026-10-27/build-final/`. Chrome через согласованное расширение: рабочий стол на 320/390/768/1440 px в двух темах, дополнительные ширины 1024–1440, отсутствие переполнения/перекрытия шапки, мобильное меню, поиск и фокус, refresh/back, запрещённый и пустой каталоги на явно изолированных фикстурах. Снимки и протокол находятся в `C:/Users/krolo/Documents/BaseWork/artifacts/Визуальная-сверка-2026-10-27/`. Консоль проверенной вкладки без ошибок и предупреждений. Проверка оформления отметила подчёркивания ссылок и круглую форму профиля; иконки взяты из согласованного макета, а не добавлены как новые зависимости.
+
+Исходное содержимое всех трёх изменённых файлов, включая уже изменённый журнал, сохранено в `C:/Users/krolo/Documents/marketplace-workspace/.change-backups/BaseWork-visual-20261027/` с сохранением относительных путей. Точные исходные и итоговые SHA-256 — в `C:/Users/krolo/Documents/BaseWork/artifacts/Визуальная-сверка-2026-10-27/Снимок файлов.json`.
+
+Откат: сначала сверить текущие файлы с итоговыми хешами и сохранить поздние изменения. При совпадении восстановить только `frontend/src/basework/BaseWork.tsx` и `frontend/src/basework/basework.css` из указанных копий; при несовпадении применить адресный обратный дифф с сохранением последующей работы. Журнал целиком не заменять, добавить запись об отмене. Остальные исходные изменения и резервные копии сохранить; reset/clean не использовать. Серверные действия, production, установка пакетов, commit/push не выполнялись.
+
+
+## 2026-10-27T11:07:32+03:00 (Europe/Moscow) — BaseWork, локальная часть этапа 3
+
+Добавлены bootstrap/profile и серверный каталог с default deny, явные iss/sub →
+существующий UUID, неизменяемая связь сессии с идентичностью и отдельный допуск
+к разделам оболочки. Прикладные membership/Grant, MFA/step-up и SQL signer
+сохранены. Доступ меню не даёт native admin и не подключает данные модулей.
+Отзыв привязки/допуска закрывает сессии, доверенные устройства и билеты.
+Есть отдельные CSRF POST выхода/выхода-везде, включая откат ошибки отзыва
+без ложной очистки cookie. Bootstrap не продлевает idle timeout. Профиль
+подключён к прежнему входу/настройке MFA. Опрос 30 с, timeout 8 с, отмена
+устаревших ответов и очистка при возврате вкладки. Шапка/сетка/CSS сохранены.
+Vite проксирует /auth на тот же backend, что /api.
+
+Authlib 1.9.1 и requests 2.34.2 с транзитивными зависимостями отдельно
+согласованы и установлены; версии/хеши дописаны в requirements. Для
+charset-normalizer добавлены хеши Windows и универсального wheel. Старые
+зависимости не обновлялись. Фактический локальный Django 5.2.17, в старом lock
+указан 5.2.18 — это исходное расхождение, данной задачей не исправлялось.
+
+Изменённые существующие файлы:
+- CHANGELOG.md
+- backend/account_security/middleware.py
+- backend/account_security/services.py
+- backend/config/settings.py
+- backend/config/urls.py
+- backend/data_isolation/middleware.py
+- backend/requirements.in
+- backend/requirements.lock
+- frontend/src/basework/BaseWork.tsx
+- frontend/src/basework/model.ts
+- frontend/src/basework/useBootstrap.ts
+- frontend/tests/basework.test.mjs
+- frontend/vite.config.ts
+
+Новые файлы:
+- backend/basework/__init__.py
+- backend/basework/migrations/0001_initial.py
+- backend/basework/migrations/0002_guards.py
+- backend/basework/migrations/__init__.py
+- backend/basework/models.py
+- backend/basework/services.py
+- backend/basework/tests/__init__.py
+- backend/basework/tests/test_http.py
+- backend/basework/tests/test_oidc_library.py
+- backend/basework/urls.py
+- backend/basework/views.py
+- backend/config/basework_local_checks.py
+- frontend/src/basework/session.ts
+
+Точные исходные копии: `.change-backups/BaseWork-stage3-20261027/`,
+с сохранением относительных путей; их SHA-256 совпадают с исходным снимком.
+
+Проверка: 114/114 backend PASS (включая 18 новых HTTP и 5 Authlib),
+32/32 frontend PASS, TypeScript/Vite PASS, Django check и makemigrations
+--check PASS, 2 runtime guard-теста PASS, pip check PASS, backend/frontend
+git diff --check PASS. Миграции исполнялись только в SQLite :memory:
+тестовой базы. Это не доказательство PostgreSQL/RLS/ACL/конкуренции.
+Первый расширенный прогон упал из-за двойного аргумента nonce в новом тесте;
+исправлен тест, итоговый полный прогон прошёл.
+
+По отдельному разрешению выполнено только чтение Selectel: Authelia 4.39.27,
+OIDC-клиентов нет, политика one_factor, discovery возвращает 401. Серверные
+настройки, базы, сотрудники, права, checkout и контейнеры не изменены.
+Chrome заблокирован ошибкой trusted RPC dependency path; новых скриншотов
+и браузерной приёмки нет. Другой браузерный способ не использовался.
+
+Этап 3 НЕ закрыт: OIDC login/callback и серверный реестр попыток ещё не
+реализованы, провайдер не настроен; живой SSO, изолированный PostgreSQL под
+ограниченной ролью, сквозной отзыв за 60 с и новые браузерные сценарии не
+проверены. Runtime guard не ослаблен, внешние обращения не включены.
+Новые назначения/реальные данные не созданы. Полномочия web на новые таблицы
+не выдавались: требуется отдельная проверка узкого ACL-контракта стенда.
+
+Доказательства, исходный/итоговый снимки, ошибки, безопасный откат и оставшаяся
+работа: `C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-2026-10-27/`.
+
+Откат локального кода: сверить текущие хеши с «Изменённые файлы.json» и
+сохранить последующие изменения. Применять только обратный дифф этого этапа;
+при точном совпадении допустимо восстановить конкретный файл из указанной
+копии. Новые файлы удалять только по манифесту после проверки отсутствия
+последующей работы и отдельного поручения. Журнал не заменять, дописать
+запись об отмене. Не делать reset/clean, обратную миграцию, восстановление
+старой базы или отмену блокировок/MFA. После будущего использования привязок
+возврат к коду без их проверки запрещён: остановить затронутый web и
+подготовить совместимый откат, сохранив реестры и защитные триггеры.
+Пакеты автоматически не удалять. Production, commit/push и этап 4 не выполнялись.
+
+
+## 2026-10-27 11:31:39 MSK (UTC+03:00) — BaseWork: локальная проверка PostgreSQL этапа 3
+
+По отдельному текущему разрешению Олега запущен Docker Desktop и создан новый
+изолированный PostgreSQL 17.11: проект `basework-stage3-pg-20261027`, отдельный
+том и internal-сеть, без публикации портов, рабочих данных и рабочих секретов.
+Рабочие БД, Authelia и серверы не затрагивались; commit/push не выполнялись.
+
+Новый файл: `backend/tools/basework_postgresql_rehearsal.py`. Защищён уникальным маркером, именем кластера,
+версией PostgreSQL и проверкой реальных SQL-учётных записей. Переиспользует штатные
+миграции, выдачу минимальных тестовых прав и SQL signer. Проверяет точный контракт
+трёх таблиц BaseWork: FORCE RLS, политики, ACL, триггеры, функции и их владельцы.
+Прикладной код и миграции не менялись. Из существующих файлов Marketplace
+изменён только этот журнал; копия до добавления записи:
+`.change-backups/BaseWork-stage3-pg-20261027/CHANGELOG.md`.
+
+Проверено: 50 групп проверок на PostgreSQL под настоящим web LOGIN, включая
+19 запретов SQL, изоляцию чужого кабинета/организации, подпись SQL/срок/повтор,
+конкурентный commit отзыва, старые cookie/API/файлы, rollback, CSRF, MFA,
+обычный выход и выход везде. Итог PASS; commit→отказ трёх путей 0,039 с в одном
+локальном замере. Отдельный штатный Gunicorn web без секретов оператора:
+4 HTTP-проверки PASS, readiness=200. Миграций к применению и расхождений моделей
+со схемой нет. Неверный маркер отвергается до подключения к БД.
+Два первых прогона остановились на ошибках нового тестового сценария: `id`
+вместо `session_id` и ожидание 403 вместо штатного redirect на вход для
+анонимного файла. Исправлен только сценарий; итоговый прогон полностью успешен.
+
+Доказательства и compose: `C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-PostgreSQL-2026-10-27/`.
+Там новые `Проверка.txt`, `compose.json`, `manifest.json`, `Изоляция.json`,
+`Исходное состояние.json`, `Сохранность.json`, `postgresql-проверки-1.txt`,
+`postgresql-проверки-2.txt`, `postgresql-проверки-3.txt`, `postgresql-итог.txt`,
+`http-проверки.txt`, `README-до.txt`. Обновлён BaseWork/README.md.
+Тестовые секреты находятся отдельно от доказательств; значения не публиковались.
+Контейнеры остановлены с кодом 0, том сохранён. Docker Desktop оставлен запущенным.
+Общий OIDC-вход, внешние адаптеры, IdP-revoke и браузерная приёмка остаются открытыми.
+
+Адресный откат: после сверки с текущими SHA-256 удалить только новый файл
+`backend/tools/basework_postgresql_rehearsal.py`, если он не менялся после этого продолжения; для журнала убрать
+только эту запись, не восстанавливать целиком старый журнал поверх новых записей.
+BaseWork/README.md откатывать обратным изменением относительно `README-до.txt`.
+Рабочий код и миграции отката не требуют. Не выполнять обратную миграцию с удалением
+истории. Стенд уже остановлен; удаление его тома не выполнялось. Не использовать
+общий git reset/clean и не затрагивать чужие Docker-ресурсы.
+
+Проверка сохранности: 303 из 304 исходных файлов побайтово сохранены; изменён
+только журнал, добавлен один тестовый инструмент. Синтаксис Python проверен.
+Полный git diff --check отмечает два прежних пробела в журнале на строках
+1875 и 1885; они вне текущего изменения и сохранены. Новый дифф чист.
+
+
+## 2026-10-27 12:20:07 MSK (UTC+03:00) — BaseWork: локальный OIDC и callback этапа 3
+
+По текущему поручению Олега реализованы HTTP login/callback и завершение
+локального MFA; проверено в прежнем изолированном PostgreSQL-стенде с новым
+синтетическим HTTPS IdP. Рабочие БД и Authelia не менялись, к серверам
+не подключались. Новые зависимости не добавлялись; commit/push не выполнялись.
+
+Authlib: Authorization Code, PKCE S256, nonce, фиксированные issuer/redirect/
+endpoint, TLS, таймауты и ограничение ответа. PostgreSQL OIDCAttempt погашает
+state отдельным commit до сети; окончательная фаза повторно проверяет живую
+привязку и прежний MFA. Создаётся существующий UUID, автоматического связывания
+по email/username нет. Ожидание/завершение MFA одноразовые. OIDC не подтверждает
+местный пароль для чувствительных операций. Исходные права и сроки сохранены.
+Новая таблица FORCE RLS: web только SELECT, переходы через узкую подписанную
+SECURITY DEFINER-функцию; прямой записи в привязки нет. Точный контракт включён
+в readiness при включённом OIDC. В обычном runtime OIDC выключен; включение
+реального провайдера не реализовано настройками этого синтетического стенда.
+
+Изменённые существующие файлы (плюс этот CHANGELOG.md):
+- `backend/basework/models.py`
+- `backend/tools/basework_postgresql_rehearsal.py`
+- `backend/account_security/services.py`
+- `backend/config/settings.py`
+- `backend/config/urls.py`
+- `backend/data_isolation/middleware.py`
+
+Новые файлы:
+- `backend/basework/migrations/0003_oidc_attempt.py`
+- `backend/basework/migrations/0004_oidc_guards.py`
+- `backend/basework/oidc.py`
+- `backend/basework/oidc_client.py`
+- `backend/basework/oidc_configuration.py`
+- `backend/basework/oidc_sql.py`
+- `backend/basework/oidc_views.py`
+- `backend/basework/templates/basework/oidc.html`
+- `backend/basework/tests/test_oidc_configuration.py`
+- `backend/config/basework_oidc_stand.py`
+- `backend/tools/basework_oidc_contract.py`
+- `backend/tools/basework_oidc_provider.py`
+- `backend/tools/basework_oidc_rehearsal.py`
+
+Копии существующих файлов, включая журнал до этой записи:
+`.change-backups/BaseWork-stage3-oidc-20261027/` с сохранённой структурой путей.
+
+Проверено: 65 сквозных HTTPS-проверок OIDC PASS (PostgreSQL, Authlib,
+синтетический провайдер, два workers Gunicorn); 50 прежних PostgreSQL-проверок
+PASS; 109 backend-регрессий и 5 новых тестов конфигурации/транспорта PASS.
+Два параллельных callback и два параллельных завершения MFA дают ровно один
+успех. Проверены неверные токены/PKCE/state, срок, CSRF, чужой браузер, ошибки
+провайдера, реальная блокировка БД после обмена, отзыв до MFA, старые сессии,
+SQL ACL/RLS, шифрование состояния и штатный лимит входа 30/31.
+Миграции применены только локально; makemigrations --check без расхождений.
+Синтаксис Python проверен; новые строки без trailing whitespace. Два прежних
+замечания git diff --check в журнале сохранены как посторонняя работа.
+
+Начальные ошибки названы в протоколе: параметризация %ROWTYPE в миграции
+исправлена params=None; для synthetic API добавлена отдельная конфигурация
+стенда вместо изменения рабочих настроек. Первый неуспешный HTTP-прогон
+сохранён. Счётчик отказов claim сохраняется независимо от результата claim.
+Штатная остановка тестового IdP исправлена обработчиком SIGTERM и проверена
+повторным запуском/stop (0 вместо первого 137). Само утверждение конкурентного
+теста не менялось; его подпись уточнена: распределение запросов по workers
+не фиксировалось, доказаны параллельные HTTP-запросы и одноразовость.
+
+Все доказательства: `C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-OIDC-2026-10-27/`.
+Созданы compose.json, Проверка.txt, Изоляция.json, Исходное состояние.json,
+Сохранность.json, README-до.txt; логи oidc-проверки-1/2/3.txt, oidc-итог.txt,
+backend-регрессия.txt, postgresql-регрессия.txt, oidc-конфигурация.txt.
+Обновлён BaseWork/README.md. Тестовые сертификат/CA/ключ/секрет клиента созданы
+отдельно от доказательств в BaseWork/.local-stage3-pg-20261027; значения не
+выводились и в Git не добавлялись. Контейнеры web/idp/postgres остановлены с
+exit 0, том сохранён. Docker Desktop остаётся запущенным.
+
+Браузерная приёмка не выполнена: в установленном Browser 26.1021.31345 каталог
+skills пуст, Browser/Chrome SKILL.md также не найден в остальных каталогах
+профиля. По правилу Олега без него browser-client не запускался, другой
+браузерный инструмент не использовался, плагин не исправлялся. Реальный OIDC
+Authelia, IdP-revoke и внешние приложения не проверены. Весь этап 3 не закрыт.
+
+Адресный откат: отключить OIDC (BASEWORK_OIDC_MODE=disabled) либо оставить
+локальный стенд остановленным. Сверить SHA-256 Сохранность.json и применить
+только обратные изменения перечисленных существующих файлов, не затирая
+поздние правки. Журнал откатывать отдельной уточняющей записью. Новые файлы
+удалять только после проверки отсутствия поздних изменений/ссылок; источники
+применённых миграций 0003/0004 и oidc_sql.py сохранять, пока существует стенд
+с их историей. Не удалять таблицу/историю попыток обратной миграцией. Для
+BaseWork/README.md использовать адресный дифф относительно README-до.txt.
+Том, тестовые секреты и чужие Docker-ресурсы не удалялись. Общий reset/clean
+запрещён. Постоянная память не менялась.
+
+## 2026-10-27 13:25 MSK (Europe/Moscow) — локальный OIDC provider для BaseWork
+
+По поручению реализовать режим настоящего провайдера локально без сервера,
+Authelia и рабочих БД добавлен BASEWORK_OIDC_MODE=provider. Закреплённые issuer,
+client ID, callback и HTTPS endpoints читаются из отдельного JSON; секрет/CA —
+из /run/secrets. Discovery подтверждает конфигурацию, лишние поля не расширяют
+сетевой доступ и параметры Authlib. Сохранены disabled/isolated, MFA, прикладные
+права, signer/FORCE RLS и общий запрет внешних действий. Secure cookie обязательны,
+fingerprint включает все параметры и файлы секретов/собственного CA.
+
+Изменены backend/basework/oidc_configuration.py, backend/basework/oidc_client.py,
+backend/basework/oidc.py, backend/basework/tests/test_oidc_configuration.py,
+backend/tools/basework_oidc_provider.py, backend/tools/basework_oidc_rehearsal.py,
+CHANGELOG.md. Новый файл docs/BASEWORK_OIDC.txt. Адресные копии всех семи прежних
+файлов: .change-backups/BaseWork-stage3-provider-20261027/ с исходными путями.
+Миграции, SQL, зависимости и frontend не менялись. Ветка beta/HEAD 05e8318f
+сохранены; commit/push и серверных действий не было.
+
+Проверено: 127 backend-тестов PASS (SQLite in-memory, включая 18 конфигурационных),
+после окончательного уточнения портов повторно все 18 конфигурационных PASS;
+78 HTTPS-утверждений provider и 78 isolated PASS на PostgreSQL/Gunicorn/тестовом
+IdP, 50 PostgreSQL-регрессий PASS, контракт миграций PASS. Дополнительные реальные
+TLS-отказы по CA/имени сертификата PASS, verify=False не отключает проверку.
+Первая TLS-проверка упала с MissingTokenError из-за тестового вызова discovery
+без withhold_token=True; вызов исправлен, полный повтор успешен. Новых миграций
+не потребовалось. Два старых trailing whitespace CHANGELOG.md не исправлялись.
+
+Доказательства в C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-OIDC-provider-2026-10-27/:
+compose.json, provider.json, Проверка.txt, TLS-проверка.txt, Изоляция.json,
+Остановка.json, Исходное состояние.json, Сохранность.json, README-до.txt;
+логи backend-регрессия.txt, конфигурация-итог.txt, контракт-стенда.txt,
+oidc-provider-1.txt, oidc-provider-2.txt, oidc-isolated-регрессия.txt,
+postgresql-регрессия.txt. BaseWork/README.md дополнён актуальным статусом.
+Стенд остановлен с exit 0, том и секреты сохранены. Реальный SSO, доставка
+блокировки из Authelia и браузерная приёмка не выполнены; весь этап 3 открыт.
+
+Откат: оставить стенд остановленным/выключить вход, сверить итоговые SHA и
+адресные копии, применить обратный дифф только этой работы; журнал дополнять,
+не заменять. Новый docs/BASEWORK_OIDC.txt и артефакты удалять только после
+проверки отсутствия поздних правок/ссылок. BaseWork/README.md сверять с README-до.txt.
+Не откатывать схему/историю, блокировки, права и MFA; не возвращать код, игнорирующий
+федеративные сессии. Не применять reset/clean и не удалять том/секреты стенда.
+
+## 2026-10-27 14:21 MSK (Europe/Moscow) — подготовка перехода истории в main без коммита
+
+По поручению подготовлен только локальный переход приложения в main с сохранением
+обеих историй и всех местных изменений. Отдельная копия:
+C:/Users/krolo/Documents/marketplace-workspace-main-preparation.
+Исходная C:/Users/krolo/Documents/marketplace-workspace остаётся на beta, её
+файлы, индекс и ссылки не менялись. Эта запись добавлена только в отдельной копии.
+
+Новый main в отдельной копии стоит на e076a561c71d41ca172eb9e0e70425013074faa2 —
+локально сохранённом и ранее проверенном серверном main. Запущен merge
+--no-commit --no-ff --allow-unrelated-histories с beta
+05e8318f453c6cfd2904ffdbec0e43ce45a365fa. MERGE_HEAD сохранён, commit не создан.
+Отдельные source-main/source-beta/source-local-main сохраняют исходные ссылки.
+Локальный исходный main a0463985eea5b02c1c5f1878e261b8422c1a4662 — предок beta;
+он не подменял серверный main. Remotes в новой копии не настроены.
+
+Единственный конфликт README.md разрешён содержимым README приложения из beta.
+Обе версии и конфликтный файл сохранены в
+.change-backups/main-preparation-20261027/README-main-before.md,
+README-stage-2.md, README-stage-3.md и README-conflict.md.
+Перед наложением местных файлов сделаны адресные копии изменяемых файлов в
+.change-backups/main-preparation-20261027/before-overlay/.
+Копия полного местного журнала перед этой записью:
+.change-backups/main-preparation-20261027/CHANGELOG-local-before.md.
+
+Перенесены все 319 отслеживаемых и новых неигнорируемых файлов исходной папки,
+включая местные документы, этапы BaseWork и изменения зависимостей прежних задач.
+Точный перечень — Исходные файлы.json/Перенос.json в доказательствах. Перед записью
+журнала все 319 файлов побайтово совпали с исходными. После неё единственное
+отличие — добавление этой записи к CHANGELOG.md. Прикладной код не изменялся.
+Игнорируемые данные/секреты/сборки/резервные копии не добавлялись в индекс и
+остались в исходной папке. Состав индекса подготовлен для проверки, не публикации.
+
+Проверка: проверенный Git bundle с исходными refs; совпадение наборов 61 коммита,
+оба исходных корня доступны; HEAD/MERGE_HEAD соответствуют двум родителям;
+нет неразрешённых конфликтов; staged-содержимое совпадает с рабочими файлами;
+Git fsck и сверка исходных файлов/индекса/refs. Тесты приложения повторно не
+запускались: перенос байтов кода без его изменения; прежние протоколы остаются
+отдельными доказательствами. Новых зависимостей, миграций и серверных действий нет.
+
+Доказательства: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-main-2026-10-27/.
+Содержат histories.bundle, snapshot/, исходные манифесты/patch/status/refs,
+протокол Git, конфликт README, проверку переноса, итоговый состав индекса и
+инструкцию продолжения. Bundle и снимок локальны; не отправлялись наружу.
+Первая попытка merge остановилась до изменений: Git потребовал committer identity
+даже с --no-commit. Повтор использовал только временное окружение процесса;
+постоянные user.name/email не изменялись, новый commit отсутствует.
+
+Откат подготовки: оставить отдельную копию нетронутой и продолжить исходную beta.
+Для отмены merge в отдельной копии сначала сохранить её новые изменения и
+сверить итоговые SHA; не выполнять abort поверх поздней работы вслепую. Удаление
+копии требует отдельного решения и проверки её resolved path. Не применять
+reset --hard/clean, не удалять bundle/снимок как единственное доказательство.
+Перед будущими commit/push/выкладкой нужны отдельное поручение и актуальная
+проверка удалённого main; текущая задача не делала сетевой fetch и не подтверждает
+отсутствие изменений main на сервере после последнего разрешённого чтения.
+
+## 2026-10-27 14:33 MSK (Europe/Moscow) — проверка diff и локальный merge-коммит main
+
+По отдельному поручению Олега проверен подготовленный diff и разрешено создать
+локальный merge-коммит в main без push и серверных действий. Место выполнения:
+C:/Users/krolo/Documents/marketplace-workspace-main-preparation.
+Первый родитель e076a561c71d41ca172eb9e0e70425013074faa2, второй родитель
+05e8318f453c6cfd2904ffdbec0e43ce45a365fa. Обе истории и все подготовленные
+местные изменения сохраняются; исходная папка marketplace-workspace на beta
+не изменяется. Итоговый SHA коммита сохраняется вне коммита в протоколе ниже.
+
+Проверены состав индекса относительно main и 56 изменённых путей относительно
+source-beta, сохранность исходного снимка, вход/callback/MFA, проверки прав и
+сессий, конфигурация OIDC, React bootstrap/logout, зависимости и документация.
+Новых блокирующих замечаний для локального коммита не выявлено; это не полная
+приёмка живого SSO и не разрешение выкладки. Реальная Authelia/IdP-отзыв,
+браузерные сценарии и актуальность удалённого main остаются непроверенными.
+
+В отдельной копии заново прошли 32 frontend-теста. Синтаксис всех 196 Python
+и 24 JSON-файлов корректен. Шаблоны приватных ключей и типовых GitHub/AWS-токенов
+в индексе не найдены; это ограниченная проверка, не доказательство отсутствия
+любых секретов. Новые неигнорируемые файлы сверены с исходным манифестом.
+Код соответствует ранее проверенному снимку provider: предыдущие 127 backend,
+78+78 HTTPS и 50 PostgreSQL тестов не запускались заново и не заявляются новыми.
+git diff --check с учётом CRLF: два унаследованных замечания blank-at-EOF в
+docs/ROLE_CONTRACT.md и docs/design/prototype.html; относительно source-beta
+таких замечаний нет. Файлы не менялись ради косметической очистки.
+
+Единственное новое изменение содержимого этой задачи в копии — данная запись
+CHANGELOG.md. Исходный журнал сохранён в .change-backups/main-commit-20261027/CHANGELOG.md.
+Проверка React проведена с установленным vercel-react-best-practices; новых
+зависимостей и изменений UI нет. Авторская идентичность взята из последних
+коммитов проекта и передана только процессу commit; глобальные настройки не менялись.
+
+Доказательства: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-main-commit-2026-10-27/.
+До коммита.json, CHANGELOG-до.txt, diff-stat.txt, diff-check.txt,
+frontend-тесты.txt, сообщение-коммита.txt, commit.txt, После коммита.json,
+Проверка.txt и README-до.txt. BaseWork/README.md получает итоговый статус отдельно.
+Прикладной код, миграции, зависимости, рабочие базы и Authelia не изменялись;
+push, SSH и сетевой fetch не выполнялись. Исходные 61 коммит сохраняются.
+
+Откат: до отдельного решения оставить новый main локально и продолжать исходную
+beta; не применять reset --hard/clean и не переписывать историю. Для отмены
+содержимого после дальнейших изменений нужен отдельно согласованный адресный
+revert с сохранением поздней работы, блокировок и MFA. Backup журнала служит
+сравнением, не основанием перезаписывать его целиком. Перед будущим push отдельно
+проверить удалённый main; наличие локального merge не разрешает force push или
+обход доставки Git-файлов через согласованный git pull из main.

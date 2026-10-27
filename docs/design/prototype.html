@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><link rel="icon" href="data:,">
+<script>
+// Restore the initial demo profile before the stylesheet and first paint.
+try {
+  const saved = JSON.parse(localStorage.getItem('mw-grid-v2:owner'));
+  document.documentElement.dataset.theme = (localStorage.getItem('mw-grid-theme:owner') || saved?.preferences?.theme) === 'dark' ? 'dark' : 'light';
+} catch { document.documentElement.dataset.theme = 'light'; }
+</script>
+<title>Закупки — рабочее пространство</title><link rel="stylesheet" href="grid-style.css"><link rel="stylesheet" href="workbench-style.css"><link rel="stylesheet" href="appearance-presets.css"><link rel="stylesheet" href="sheet-style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">К рабочей таблице</a>
+<div class="app">
+<div class="app-body">
+<header class="topbar">
+<div class="workbook-name"><button class="workspace-logo" type="button" data-page="desk" aria-label="На главную" title="Главная — моё рабочее место"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h6v18H2zM11 3h11v7H11zM11 13h11v8H11z" fill="currentColor"/></svg></button><button id="organization-switch" type="button" aria-label="Выбрать организации и кабинеты" aria-haspopup="dialog">Организации</button></div>
+<span id="breadcrumb" class="sr-only">Закупки</span>
+<div class="sidebar sheet-navigation" id="sidebar">
+<nav id="navigation" aria-label="Разделы системы">
+<button class="nav-item" data-page="desk">Моё рабочее место</button>
+<button class="nav-item active" data-page="purchases" aria-current="page">Закупки</button>
+<button class="nav-item" data-page="products">Товары</button>
+<button class="nav-item" data-page="operations">Операции</button>
+<button class="nav-item" data-page="overview">Обзор</button>
+<button class="nav-item" data-page="quality">Качество данных</button>
+<button class="nav-item" data-page="plan">План-факт</button>
+<button class="nav-item" data-page="team">Команда и доступ</button>
+</nav>
+<div class="sheet-scroll-buttons" hidden><button class="icon-button" data-sheet-scroll="-1" aria-label="Показать предыдущие разделы">‹</button><button class="icon-button" data-sheet-scroll="1" aria-label="Показать следующие разделы">›</button></div>
+</div>
+<div class="top-actions"><a class="doc-link" href="workspace-v3-guide.html" aria-label="Описание системы" title="Описание системы">?</a><button id="theme-toggle" class="btn theme-toggle" type="button" role="switch" aria-label="Тёмная тема" aria-checked="false" title="Включить тёмную тему"><span class="theme-label">Светлая</span></button><select id="profile" aria-label="Демо-профиль"><option value="owner">Руководитель</option><option value="manager">Менеджер</option></select></div>
+</header>
+<div id="organization-context" class="organization-context" aria-label="Текущая область данных"></div>
+<main id="main" class="workspace" tabindex="-1"></main>
+</div>
+</div>
+<dialog id="panel" class="drawer" aria-labelledby="panel-title"></dialog>
+<dialog id="modal" class="modal" aria-labelledby="modal-title"></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script src="grid-engine.js"></script><script src="organization-scope.js"></script><script src="workbench-engine.js"></script><script src="workbench-app.js"></script><script src="appearance-presets.js"></script><script src="grid-app.js"></script>
+</body></html>
+

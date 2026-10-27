@@ -1,0 +1,8 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Защита аккаунта</title><main><h1>Защита аккаунта</h1>
+{% if wizard.steps.current == 'welcome' %}<p>Подключение или замена TOTP. Подготовьте приложение-аутентификатор. Старый фактор действует до подтверждения нового.</p>{% endif %}
+{% if wizard.steps.current == 'generator' %}<p>Отсканируйте QR в приложении-аутентификаторе и подтвердите его кодом.</p><img src="{{ QR_URL }}" alt="QR для подключения TOTP">{% endif %}
+<form method="post">{% csrf_token %}{{ wizard.management_form }}{{ wizard.form.as_p }}<button type="submit">Продолжить</button></form>
+<p><a href="/auth/mfa/recovery/">Использовать восстановительный код</a></p>
+<form method="post" action="/auth/logout">{% csrf_token %}<button type="submit">Выйти</button></form>
+</main></html>
