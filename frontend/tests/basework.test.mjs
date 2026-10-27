@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { requestAuthOptions, oidcLoginPath } from '../src/basework/authOptions.ts';
 import { applications, applicationPanel, applicationPath, directory, parseBootstrap, requestBootstrap,
   resolveRoute, searchApplications } from '../src/basework/model.ts';
 
@@ -11,6 +12,28 @@ const allowed = id => ({ id, access: 'allowed', availability: 'available' });
 const ready = items => parseBootstrap(authenticated(items));
 const response = (status, body, type = 'application/json') => new Response(type === 'application/json' ? JSON.stringify(body) : body, { status, headers: { 'Content-Type': type } });
 const signal = () => new AbortController().signal;
+
+test('Вход Authelia доступен только по явному boolean флагу; адрес фиксирован', async () => {
+  assert.equal(oidcLoginPath, '/auth/basework/oidc/login');
+  for (const [body, expected] of [[{ oidcEnabled: true }, 'enabled'], [{ oidcEnabled: false }, 'disabled'],
+    [{ oidcEnabled: 'true' }, 'unavailable'], [{}, 'unavailable'], [null, 'unavailable']]) {
+    assert.equal(await requestAuthOptions(signal(), async (url, options) => {
+      assert.equal(url, '/api/v1/basework/auth-options');
+      assert.equal(options.cache, 'no-store');
+      assert.equal(options.redirect, 'error');
+      assert.equal(options.credentials, 'same-origin');
+      return response(200, body);
+    }), expected);
+  }
+});
+
+test('Недоступный, перенаправленный или неверный ответ не включает Authelia', async () => {
+  for (const result of [response(503, {}), response(200, '<html>', 'text/html'),
+    new Response('{', { headers: { 'Content-Type': 'application/json' } })]) {
+    assert.equal(await requestAuthOptions(signal(), async () => result), 'unavailable');
+  }
+  await assert.rejects(requestAuthOptions(signal(), async () => { throw new TypeError('network'); }));
+});
 
 test('Каталог ограничен семью согласованными приложениями', () => {
   assert.deepEqual(applications.map(item => item.id), ['marketplace', 'reports', 'sources', 'airflow', 'bloggers', 'faq', 'rooms']);

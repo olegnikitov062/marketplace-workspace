@@ -1,0 +1,20 @@
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+:8080 {
+	root * /srv
+	@backend path /auth /auth/* /api /api/*
+	handle @backend {
+		respond 404
+	}
+	handle /assets/* {
+		file_server
+	}
+	handle {
+		header Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}

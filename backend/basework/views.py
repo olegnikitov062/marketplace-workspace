@@ -15,6 +15,12 @@ from account_security.models import AccountSession
 from .services import catalog
 
 
+@never_cache
+@require_GET
+def auth_options(request):
+    return JsonResponse({'oidcEnabled': bool(getattr(settings, 'BASEWORK_OIDC_ENABLED', False))})
+
+
 def guarded(view=None, *, full=True):
     if view is None:
         return lambda target: guarded(target, full=full)

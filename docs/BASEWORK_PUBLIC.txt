@@ -1,0 +1,141 @@
+BaseWork: локальный patch публикации и операторских команд
+
+Назначение
+Подготовка отдельного тестового стенда с настоящим OIDC-провайдером.
+Это не разрешение на commit/push, подключение к серверу или изменение Authelia,
+общего Caddy, рабочей beta и рабочих БД. Настоящая Authelia этим patch не включена.
+Новых зависимостей, миграций и изменения существующих прав БД нет.
+
+Вход в оболочке
+GET /api/v1/basework/auth-options возвращает только {"oidcEnabled":boolean}.
+Ответ не кешируется и не содержит issuer, subject, client_id, URL или секретов.
+В анонимном/истёкшем профиле ссылка «Войти через Authelia» появляется только
+при явном true. Адрес зафиксирован в коде: /auth/basework/oidc/login.
+Недоступный API, неверный JSON и тайм-аут не включают ссылку. Проверка повторяется
+при возвращении на страницу. Локальный вход Marketplace/MFA сохраняется.
+Начало OIDC остаётся подтверждаемым POST с CSRF; callback, PKCE, nonce, TLS,
+локальная MFA, привязки и отзыв используют существующий backend.
+Флаг означает настройку входа, а не проверенную доступность Authelia.
+Выход BaseWork не объявляется выходом из провайдера или приложений.
+
+Профиль backend
+DJANGO_SETTINGS_MODULE=config.basework_public
+ENVIRONMENT=beta; PROCESS_MODE=web; DB_HOST=postgres; DB_PORT=5432;
+DB_NAME=mw_beta; DB_USER=mw_beta_web.
+Штатные secret mounts, обязательный signer, RLS и выключенные external flags
+сохраняются. BASEWORK_PG_REHEARSAL=basework-stage3-pg-20261027 и файл
+/run/basework-pg/manifest.json с точным содержимым:
+{"project":"basework-stage3-pg-20261027","synthetic_only":true}.
+Маркер относится только к отдельной БД стенда, не к рабочей beta.
+
+BASEWORK_PUBLIC_CONFIG_FILE=/run/config/basework_public.json; read-only файл:
+{
+  "origin": "https://basework.example.invalid",
+  "trusted_proxy_ips": ["172.20.0.2"]
+}
+Это нерабочий пример. Перед публикацией подставить согласованный точный origin
+и фактический закреплённый IP gateway в отдельной edge-сети. Диапазоны и wildcard
+не принимаются. До четырёх уникальных канонических IP; без scope ID IPv6.
+Origin — HTTPS без пути, slash, query, userinfo и явного стандартного порта 443.
+Host проверяется вместе с нестандартным портом. CSRF origin закреплён полностью.
+Для OIDC callback обязан быть origin + /auth/basework/oidc/callback.
+Отключённый OIDC допускается; файл provider тогда не нужен.
+Смена конфига требует перезапуска процесса и повторной приёмки.
+
+Контракт gateway
+Только известный peer вправе передать запрос backend. Он обязан ПЕРЕЗАПИСАТЬ
+X-Forwarded-Proto значением https и X-Basework-Client-IP собственным remote_host
+(IP без порта), сохранив точный Host. Не копировать клиентские заголовки.
+Если передаётся X-Forwarded-Host, он должен точно совпасть с Host.
+Forwarded и X-Forwarded-For в backend удаляются; REMOTE_ADDR заменяется только
+проверенным одиночным X-Basework-Client-IP. Эта проверка идёт до сессии и SQL.
+Не открывать backend наружу, не разрешать Docker subnet целиком.
+Не доверять произвольному внешнему CDN без нового согласованного контракта.
+Cookies Secure, host-only; штатный SameSite=Lax сохраняется.
+SECURITY_DOWNLOAD_PROBE=False. Дополнительно /auth/security/probe и его
+подпути получают 404 до сессий/SQL: прежняя ACL-ветка обходила этот флаг.
+
+Статика
+Из frontend: docker build -f Dockerfile.public -t <локальный-образ> .
+Образ использует существующие pinned Node/Caddy и package-lock. Runtime UID/GID
+10001:10001, порт 8080, capabilities бинарника удалены. Запускать read-only,
+cap_drop ALL, no-new-privileges, без секретов и БД. Общий Caddy не изменяется.
+SPA /basework/profile и /basework/apps/* обслуживаются index.html; /auth,
+/auth/*, /api, /api/* и отсутствующие assets не получают HTML fallback.
+На будущем gateway /auth и /api направляются в backend, остальные пути —
+в этот frontend. Frontend и gateway только в отдельной edge, PostgreSQL только
+в isolated, web в обеих. Не присоединять стенд к рабочим сетям.
+Схема egress к настоящей Authelia и IP allowlist — по отдельному плану приёмки.
+
+Операторский процесс
+python manage.py basework_stand <action> --user <UUID>
+Запускать отдельным одноразовым процессом со штатными config.settings,
+ENVIRONMENT=beta, PROCESS_MODE=migrate, DB_USER=mw_beta_migrator и отдельным
+db_migrator_password. Не выдавать эти mounts или роль web-процессу.
+Проверяются marker, PostgreSQL 17, точный cluster_name
+basework-stage3-pg-20261027, current_database=mw_beta, session_user/current_user
+mw_beta_migrator, отсутствие SUPERUSER/BYPASSRLS и allowlist UUID.
+При отказе CLI возвращает общий CommandError без входных значений и SQL.
+
+BASEWORK_OPERATOR_CONFIG_FILE=/run/config/basework_operator.json:
+{
+  "project": "basework-stage3-pg-20261027",
+  "users": [{"id": "<канонический UUID>", "username": "basework-uat-<метка>"}]
+}
+Это схема, не готовый JSON для запуска. Допускается 1–4 явно согласованных UUID,
+уникальные usernames строго basework-uat-[a-z0-9-]{1,48}. Не подставлять UUID
+сотрудников/владельцев. Файлы read-only, не symlink; никаких общих списков людей.
+
+1. Создать только нового синтетического пользователя:
+python manage.py basework_stand create-user --user <UUID> --password-file /run/secrets/basework_uat_<метка>
+Пароль 32–128 печатных ASCII-символов, файл не symlink; значение не передавать
+через argv, env или отчёт. Существующий UUID/username отклоняется. Создаются
+только собственные synthetic organization/cabinet/record и observer membership,
+активированный контакт example.invalid, без прикладных/платформенных прав.
+UUID этих объектов детерминированно связан с тестовым UUID и возвращается CLI.
+Локальная MFA не создаётся и не обходится командой.
+
+2. Привязать заранее подтверждённые issuer+sub:
+/run/config/basework_identity.json содержит ровно user_id, issuer, subject.
+issuer должен совпасть с активным provider. Subject берётся из проверенного
+идентификатора Authelia; нельзя выводить его из username/email или угадывать.
+Файл вне Git/отчётов, read-only, только операторскому процессу.
+python manage.py basework_stand bind-identity --user <UUID>
+Любая существующая история issuer+sub либо user+issuer запрещает повторную
+привязку, включая отозванную. Автоматического создания по callback нет.
+
+3. Разрешить только просмотр собственного synthetic_record:
+python manage.py basework_stand grant-view --user <UUID>
+Добавляется один cabinet-scoped view и навигационный доступ marketplace.
+Экспорт, изменение, управление правами, owner/platform не назначаются.
+Повторная выдача и восстановление отозванного доступа отклоняются.
+Пользователь без этого шага остаётся без приложений и данных.
+
+4. Отозвать тестовый доступ или идентичность:
+python manage.py basework_stand revoke-view --user <UUID>
+python manage.py basework_stand revoke-identity --user <UUID>
+Используются существующие атомарные сервисы отзыва; локальные сессии этого
+пользователя и разрешения выгрузки отзываются. История не удаляется.
+Повторный отзыв не возвращает доступ. Другой пользователь не затрагивается.
+Отзыв идентичности работает и при выключенном OIDC; требует ровно одной
+привязки этого пользователя. Неоднозначную историю команда не выбирает сама.
+Для любого действия кроме create-user проверяется собственный synthetic fixture.
+
+Доставка и ограничения
+После отдельного разрешения: commit/push, проверка main, затем только
+git pull --ff-only origin main в существующем серверном checkout main.
+Git-файлы не копировать, не применять patch вручную на сервере. Перед созданием
+внешних конфигов/секретов проверить их непринадлежность Git и получить отдельное
+разрешение. Существующий том стенда не bootstrap/configure заново.
+Этот документ не содержит готового diff общих Authelia/Caddy и не разрешает его.
+
+Проверки patch: basework unit tests, frontend node tests/tsc/Vite, CLI на отдельной
+PostgreSQL, public HTTP provider/disabled/Host/Origin/proxy, runtime статики,
+прежние PostgreSQL и HTTPS OIDC сценарии. Подробный фактический протокол хранится
+в BaseWork/artifacts/Этап-3-Authelia-local-patch-2026-10-27/Проверка.txt.
+Настоящая Authelia, публичный DNS/TLS и Chrome-приёмка остаются отдельным этапом.
+Автоматическая доставка блокировки только в IdP к старой локальной сессии
+за <=60 секунд этим patch не реализована; снятие OIDC-флага не заменяет отзыв.
+Откат кода — адресный обратный diff после сверки поздних изменений. Остановить
+только свои тестовые контейнеры, сохранить том/секреты. Не восстанавливать
+отозванную историю, не отменять миграции и не менять рабочие конфигурации.

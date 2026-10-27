@@ -2338,3 +2338,25 @@ revert с сохранением поздней работы, блокирово
 сравнением, не основанием перезаписывать его целиком. Перед будущим push отдельно
 проверить удалённый main; наличие локального merge не разрешает force push или
 обход доставки Git-файлов через согласованный git pull из main.
+
+## 2026-10-27 — локальный patch Authelia, публикации и операторских команд
+
+Время: 17:02 МСК. Только marketplace-workspace-main-preparation, main a4de4ae.
+Добавлен публичный no-store boolean доступности OIDC и фиксированная ссылка в профиле React; сохранены локальный MFA и существующий logout. Новый config.basework_public проверяет маркер стенда, exact HTTPS Host/Origin и trusted proxy до сессии/SQL; закрывает legacy download probe явно. Отдельный runtime frontend на pinned Caddy обслуживает SPA, не перехватывает /auth и /api; UID 10001, read-only, cap_drop ALL. Новая CLI basework_stand ограничена синтетическим allowlist UUID, точными PostgreSQL 17/кластером/ролью, создаёт только observer fixture, явную issuer+sub привязку и собственный view. Отзыв сохраняет историю и закрывает локальные сессии; возможен при выключенном OIDC. Автопривязки и восстановления отозванного доступа нет.
+
+Файлы: backend/basework/{views.py,urls.py,publication.py,stand_operator.py}; backend/basework/management/{__init__.py,commands/__init__.py,commands/basework_stand.py}; backend/basework/tests/{test_publication.py,test_stand_operator.py}; backend/config/basework_public.py; frontend/src/basework/{BaseWork.tsx,authOptions.ts,useAuthOptions.ts}; frontend/tests/basework.test.mjs; frontend/{Dockerfile.public,Caddyfile.public}; docs/{BASEWORK_OIDC.txt,BASEWORK_PUBLIC.txt}; CHANGELOG.md.
+
+Проверки: 51 BaseWork-тест и повтор 6 операторских после финального изменения PASS; 34 frontend-теста, tsc/Vite и Docker build PASS; 50 PostgreSQL/RLS/отзыв и 78 HTTPS OIDC PASS; 43 операторские проверки на PostgreSQL и отдельный отзыв при disabled PASS; 18 public HTTP + отказ недоверенного peer + 4 проверки загрузки профиля PASS; Caddy validate и 15 runtime/static проверок PASS. Старые наборы: 56 security (6 PG-only skipped), 77 access_control (9 PG-only skipped) — остальные PASS в соответствующих профилях Linux/SQLite. Общий первый Windows-прогон имел 12 errors: несовместимый профиль старых миграционных тестов и Windows TEMP; первый отдельный ACL-прогон использовал профиль без data_isolation и неполный mount, 6 failures/8 errors; причины исправлены в запуске, старый код не менялся. Ошибки probe-пути импорта, Docker bind path и лишней capability Caddy устранены и перепроверены.
+
+Новых зависимостей/lockfile/миграций нет. Подробности, команды и patch: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-Authelia-local-patch-2026-10-27/. Бэкапы изменённых прежних файлов: .change-backups/authelia-public-local-20261027/. Предшествующие незакоммиченные записи журнала сохранены. Исходный beta checkout не редактировался; его установленные frontend-зависимости использованы через локальный junction. SSH, commit/push и изменения серверных Authelia/Caddy/beta/рабочих БД не выполнялись. Настоящее SSO, браузерная приёмка и автоматическая доставка отзыва только из IdP за <=60 секунд не подтверждены/не реализованы.
+
+Откат: адресный обратный diff после проверки поздних правок и бэкапов; не перезаписывать журнал целиком. Остановить только свои локальные тестовые контейнеры; сохранить том, секреты и историю. Не откатывать миграции и не возвращать отозванные права. Серверная доставка возможна лишь по отдельному поручению через git pull из main.
+
+
+## 2026-10-27 17:15 +0300 — проверка и локальный коммит patch BaseWork
+
+По текущему поручению подготовлен локальный коммит в main без push и серверных действий. Все 18 файлов basework-authelia.patch совпали с manifest SHA-256; обратный apply --check и whitespace-проверка прошли. Повторно прочитаны вход React, public middleware/settings, runtime frontend, операторские ограничения и тесты; блокирующих замечаний не найдено. Код не менялся. Использованы результаты проверенного patch: 51 BaseWork, 34 frontend, 50 PostgreSQL/RLS, 78 HTTPS OIDC, 43 operator; отдельно финальные 6 operator, public HTTP и runtime статики. Повторные Docker/БД/браузерные проверки в этой задаче не выполнялись.
+
+В коммит входят 18 файлов из предыдущей записи и относящиеся к ним дополнения CHANGELOG.md. Прежние незакоммиченные записи о push/Selectel сохраняются в рабочем дереве вне коммита; существующее содержимое журнала не заменяется. Копия перед добавлением: .change-backups/authelia-review-commit-20261027/CHANGELOG.md. Исходная beta и 319 её файлов зафиксированы хешами для контрольного сравнения. Доказательства и итоговый hash коммита: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-Authelia-local-commit-2026-10-27/.
+
+Authelia/Caddy/рабочая beta/рабочие БД не изменялись. Новых зависимостей и миграций нет. Настоящая Authelia, браузерная приёмка и доставка блокировки из IdP за <=60 секунд остаются открытыми. Откат только отдельным обратным изменением после проверки поздних правок; не использовать reset --hard/clean, не стирать журнал, историю привязок, том и секреты. Push и выкладка требуют нового поручения.
