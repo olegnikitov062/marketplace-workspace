@@ -1,2 +1,10 @@
-<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>{{ title }}</title><main><h1>{{ title }}</h1><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Подтвердить</button></form><a href="/auth/mfa/login/">Вход</a></main></html>
+{% extends "account_security/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block width %}narrow{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<section class="section">
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button class="primary" type="submit">Подтвердить</button></form>
+</section>
+<a class="back" href="/auth/security/">К защите аккаунта</a>
+{% endblock %}

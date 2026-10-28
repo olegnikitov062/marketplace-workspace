@@ -1,9 +1,80 @@
-<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>Защита аккаунта</title><main><h1>Защита аккаунта</h1>
-<p>TOTP: {% if mfa_enabled %}подключён{% else %}не подключён{% endif %}.{% if mfa_required %} Обязателен для владельца.{% endif %}</p>
-<p><a href="/auth/security/confirm/">Подтвердить пароль и TOTP</a> · <a href="/auth/mfa/setup/">Подключить или заменить TOTP</a> · <a href="/auth/security/password/">Сменить пароль</a></p>
-<h2>Сессии</h2><ul>{% for session in sessions %}<li>{% if session.id == current_session_id %}<strong>Эта сессия.</strong> {% endif %}{{ session.created_at }} — до {{ session.expires_at }}<form method="post" action="{% url 'account_security:revoke-session' session.id %}">{% csrf_token %}<button type="submit">Отозвать сессию</button></form></li>{% endfor %}</ul>
-<h2>Доверенные устройства</h2><ul>{% for device in devices %}<li>{{ device.created_at }} — до {{ device.expires_at }}<form method="post" action="{% url 'account_security:revoke-device' device.id %}">{% csrf_token %}<button type="submit">Отозвать доверие</button></form></li>{% endfor %}</ul>
-{% if mfa_enabled and not mfa_required %}<form method="post" action="/auth/security/disable/">{% csrf_token %}<button type="submit">Отключить добровольный TOTP после подтверждения</button></form>{% endif %}
-<form method="post" action="/auth/security/logout-all/">{% csrf_token %}<button type="submit">Выйти везде и забыть устройства</button></form>
-<form method="post" action="/auth/logout">{% csrf_token %}<button type="submit">Выйти здесь</button></form></main></html>
+{% extends "account_security/base.html" %}
+{% load tz %}
+{% block content %}
+<h1>Защита аккаунта</h1>
+<p class="intro">Пароль, второй фактор и доступ с других устройств.</p>
+<section class="section" aria-labelledby="sign-in-title">
+  <h2 id="sign-in-title">Вход и подтверждение</h2>
+  <p>Коды из приложения (TOTP): <strong>{% if mfa_enabled %}подключены{% else %}не подключены{% endif %}</strong>.{% if mfa_required %} Второй фактор обязателен для владельца.{% endif %}</p>
+  <div class="actions">
+    <a class="button" href="/auth/security/password/">Сменить пароль</a>
+    <a class="button" href="/auth/mfa/setup/">{% if mfa_enabled %}Заменить TOTP{% else %}Подключить TOTP{% endif %}</a>
+    <a class="button" href="/auth/security/confirm/">Подтвердить личность</a>
+    {% if mfa_enabled and not mfa_required %}<form method="post" action="/auth/security/disable/" data-security-action="refresh">{% csrf_token %}<button type="submit">Отключить TOTP</button></form>{% endif %}
+  </div>
+  <p class="action-hint">Перед сменой пароля или отзывом доступа может потребоваться повторное подтверждение личности.</p>
+</section>
+{% timezone "Europe/Moscow" %}
+<section class="section" aria-labelledby="sessions-title">
+  <h2 id="sessions-title">Сессии</h2>
+  <ul class="records">
+    {% for session in sessions %}<li class="record">
+      <div><strong>{% if session.id == current_session_id %}Эта сессия{% else %}Другая сессия{% endif %}</strong><p>Вход: {{ session.created_at|date:"d.m.Y H:i" }} МСК<br>Действует до {{ session.expires_at|date:"d.m.Y H:i" }} МСК</p></div>
+      <form method="post" action="{% url 'account_security:revoke-session' session.id %}" data-security-action="{% if session.id == current_session_id %}login{% else %}refresh{% endif %}">{% csrf_token %}<button type="submit">{% if session.id == current_session_id %}Завершить эту сессию{% else %}Отозвать сессию{% endif %}</button></form>
+    </li>{% empty %}<li class="muted">Активных сессий нет.</li>{% endfor %}
+  </ul>
+</section>
+<section class="section" aria-labelledby="devices-title">
+  <h2 id="devices-title">Доверенные устройства</h2>
+  <ul class="records">
+    {% for device in devices %}<li class="record">
+      <div><strong>Устройство от {{ device.created_at|date:"d.m.Y H:i" }} МСК</strong><p>Доверие действует до {{ device.expires_at|date:"d.m.Y H:i" }} МСК</p></div>
+      <form method="post" action="{% url 'account_security:revoke-device' device.id %}" data-security-action="refresh">{% csrf_token %}<button type="submit">Отозвать доверие</button></form>
+    </li>{% empty %}<li class="muted">Доверенных устройств нет.</li>{% endfor %}
+  </ul>
+</section>
+{% endtimezone %}
+<section class="section" aria-labelledby="logout-title">
+  <h2 id="logout-title">Выход из аккаунта</h2>
+  <div class="actions">
+    <form method="post" action="/auth/logout" data-security-action="login">{% csrf_token %}<button type="submit">Выйти здесь</button></form>
+    <form method="post" action="/auth/security/logout-all/" data-security-action="login">{% csrf_token %}<button type="submit">Выйти везде и забыть устройства</button></form>
+  </div>
+</section>
+<p id="action-status" role="status" aria-live="polite" tabindex="-1"></p>
+<a class="back" href="/basework/profile">Вернуться в профиль</a>
+{% endblock %}
+{% block scripts %}
+<script>
+  let pending = false;
+  document.querySelectorAll('form[data-security-action]').forEach(form => {
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (pending) return;
+      pending = true;
+      const status = document.getElementById('action-status');
+      const buttons = document.querySelectorAll('form[data-security-action] button');
+      buttons.forEach(button => { button.disabled = true; });
+      status.textContent = 'Выполняем действие…';
+      try {
+        const response = await fetch(form.action, { method: 'POST', credentials: 'same-origin', redirect: 'error', body: new URLSearchParams(new FormData(form)), signal: AbortSignal.timeout(15000) });
+        if (!response.ok) {
+          status.textContent = response.status === 403 ? 'Действие не разрешено. Подтвердите личность и повторите попытку.' : response.status === 429 ? 'Слишком много попыток. Повторите позже.' : 'Сервер не подтвердил действие. Обновите страницу и проверьте состояние.';
+          status.focus();
+          return;
+        }
+        const result = await response.json();
+        if (result.status !== 'ok') throw new Error();
+        if (form.dataset.securityAction === 'login') location.assign('/auth/basework/login');
+        else location.reload();
+      } catch {
+        status.textContent = 'Не удалось подтвердить результат. Обновите страницу и проверьте состояние перед повторной попыткой.';
+        status.focus();
+      } finally {
+        pending = false;
+        buttons.forEach(button => { button.disabled = false; });
+      }
+    });
+  });
+</script>
+{% endblock %}

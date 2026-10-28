@@ -1,3 +1,12 @@
-<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>Восстановительные коды</title><main><h1>Сохраните восстановительные коды</h1><p>Коды показаны один раз. Храните их отдельно от пароля и устройства TOTP. Каждый код разрешает только восстановление фактора и действует однократно.</p>
-<ul>{% for code in codes %}<li><code>{{ code }}</code></li>{% endfor %}</ul><p>Прежние сессии и доверенные устройства отозваны. Выполните новый вход.</p><a href="/auth/mfa/login/">Войти</a></main></html>
+{% extends "account_security/base.html" %}
+{% block title %}Восстановительные коды{% endblock %}
+{% block width %}narrow{% endblock %}
+{% block content %}
+<h1>Сохраните восстановительные коды</h1>
+<section class="section">
+  <p>Коды показаны один раз. Храните их отдельно от пароля и устройства TOTP. Каждый код разрешает только восстановление фактора и действует однократно.</p>
+  <ul class="codes">{% for code in codes %}<li><code>{{ code }}</code></li>{% endfor %}</ul>
+  <p>Прежние сессии и доверенные устройства отозваны. Выполните новый вход.</p>
+  <a class="button primary" href="/auth/basework/login">Войти</a>
+</section>
+{% endblock %}

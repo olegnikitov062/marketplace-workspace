@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="same-origin">
+  <meta name="theme-color" content="#f2f3f0">
+  <link rel="icon" type="image/svg+xml" href="/basework-icon.svg">
+  <title>{% block title %}Защита аккаунта{% endblock %} — BaseWork</title>
+  <script>
+    try {
+      const value = localStorage.getItem('basework.theme.v1');
+      document.documentElement.dataset.theme = value === 'light' || value === 'dark' ? value : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    } catch { document.documentElement.dataset.theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.querySelector('meta[name="theme-color"]').content = document.documentElement.dataset.theme === 'dark' ? '#171d19' : '#f2f3f0';
+  </script>
+  <style>
+    :root { font: 14px/1.5 'Segoe UI Variable', 'Segoe UI', Arial, sans-serif; color-scheme: light; --canvas: #f2f3f0; --surface: #fff; --subtle: #f0f2ee; --text: #232825; --muted: #626e65; --line: #dce1da; --accent: #24654e; --error: #9a2925; }
+    :root[data-theme='dark'] { color-scheme: dark; --canvas: #171d19; --surface: #202822; --subtle: #29312a; --text: #edf1e8; --muted: #adb9aa; --line: #3b473c; --accent: #a7cfb5; --error: #ffb4ab; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--text); background: var(--canvas); }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    button, input { font: inherit; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; min-height: 64px; padding: 10px 26px; background: var(--surface); border-bottom: 1px solid var(--line); }
+    .brand { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; font: 21px Bahnschrift, 'Segoe UI', sans-serif; color: var(--text); text-decoration: none; }
+    .brand-mark { display: flex; align-items: center; gap: 3px; width: 21px; height: 25px; }
+    .brand-mark i { width: 5px; height: 20px; border-radius: 1px; background: var(--accent); transform: skewY(-20deg); }
+    .brand-mark i:nth-child(2) { height: 15px; }
+    .brand-mark i:nth-child(3) { height: 10px; }
+    main { width: min(100%, 1080px); margin: 0 auto; padding: 32px; }
+    main.narrow { max-width: 520px; }
+    h1 { margin: 0 0 10px; font: 550 30px/1.2 Bahnschrift, 'Segoe UI', sans-serif; letter-spacing: -.45px; }
+    h2 { margin: 0 0 12px; font-size: 17px; }
+    p { margin: 0 0 16px; }
+    .intro, .muted, .helptext { color: var(--muted); }
+    .intro { margin-bottom: 24px; }
+    .section { padding: 24px; margin-top: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .section > :last-child { margin-bottom: 0; }
+    .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .button, button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface); color: var(--text); font: inherit; text-decoration: none; text-align: center; cursor: pointer; }
+    .button:hover, button:hover { background: var(--subtle); }
+    button:disabled { opacity: .65; cursor: wait; }
+    .primary { border-color: var(--accent); }
+    .records { list-style: none; margin: 0; padding: 0; }
+    .record { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); }
+    .record:first-child { padding-top: 0; border-top: 0; }
+    .record:last-child { padding-bottom: 0; }
+    .record p { margin: 4px 0 0; color: var(--muted); }
+    .record form { flex-shrink: 0; }
+    .field { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; }
+    input:not([type=hidden]):not([type=checkbox]):not([type=radio]), select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface); color: var(--text); }
+    input[type=checkbox], input[type=radio] { accent-color: var(--accent); }
+    .checkbox label { display: inline; font-weight: 400; }
+    .checkbox input { margin-right: 8px; }
+    .errorlist { list-style: none; padding: 0; margin: 6px 0 14px; color: var(--error); }
+    .helptext { display: block; margin-top: 6px; font-size: 13px; }
+    .back { display: inline-flex; align-items: center; min-height: 44px; margin-top: 16px; }
+    .codes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0; list-style: none; }
+    code { overflow-wrap: anywhere; }
+    .qr { display: block; max-width: 100%; height: auto; margin-bottom: 20px; background: white; padding: 12px; }
+    .action-hint { margin-top: 16px; color: var(--muted); }
+    #action-status { margin-top: 16px; color: var(--muted); }
+    #action-status:empty { margin: 0; }
+    @media (max-width: 600px) { .topbar { padding: 8px 16px; } main { padding: 24px 16px; } h1 { font-size: 27px; } .section { padding: 20px 16px; } .record { align-items: flex-start; flex-direction: column; } }
+    @media (forced-colors: active) { .brand-mark i { background: CanvasText; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/basework/" aria-label="BaseWork, рабочий стол"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span translate="no">BaseWork</span></a>
+    <a class="button" href="/basework/profile">Профиль</a>
+  </header>
+  <main class="{% block width %}{% endblock %}">{% block content %}{% endblock %}</main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
