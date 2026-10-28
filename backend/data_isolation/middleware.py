@@ -20,7 +20,8 @@ class IsolationBoundary:
             return JsonResponse({'status': 'not_found'}, status=404)
         view = getattr(match.func, 'view_class', match.func)
         if view.__module__ not in {'accounts.views', 'account_security.views',
-                                  'access_control.views', 'config.urls', 'basework.views', 'basework.oidc_views'}:
+                                  'access_control.views', 'config.urls', 'basework.views', 'basework.oidc_views',
+                                  'basework.password_views'}:
             return JsonResponse({'status': 'denied'}, status=403)
         if request.path_info == '/auth/basework/oidc/callback' and getattr(settings, 'BASEWORK_OIDC_ENABLED', False):
             # Погашение state коммитится отдельно. Внешний обмен не удерживает

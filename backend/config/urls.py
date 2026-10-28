@@ -83,7 +83,9 @@ if getattr(settings, "ACCESS_CONTROL_ENABLED", False):
 if getattr(settings, 'BASEWORK_ENABLED', False):
     urlpatterns.append(path('api/v1/basework/', include('basework.urls')))
     from basework import oidc_views
+    from basework.password_views import BaseWorkLogin
     urlpatterns += [
+        path('auth/basework/login', BaseWorkLogin.as_view(), name='basework_login'),
         path('auth/basework/oidc/login', oidc_views.login),
         path('auth/basework/oidc/callback', oidc_views.callback),
         path('auth/basework/oidc/mfa', oidc_views.mfa),

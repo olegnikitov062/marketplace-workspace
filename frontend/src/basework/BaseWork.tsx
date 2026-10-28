@@ -45,7 +45,8 @@ function StatePanel({ kind, retry }: { kind: PanelKind; retry?: () => void }) {
   const panel = panels[kind];
   return <section className="bw-state" role={kind === 'error' || kind === 'forbidden' || kind === 'module_error' ? 'alert' : 'status'} aria-busy={kind === 'loading'}>
     <h2>{panel.title}</h2><p>{panel.description}</p>
-    {retry && ['error', 'unavailable', 'module_unavailable', 'module_error', 'anonymous', 'expired', 'mfa_required', 'forbidden'].includes(kind) ?
+    {['anonymous', 'expired'].includes(kind) ? <a className="bw-button" href="/auth/basework/login">Войти</a> : null}
+    {retry && ['error', 'unavailable', 'module_unavailable', 'module_error', 'mfa_required', 'forbidden'].includes(kind) ?
       <button type="button" className="bw-button" onClick={retry}>Повторить проверку</button> : null}
   </section>;
 }
@@ -137,17 +138,16 @@ function Profile({ resource, retry, logout }: { resource: Resource; retry: () =>
         {resource.status === 'ready' ? <button type="button" className="bw-button" disabled={pending} onClick={() => void leave(true)}>Выйти из всех сессий</button> : null}
       </> : null}
       {['anonymous', 'expired'].includes(resource.status) ?
-        <>{authOptions === 'enabled' ? <a className="bw-button" href={oidcLoginPath}>Войти через Authelia</a> : null}
-          <a className="bw-button" href="/auth/mfa/login/">Вход Marketplace с MFA</a></> : null}
+        <><a className="bw-button" href="/auth/basework/login">Войти по логину и паролю</a>
+          {authOptions === 'enabled' ? <a href={oidcLoginPath}>Войти через Authelia</a> : null}</> : null}
       {resource.status === 'mfa_required' ? <a className="bw-button" href="/auth/mfa/setup/">Завершить настройку MFA</a> : null}
       {resource.status === 'ready' ? <a href="/auth/security/">Безопасность и подтверждение MFA</a> : null}
     </div>
     <p role="status" aria-live="polite">{pending ? 'Сервер завершает сессию…' : message}</p>
-  </section><aside className="bw-aside"><section><h2>Общий вход</h2><p>{authOptions === 'enabled' ?
-    'Вход через Authelia настроен. Прикладные права и локальная MFA проверяются в BaseWork.' :
-    authOptions === 'disabled' ? 'Общий вход выключен. Доступен вход Marketplace с MFA.' :
-      'Доступность общего входа не подтверждена. Можно использовать вход Marketplace с MFA.'}</p>
-    <p>Выход из BaseWork не подтверждает выход из Authelia или отдельных приложений.</p></section></aside></div>;
+  </section><aside className="bw-aside"><section><h2>Вход в аккаунт</h2>
+    <p>Используйте свой логин и пароль. После входа откроется рабочий стол.</p>
+    {authOptions === 'enabled' ? <p>Также доступен вход через Authelia. Выход из BaseWork не завершает сессию Authelia.</p> : null}
+  </section></aside></div>;
 }
 
 function Notifications() {
