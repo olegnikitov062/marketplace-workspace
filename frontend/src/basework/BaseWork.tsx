@@ -131,8 +131,8 @@ function Profile({ resource, retry, logout }: { resource: Resource; retry: () =>
   return <div className="bw-columns"><section className="bw-surface bw-section" aria-labelledby="session-title">
     <h2 id="session-title">Текущая сессия</h2><SessionSummary resource={resource} />
     {resource.status === 'ready' ? <p>Разрешения приложений определяет сервер. Настройки темы не влияют на доступ.</p> : null}
-    <button type="button" className="bw-button" onClick={retry} disabled={pending || resource.status === 'loading'}>{resource.status === 'loading' ? 'Проверяем сессию…' : 'Проверить сессию'}</button>
-    <div className="bw-section-footer">
+    <div className="bw-profile-actions">
+      <button type="button" className="bw-button" onClick={retry} disabled={pending || resource.status === 'loading'}>{resource.status === 'loading' ? 'Проверяем сессию…' : 'Проверить сессию'}</button>
       {resource.status === 'ready' || resource.status === 'mfa_required' || pending ? <>
         <button type="button" className="bw-button" disabled={pending} onClick={() => void leave(false)}>Выйти</button>
         {resource.status === 'ready' ? <button type="button" className="bw-button" disabled={pending} onClick={() => void leave(true)}>Выйти из всех сессий</button> : null}
@@ -218,20 +218,19 @@ export function BaseWork() {
     const order = ['marketplace', 'reports', 'bloggers', 'faq', 'rooms', 'sources', 'airflow'];
     return order.indexOf(a.id) - order.indexOf(b.id);
   });
-  const navigation = <><Link href="/basework/" aria-label="Рабочий стол" aria-current={route.kind === 'home' ? 'page' : undefined} onClick={closeDialog}>Стол</Link>
-    {navigationEntries.map(entry => <Link key={entry.id} href={applicationPath(entry.id)} onClick={closeDialog} aria-label={entry.title}
-      aria-current={route.kind === 'application' && route.application.id === entry.id ? 'page' : undefined}>{entry.id === 'sources' ? 'Данные' : entry.title}</Link>)}</>;
+  const navigation = navigationEntries.map(entry => <Link key={entry.id} href={applicationPath(entry.id)} onClick={closeDialog} aria-label={entry.title}
+    aria-current={route.kind === 'application' && route.application.id === entry.id ? 'page' : undefined}>{entry.id === 'sources' ? 'Данные' : entry.title}</Link>);
   return <div className="bw-suite">
     <a className="bw-skip" href="#main-content">К содержимому</a>
     <header className="bw-topbar">
       <button type="button" className="bw-top-action bw-menu" aria-label="Меню" aria-haspopup="dialog" onClick={() => setDialog('menu')}><Icon name="menu" /></button>
       <Link href="/basework/" className="bw-brand" aria-label="BaseWork, рабочий стол"><span className="bw-brand-mark" aria-hidden="true"><i /><i /><i /></span><span translate="no">BaseWork</span></Link>
-      <nav className="bw-desktop-nav" aria-label="Приложения BaseWork">{navigation}</nav>
+      {navigationEntries.length > 0 ? <nav className="bw-desktop-nav" aria-label="Приложения BaseWork">{navigation}</nav> : null}
       <div className="bw-actions">
         <button type="button" className="bw-top-search" aria-label="Поиск" aria-haspopup="dialog" aria-keyshortcuts="Control+k Meta+k" onClick={() => setDialog('search')}><Icon name="search" /><span className="bw-search-caption">Поиск</span><span className="bw-shortcut" aria-hidden="true">Ctrl K</span></button>
         <button type="button" className="bw-top-action" aria-label="Тема" aria-haspopup="dialog" onClick={() => setDialog('theme')}><Icon name="moon" /></button>
         <Link className="bw-top-action bw-notification-action" href="/basework/notifications" aria-label="Уведомления" aria-current={route.kind === 'notifications' ? 'page' : undefined}><Icon name="bell" /></Link>
-        <Link className="bw-profile-action" href="/basework/profile" aria-label="Профиль" aria-current={route.kind === 'profile' ? 'page' : undefined}><span className="bw-profile-icon"><Icon name="users" /></span><span>Профиль</span></Link>
+        <Link className="bw-profile-action" href="/basework/profile" aria-label="Профиль" aria-current={route.kind === 'profile' ? 'page' : undefined}><Icon name="users" /><span>Профиль</span></Link>
       </div>
     </header>
     <main id="main-content" className="bw-main" tabIndex={-1}>

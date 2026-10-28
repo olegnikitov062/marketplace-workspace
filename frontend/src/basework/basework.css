@@ -41,7 +41,7 @@ h2 { font-size: 17px; line-height: 1.4; font-weight: 600; }
 .bw-skip { position: fixed; top: -100px; left: 16px; z-index: 10; padding: 12px 16px; background: var(--bw-surface); }
 .bw-skip:focus { top: 12px; }
 .bw-suite { min-height: 100dvh; display: flex; flex-direction: column; }
-.bw-topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 10px 26px; min-height: 65px; background: var(--bw-surface); border-bottom: 1px solid var(--bw-line); }
+.bw-topbar { display: flex; align-items: center; gap: 14px; padding: 10px 26px; min-height: 64px; background: var(--bw-surface); border-bottom: 1px solid var(--bw-line); }
 .bw-brand { display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0; color: var(--bw-text); font-family: Bahnschrift, 'Segoe UI', sans-serif; font-size: 21px; letter-spacing: -.5px; text-decoration: none; min-height: 44px; }
 .bw-brand:hover { text-decoration: none; color: var(--bw-accent); }
 .bw-brand-mark { display: flex; align-items: center; gap: 3px; width: 21px; height: 25px; }
@@ -57,7 +57,6 @@ h2 { font-size: 17px; line-height: 1.4; font-weight: 600; }
 .bw-button:hover { background: var(--bw-subtle); text-decoration: none; }
 .bw-button[aria-current='page'] { color: var(--bw-accent); border-color: var(--bw-accent); }
 .bw-shortcut { font-size: 11px; color: var(--bw-muted); }
-.bw-button.bw-menu { display: none; }
 .bw-main { width: 100%; max-width: 1600px; padding: 28px 32px 40px; margin: 0 auto; flex: 1; min-width: 0; }
 .bw-page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .bw-page-head p { margin-top: 8px; color: var(--bw-muted); font-size: 13px; }
@@ -87,6 +86,8 @@ h2 { font-size: 17px; line-height: 1.4; font-weight: 600; }
 .bw-section > .bw-session-name { color: var(--bw-text); font-weight: 600; }
 .bw-section-footer { display: flex; flex-wrap: wrap; gap: 12px 24px; border-top: 1px solid var(--bw-line); padding: 12px 24px; }
 .bw-section-footer a { display: inline-flex; align-items: center; min-height: 44px; }
+.bw-profile-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--bw-line); }
+.bw-profile-actions > a { display: inline-flex; align-items: center; min-height: 44px; }
 .bw-muted { color: var(--bw-muted); }
 .bw-mobile-status { display: none; }
 .bw-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding: 16px 32px; border-top: 1px solid var(--bw-line); color: var(--bw-muted); font-size: 12px; }
@@ -111,10 +112,6 @@ h2 { font-size: 17px; line-height: 1.4; font-weight: 600; }
 .bw-mobile-nav { display: flex; flex-direction: column; }
 .bw-mobile-nav a { display: flex; align-items: center; min-height: 48px; padding: 10px 8px; text-decoration: none; border-top: 1px solid var(--bw-line); }
 .bw-mobile-nav a:hover, .bw-mobile-nav a[aria-current='page'] { background: var(--bw-subtle); }
-@media (max-width: 1399px) {
-  .bw-desktop-nav { display: none; }
-  .bw-button.bw-menu { display: inline-flex; }
-}
 @media (max-width: 900px) {
   .bw-columns { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .bw-aside { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
@@ -122,11 +119,6 @@ h2 { font-size: 17px; line-height: 1.4; font-weight: 600; }
   .bw-aside > * { min-width: 0; }
 }
 @media (max-width: 600px) {
-  .bw-topbar { padding: 8px 16px; gap: 6px 14px; }
-  .bw-brand { margin-right: auto; }
-  .bw-actions { width: 100%; display: grid; grid-template-columns: auto auto 1fr auto; margin-left: 0; gap: 4px; }
-  .bw-actions .bw-button { padding: 8px; font-size: 12px; }
-  .bw-shortcut { display: none; }
   .bw-main { padding: 24px 16px 32px; }
   h1 { font-size: 27px; }
   .bw-page-head { flex-direction: column; gap: 8px; margin-bottom: 20px; }
@@ -150,18 +142,13 @@ h2 { font-size: 17px; line-height: 1.4; font-weight: 600; }
 @media (forced-colors: active) { .bw-brand-mark i { background: CanvasText; } }
 
 
-/* Рабочий стол и шапка повторяют компоновку согласованного макета. */
-.bw-topbar { flex-wrap: nowrap; gap: 14px; padding: 0 26px; min-height: 64px; }
-.bw-desktop-nav a { padding: 0 10px; }
-.bw-actions { gap: 2px; }
-.bw-top-action, .bw-top-search, .bw-profile-action { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; color: var(--bw-muted); background: transparent; border: 0; text-decoration: none; font: inherit; font-size: 12px; }
-.bw-top-action { width: 44px; padding: 10px; flex-shrink: 0; border-radius: 5px; }
-.bw-top-action:hover, .bw-profile-action:hover { background: var(--bw-subtle); color: var(--bw-text); text-decoration: none; }
-.bw-top-search { gap: 8px; padding: 0 9px; border: 1px solid var(--bw-line); border-radius: 5px; }
-.bw-top-search svg { width: 15px; height: 15px; }
-.bw-profile-action { gap: 8px; padding-left: 10px; border-left: 1px solid var(--bw-line); color: var(--bw-text); }
-.bw-profile-icon { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--bw-subtle); color: var(--bw-muted); }
-.bw-profile-icon svg { width: 16px; height: 16px; }
+.bw-top-action, .bw-top-search, .bw-profile-action { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; gap: 8px; height: 44px; padding: 0 12px; color: var(--bw-muted); background: transparent; border: 1px solid transparent; border-radius: 5px; text-decoration: none; font: inherit; font-size: 12px; line-height: 1; white-space: nowrap; }
+.bw-top-action { width: 44px; padding: 0; }
+.bw-top-action > svg, .bw-top-search > svg, .bw-profile-action > svg { display: block; flex-shrink: 0; width: 18px; height: 18px; }
+.bw-top-action:hover, .bw-top-search:hover, .bw-profile-action:hover { background: var(--bw-subtle); color: var(--bw-text); text-decoration: none; }
+.bw-top-search, .bw-profile-action { border-color: var(--bw-line); }
+.bw-profile-action { color: var(--bw-text); }
+.bw-top-action[aria-current='page'], .bw-profile-action[aria-current='page'] { color: var(--bw-accent); border-color: var(--bw-accent); background: var(--bw-selected); }
 .bw-menu { display: none; }
 .bw-today { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .bw-today strong { font-family: Bahnschrift, 'Segoe UI', sans-serif; font-size: 48px; font-weight: 550; line-height: 1; }
@@ -190,17 +177,16 @@ h2 { font-size: 17px; line-height: 1.4; font-weight: 600; }
 .bw-sources-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; font-size: 12px; }
 .bw-home-aside h2 { font-size: 15px; }
 .bw-home-aside p { line-height: 1.65; }
-@media (max-width: 1100px) {
+@media (max-width: 1250px) {
   .bw-desktop-nav { display: none; }
   .bw-menu { display: inline-flex; }
 }
 @media (max-width: 800px) {
-  .bw-topbar { min-height: 54px; padding: 0 12px; gap: 4px; }
+  .bw-topbar { min-height: 60px; padding: 8px 12px; gap: 4px; }
   .bw-brand { margin-right: auto; font-size: 18px; }
-  .bw-actions { width: auto; display: flex; margin-left: 0; gap: 0; }
-  .bw-top-search { width: 44px; padding: 10px; border: 0; }
+  .bw-actions { margin-left: 0; gap: 4px; }
+  .bw-top-search, .bw-profile-action { width: 44px; padding: 0; }
   .bw-search-caption, .bw-top-search .bw-shortcut, .bw-profile-action > span:last-child, .bw-notification-action { display: none; }
-  .bw-profile-action { width: 44px; min-width: 44px; padding: 0; border: 0; }
   .bw-home-section { padding: 20px 16px; }
   .bw-app-grid { grid-template-columns: minmax(0, 1fr); }
   .bw-app-link { min-height: 76px; }
@@ -212,9 +198,6 @@ h2 { font-size: 17px; line-height: 1.4; font-weight: 600; }
   .bw-today { gap: 7px; }
   .bw-today strong { font-size: 36px; }
   .bw-today span { font-size: 11px; }
-  .bw-topbar { padding: 0 8px; gap: 1px; }
-  .bw-menu, .bw-top-action, .bw-top-search, .bw-profile-action { width: 40px; min-width: 40px; }
+  .bw-topbar { flex-wrap: wrap; padding-inline: 8px; gap: 4px; }
+  .bw-actions { margin-left: auto; }
 }
-
-@media (min-width: 1251px) { .bw-desktop-nav { display: flex; } }
-@media (min-width: 1101px) and (max-width: 1250px) { .bw-menu { display: inline-flex; } }
