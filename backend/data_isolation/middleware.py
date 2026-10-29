@@ -38,6 +38,21 @@ class IsolationBoundary:
                 patch_cache_control(response, private=True, no_store=True, no_cache=True)
                 response['Referrer-Policy'] = 'no-referrer'
                 return response
+        response = self.transactional_response(request)
+        if getattr(request, '_basework_faq_pending', False) and response.status_code == 200:
+            from basework.faq import read_source, SourceUnavailable
+            try:
+                request._basework_faq_result = read_source()
+            except SourceUnavailable:
+                request._basework_faq_result = None
+            # Повторная авторизация использует свежие user/session и те же SQL-подписи.
+            for name in ('_cached_user', '_acached_user'):
+                if hasattr(request, name):
+                    delattr(request, name)
+            return self.transactional_response(request)
+        return response
+
+    def transactional_response(self, request):
         marker = scope.set(None)
         try:
             with transaction.atomic(), connection.execute_wrapper(StatementSigner(connection, uuid.uuid4().hex)):

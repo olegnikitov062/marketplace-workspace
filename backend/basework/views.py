@@ -13,6 +13,7 @@ from django.views.decorators.http import require_GET, require_POST
 from account_security import services as security
 from account_security.models import AccountSession
 from .services import catalog
+from . import faq
 
 
 @never_cache
@@ -62,6 +63,25 @@ def application(request, application_id):
     if not any(item['id'] == application_id for item in catalog(request.user)):
         return JsonResponse({'status': 'denied'}, status=403)
     return JsonResponse({'status': 'module_unavailable'}, status=503)
+
+
+@require_GET
+@guarded
+def faq_items(request):
+    if not any(item['id'] == 'faq' for item in catalog(request.user)):
+        return JsonResponse({'status': 'denied'}, status=403)
+    if set(request.GET) - {'q', 'category'} or any(len(values) != 1 for _, values in request.GET.lists()):
+        return JsonResponse({'status': 'invalid_request'}, status=400)
+    query, category = request.GET.get('q', '').strip(), request.GET.get('category', '').strip()
+    if len(query) > 300 or len(category) > 1000:
+        return JsonResponse({'status': 'invalid_request'}, status=400)
+    if not hasattr(request, '_basework_faq_result'):
+        # IsolationBoundary завершит транзакцию до сети и повторит этот guard после неё.
+        request._basework_faq_pending = True
+        return JsonResponse({'status': 'source_pending'})
+    if request._basework_faq_result is None:
+        return JsonResponse({'status': 'source_unavailable'}, status=503)
+    return JsonResponse(faq.search(request._basework_faq_result, query, category))
 
 
 @require_POST

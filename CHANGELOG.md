@@ -2418,3 +2418,50 @@ Commit/push, серверные подключения и выкладка не 
 Доставка: обычный push main, затем git pull --ff-only origin main. Собираются backend и frontend, обновляются только web/frontend изолированного проекта basework-stage3-pg-20261027. Перед заменой двух image сохраняются compose и прежние образы. Миграции не запускаются. Базы, Authelia, общий Caddy и рабочая beta не меняются. Проверка публичного входа использует существующий тестовый аккаунт только на сервере, без передачи пароля и с завершением созданной проверкой сессии.
 
 Доказательства: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-защита-выкладка-2026-10-28/. Backup журнала: .change-backups/2026-10-28-security-deploy/CHANGELOG.before.md. Откат: вернуть прежние image из backup compose и пересоздать только web/frontend без зависимостей; Git откатывать отдельным revert через main, местный журнал — адресно. Факт выкладки и проверки будут записаны после исполнения; визуальная приёмка Chrome пока не выполнена.
+
+## 2026-10-29 10:59:53 Europe/Moscow (UTC+3) — BaseWork, этап 4: FAQ только чтение и поиск
+
+Рабочая копия main-preparation, main, исходный HEAD 04243c7dc63a0b7b415c154859e38e8923467520. Прежние незакоммиченные записи журнала сохранены побайтно.
+
+Добавлены серверный адаптер прежнего GET /api/items и экран справочника: вопросы, категории, контакты, поиск, версия, loading/empty/error/403. Единственный источник остаётся прежний data.json; БД FAQ, редактор, запись и новые зависимости не создавались. BASEWORK_FAQ_URL по умолчанию пуст. Сессия и ApplicationAccess проверяются до сети и повторно перед выдачей, сеть вынесена из SQL-транзакции. Ключ редактора и служебные поля не передаются.
+
+Изменённые файлы: `backend/basework/views.py`, `backend/basework/urls.py`, `backend/basework/services.py`, `backend/config/settings.py`, `backend/data_isolation/middleware.py`, `frontend/src/basework/BaseWork.tsx`, `frontend/src/basework/basework.css`, `frontend/package.json`, `frontend/tests/serve-basework.mjs`, `CHANGELOG.md`.
+Новые файлы: `backend/basework/faq.py`, `backend/basework/tests/test_faq.py`, `frontend/src/basework/Faq.tsx`, `frontend/src/basework/faqApi.ts`, `frontend/tests/faq.test.mjs`.
+Исходные файлы сохранены по тем же относительным путям в `.change-backups/2026-10-29-faq/`; резерв CHANGELOG.md содержит всю прежнюю местную работу.
+
+Проверки: 18/18 новых backend FAQ; 47/47 frontend; окончательная TypeScript/Vite сборка PASS; git diff --check backend/frontend PASS. Точное сравнение локального источника: версия 97 от 14.10.2026, 47 вопросов, 9 категорий, 18 людей, 67 контактов; поиск по каждому вопросу/категории/имени, хеши источника сохранены. Это локальный снимок, не live.
+Расширенный backend: 175 запусков, 164 PASS, 3 ERROR, 8 SKIP. Три ошибки (старый export-probe и два обратных миграционных теста) повторены на чистом исходном HEAD; не исправлялись вне scope. Пропуски PostgreSQL не считаются успешными.
+Chrome-приёмка FAQ не выполнена: установленный browser-client найден, каталоги обязательных Browser/Chrome skills пусты. PostgreSQL/RLS нового маршрута и живой источник не проверены. Этапы 3/4 целиком не закрыты.
+
+Управленческие документы: C:/Users/krolo/Documents/BaseWork/README.md (добавлен актуальный статус; исходник README-до.txt). Доказательства: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-4-FAQ-2026-10-29/ — Проверка.txt, Подключение стенда.txt, compare_local_source.py, local-source-comparison.json, check_baseline.py, baseline-errors.log, backend-faq-tests.log, backend-faq-tests-final.log, backend-regressions.log, frontend-tests.log, frontend-build.log, frontend-build-final.log, README-до.txt, file-manifest.json. Персональные данные источника туда не копировались.
+
+Откат: сравнить текущие файлы с резервами и применить только обратный diff этой задачи, сохранив более позднюю работу. Новые файлы удалить только при отсутствии последующих изменений и после удаления ссылок/импортов. Журнал целиком не заменять; дописать запись об откате. Для будущего отключения адаптера убрать BASEWORK_FAQ_URL установленным согласованным процессом; данные, права и отозванные сессии назад не возвращать. Без reset/clean.
+Серверных подключений, commit/push, выкладки, изменений рабочих БД/реальных прав/Authelia/Caddy нет. Исходная marketplace-workspace и исключённые FBS/Finkos/FANBOX не редактировались.
+
+
+## 2026-10-29 11:15:36 Europe/Moscow (UTC+3) — BaseWork FAQ: локальная PostgreSQL/RLS-приёмка
+
+По текущему поручению создан и проверен отдельный локальный кластер `basework-stage4-faq-pg-20261029`, PostgreSQL 17.11, новый том и internal network без опубликованных портов. Использованы только ранее установленные образы, без pull и новых зависимостей. Рабочие базы/серверы и прежние контейнеры не затронуты.
+
+Новый файл: `backend/tools/basework_faq_postgresql_rehearsal.py` — переиспользует строгий bootstrap/контракт этапа 3 с отдельным маркером кластера; проверяет FAQ под настоящим LOGIN mw_beta_web и отзыв отдельным соединением. Код FAQ, middleware, модели/миграции/RLS и frontend не менялись; предыдущие местные файлы сверены по SHA-256.
+
+Проверки: 39/39 новых FAQ PostgreSQL, 50/50 прежних PostgreSQL/RLS-регрессий, контракт ACL/политик/триггеров PASS, 32 FORCE RLS таблицы. Отзыв после commit: 0,049199 с; отзыв во время HTTP-чтения: 0,037530 с; прежние три пути: 0,074 с. Старые cookie не оживают при повторном назначении права, другой пользователь сохраняет доступ. Запись с CSRF запрещена, источник читается без транзакции со статусом PostgreSQL IDLE.
+
+HTTP маршруты проверены Django Client с полными middleware и реальными PostgreSQL LOGIN; синтетический FAQ — настоящий loopback HTTP. Это не проверка gunicorn/ingress/TLS/Chrome или живого FAQ. Chrome не трогали по поручению; три прежние ошибки общего SQLite-прогона не закрываются этим отдельным набором. Общий этап 3 не объявлен завершённым.
+
+Новый postgres остановлен exit0, одноразовые probe удалены штатно, тестовый том и секреты сохранены для повторения. Локальный Docker Desktop был запущен для этой приёмки; в конце запущенных контейнеров нет.
+
+Документы BaseWork: README.md дополнен; резерв README-до.txt. Новые доказательства в C:/Users/krolo/Documents/BaseWork/artifacts/Этап-4-FAQ-PostgreSQL-2026-10-29/: Проверка.txt, baseline.json, prepare.py, manifest.json, compose.json, bootstrap.log, configure.log, faq-first.log, postgresql-regressions.log, isolation.json, result.json, README-до.txt. Закрытая конфигурация нового тестового кластера: C:/Users/krolo/Documents/BaseWork/.local-stage4-faq-pg-20261029/; значения секретов не включены в документы или журналы.
+
+Резерв изменяемого журнала: `.change-backups/2026-10-29-faq-postgresql/CHANGELOG.md`. Откат: сохранить доказательства, сравнить последующие правки; новый harness удалить только если на него нет нужных ссылок и более поздней работы. Runtime не менялся. Журнал целиком не заменять, добавить запись об откате. Кластер уже остановлен; том/секреты автоматически не удалять, общий docker prune/reset/clean запрещены. Commit/push и серверных действий нет.
+
+
+## 2026-10-29 11:53:20 МСК (UTC+3) — подготовка согласованной выкладки FAQ
+
+Олег разрешил commit/push main, git pull на Selectel, узкое GET-исключение Caddy и настройки backend, замену только web/frontend. В коммит входят 15 файлов FAQ, перечисленных в записях реализации и PostgreSQL-приёмки выше, и относящиеся к FAQ записи CHANGELOG.md. Старые местные записи журнала сохранены unstaged, резерв: .change-backups/2026-10-29-faq-deploy/CHANGELOG.before.md. Все исходники совпали по SHA-256 с проверенными: 18 backend FAQ, 47 frontend, сборка, 39 FAQ PostgreSQL и 50 PostgreSQL-регрессий. Три прежние ошибки общего SQLite-прогона не закрыты.
+
+Свежий Selectel preflight: чистый main и origin/main на 04243c7dc63a0b7b415c154859e38e8923467520; хеши конфигов и адреса совпали с планом; форма входа 200, анонимный bootstrap 401. Живой FAQ версии 118: 47 вопросов, 9 категорий, 18 людей, 67 контактов. Источник остаётся прежним data.json/version.
+
+Согласованные файлы вне Git: /srv/projects/marketplace-workspace/main/config/basework-stage3/compose-password-c47cc9f.json (только images web/frontend, BASEWORK_FAQ_URL, extra_hosts web) и /srv/platform/gateway/Caddyfile (один FAQ import заменяется допуском GET /api/items от 172.28.0.3). Перед изменением — закрытые резервные копии и валидация полных конфигураций, сохранение inode Caddyfile и штатный reload. PostgreSQL, права, данные FAQ, Authelia и остальные контейнеры не изменяются; миграции не запускаются. Входы и назначения прав не выполняются.
+
+Доказательства и операционные скрипты: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-4-FAQ-выкладка-2026-10-29/. Код доставляется исключительно git pull --ff-only origin main. Фактический результат будет дописан после выкладки. Откат: после сравнения поздних изменений закрыть FAQ-исключение и reload Caddy, вернуть прежние поля compose/образы и пересоздать только web/frontend. Не откатывать данные, БД или права. Git — только отдельным согласованным revert через main, без reset/clean. Chrome отложен пользователем; полноценная приёмка прав в HTTP runtime стенда остаётся отдельным шагом.

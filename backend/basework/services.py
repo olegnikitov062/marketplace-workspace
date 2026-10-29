@@ -78,6 +78,8 @@ def catalog(user):
             cabinet__organization_id=F('organization_id')))
         if not grants.exists():
             permitted.discard('marketplace')
-    # Прикладные адаптеры ещё не подключены: разрешение меню не обещает работу модуля.
-    return [{'id': app, 'access': 'allowed', 'availability': 'unavailable'}
+    from .faq import configured
+    # Конфигурация означает возможность чтения, а не подтверждённое здоровье источника.
+    return [{'id': app, 'access': 'allowed',
+             'availability': 'available' if app == 'faq' and configured() else 'unavailable'}
             for app in APPLICATIONS if app in permitted]

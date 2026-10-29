@@ -1,5 +1,6 @@
 import { Component, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from './Dialog';
+import { Faq } from './Faq';
 import { applicationPanel, applicationPath, directory, panels, resolveRoute, searchApplications,
   type Application, type DirectoryEntry, type PanelKind, type Resource } from './model';
 import { Link, usePathname } from './navigation';
@@ -52,7 +53,7 @@ function StatePanel({ kind, retry }: { kind: PanelKind; retry?: () => void }) {
 }
 
 function statusLabel(entry: DirectoryEntry) {
-  return entry.access === 'unknown' ? 'Доступ не подтверждён' : entry.availability === 'unavailable' ? 'Модуль недоступен' : 'Ещё не подключено';
+  return entry.access === 'unknown' ? 'Доступ не подтверждён' : entry.availability === 'unavailable' ? 'Модуль недоступен' : entry.id === 'faq' ? 'Доступен для чтения' : 'Ещё не подключено';
 }
 
 function ApplicationList({ entries }: { entries: DirectoryEntry[] }) {
@@ -88,14 +89,14 @@ function Home({ resource, retry, onSearch }: { resource: Resource; retry: () => 
       </section>
       <section className="bw-home-section" aria-labelledby="applications-title">
         <div className="bw-home-section-head"><h2 id="applications-title">Приложения</h2><button type="button" className="bw-find" aria-haspopup="dialog" onClick={onSearch}>Найти <Icon name="search" /></button></div>
-        {entries.length > 0 ? <><p className="bw-home-note">{resource.status === 'ready' ? 'Рабочие данные ещё не подключены.' : 'Доступ к приложениям не подтверждён.'}</p><ApplicationList entries={entries} /></> :
+        {entries.length > 0 ? <><p className="bw-home-note">{resource.status === 'ready' ? 'Выберите рабочий раздел.' : 'Доступ к приложениям не подтверждён.'}</p><ApplicationList entries={entries} /></> :
           resource.status === 'ready' ? <StatePanel kind="empty" /> : null}
       </section>
     </div>
     <aside className="bw-aside bw-home-aside" aria-label="Встречи и справочник">
       <section><h2>Ближайшие встречи</h2><p>Данные встреч появятся после подключения переговорок.</p>
         {entries.some(entry => entry.id === 'rooms') ? <Link href="/basework/apps/rooms">Открыть переговорки</Link> : null}</section>
-      <section><h2>Найти ответственного</h2><p>Справочник поможет найти ответственного по рабочему вопросу после подключения.</p>
+      <section><h2>Найти ответственного</h2><p>Вопросы команды и контакты ответственных в справочнике.</p>
         {entries.some(entry => entry.id === 'faq') ? <Link href="/basework/apps/faq">Открыть справочник</Link> : null}</section>
     </aside>
   </div>;
@@ -103,6 +104,10 @@ function Home({ resource, retry, onSearch }: { resource: Resource; retry: () => 
 
 function ApplicationPage({ application, resource, retry }: { application: Application; resource: Resource; retry: () => void }) {
   const kind = applicationPanel(resource, application.id);
+  if (application.id === 'faq' && resource.status === 'ready' &&
+      resource.data.applications.some(item => item.id === 'faq' && item.access === 'allowed')) {
+    return <Faq key={resource.data.session.user.id} />;
+  }
   return <div className="bw-columns">
     <div className="bw-surface"><StatePanel kind={kind} retry={retry} />
       <div className="bw-section-footer"><Link href="/basework/">На рабочий стол</Link><Link href="/basework/profile">Проверить сессию</Link></div>

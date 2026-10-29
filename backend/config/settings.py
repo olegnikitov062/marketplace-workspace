@@ -42,6 +42,7 @@ ACCESS_CONTROL_ENABLED = True
 INSTALLED_APPS += ['data_isolation']
 INSTALLED_APPS += ['basework']
 BASEWORK_ENABLED = True
+BASEWORK_FAQ_URL = os.environ.get('BASEWORK_FAQ_URL', '')
 from basework.oidc_configuration import configure as configure_oidc
 configure_oidc(globals())
 ISOLATION_ENABLED = True
