@@ -247,7 +247,11 @@ def disable(request):
 @csrf_protect
 @login_required
 def password_change(request):
-    form = PasswordChangeForm(request.user, request.POST if request.method == "POST" else None)
+    form_class = PasswordChangeForm
+    if getattr(settings, 'BASEWORK_ENABLED', False):
+        from basework.password_forms import PersonalPasswordChangeForm
+        form_class = PersonalPasswordChangeForm
+    form = form_class(request.user, request.POST if request.method == "POST" else None)
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
             user, state = services.locked_user(request.user.pk)
@@ -256,7 +260,7 @@ def password_change(request):
             if not services.fresh(record, factor=services.authenticator(user) is not None):
                 raise PermissionDenied()
             # Validate again under the User lock against concurrent password changes.
-            form = PasswordChangeForm(user, request.POST)
+            form = form_class(user, request.POST)
             if not form.is_valid():
                 raise PermissionDenied()
             form.save(commit=False)

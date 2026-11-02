@@ -5,7 +5,6 @@ import re
 import uuid
 from pathlib import Path
 
-from django.contrib.auth.forms import SetPasswordForm
 from django.core import signing
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import connection, transaction
@@ -20,6 +19,7 @@ from accounts.models import AccountContact
 from ownership.models import User
 from .models import Administrator, ApplicationAccess
 from .services import revoke_application
+from .password_forms import PersonalSetPasswordForm
 
 CONFIG = '/run/config/basework_personal.json'
 OUTPUT = Path('/run/basework-personal-output')
@@ -104,7 +104,7 @@ def use_code(code, password1, password2):
     except (signing.BadSignature, User.DoesNotExist, ValueError, TypeError, KeyError):
         raise PermissionDenied() from None
     with override('ru'):
-        form = SetPasswordForm(user, {'new_password1': password1, 'new_password2': password2})
+        form = PersonalSetPasswordForm(user, {'new_password1': password1, 'new_password2': password2})
         if not form.is_valid():
             raise ValidationError(form.errors.as_data())
     form.save(commit=False)

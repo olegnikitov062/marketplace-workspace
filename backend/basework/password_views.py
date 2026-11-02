@@ -56,7 +56,7 @@ class PersonalAccessForm(forms.Form):
                            widget=forms.PasswordInput(attrs={'autocomplete': 'off', 'autofocus': True}))
     new_password1 = forms.CharField(label='Новый пароль', max_length=512, strip=False,
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
-        help_text='Не используйте пароль от другого сервиса или только цифры.')
+        help_text='Минимум 6 символов. Не используйте пароль от другого сервиса или только цифры.')
     new_password2 = forms.CharField(label='Повторите пароль', max_length=512, strip=False,
                                     widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}))
 

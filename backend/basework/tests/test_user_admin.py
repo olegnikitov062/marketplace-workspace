@@ -107,6 +107,38 @@ class UserAdminTests(TestCase):
         self.assertEqual(self.client.get(ROOT, secure=True).status_code, 403)
         self.assertFalse(self.client.get('/api/v1/basework/bootstrap', secure=True).json()['canManageUsers'])
 
+    def test_six_characters_for_personal_activation_and_password_change(self):
+        self.create()
+        client = Client(enforce_csrf_checks=True)
+        password = 'aX7!qP'
+        for rejected in ('aX7!q', '123456', 'qwerty'):
+            result = post(client, '/auth/basework/access', {'code': self.code, 'new_password1': rejected, 'new_password2': rejected})
+            self.assertEqual(result.status_code, 400)
+        result = post(client, '/auth/basework/access', {'code': self.code, 'new_password1': password, 'new_password2': password})
+        self.assertContains(result, 'Пароль сохранён')
+        self.assertEqual(login(client, self.user, password).status_code, 302)
+        form = client.get('/auth/security/password/', secure=True)
+        self.assertContains(form, '6')
+        new_password = 'rT8#pK'
+        result = post(client, '/auth/security/password/', {'old_password': password,
+                      'new_password1': new_password, 'new_password2': new_password})
+        self.assertEqual(result.status_code, 302)
+        self.assertEqual(client.get('/api/v1/basework/bootstrap', secure=True).status_code, 401)
+        self.assertEqual(login(client, self.user, new_password).status_code, 302)
+
+    def test_other_accounts_keep_twelve_characters(self):
+        from basework.password_forms import PersonalSetPasswordForm
+        password = 'aX7!qP'
+        legacy = User.objects.create_user('legacy-password-fixture', self.password)
+        form = PersonalSetPasswordForm(legacy, {'new_password1': password, 'new_password2': password})
+        self.assertFalse(form.is_valid())
+        self.assertTrue(any(error.code == 'password_too_short' for error in form.errors.as_data()['new_password2']))
+        self.create()
+        organization = Organization.objects.create(name='Тестовая организация')
+        Membership.objects.create(user=self.user, organization=organization, role='owner')
+        form = PersonalSetPasswordForm(self.user, {'new_password1': password, 'new_password2': password})
+        self.assertFalse(form.is_valid())
+
     def test_plain_user_with_rooms_permission_is_not_admin(self):
         user = User.objects.create_user('rooms-admin-fixture', self.password)
         ApplicationAccess.objects.create(user=user, application='rooms')
