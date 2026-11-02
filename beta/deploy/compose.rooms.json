@@ -1,0 +1,17 @@
+{
+  "services": {
+    "web": {
+      "environment": {
+        "BASEWORK_ROOMS_URL": "${BASEWORK_ROOMS_URL:?verified HTTPS rooms bridge URL required}",
+        "BASEWORK_ROOMS_KEY_FILE": "/run/secrets/basework_rooms_key",
+        "BASEWORK_ROOMS_WRITES": "${BASEWORK_ROOMS_WRITES:-0}"
+      },
+      "secrets": ["basework_rooms_key"]
+    }
+  },
+  "secrets": {
+    "basework_rooms_key": {
+      "file": "${BASEWORK_ROOMS_SECRET_FILE:?verified rooms key file required}"
+    }
+  }
+}

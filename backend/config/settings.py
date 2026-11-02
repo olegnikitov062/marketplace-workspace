@@ -43,6 +43,9 @@ INSTALLED_APPS += ['data_isolation']
 INSTALLED_APPS += ['basework']
 BASEWORK_ENABLED = True
 BASEWORK_FAQ_URL = os.environ.get('BASEWORK_FAQ_URL', '')
+BASEWORK_ROOMS_URL = os.environ.get('BASEWORK_ROOMS_URL', '')
+BASEWORK_ROOMS_KEY_FILE = os.environ.get('BASEWORK_ROOMS_KEY_FILE', '')
+BASEWORK_ROOMS_WRITES = os.environ.get('BASEWORK_ROOMS_WRITES') == '1'
 from basework.oidc_configuration import configure as configure_oidc
 configure_oidc(globals())
 ISOLATION_ENABLED = True

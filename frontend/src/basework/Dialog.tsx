@@ -20,7 +20,7 @@ export function Dialog({ title, children, onClose }: { title: string; children: 
         if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close.current(); return; }
         if (event.key !== 'Tab') return;
         const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input:not([disabled]):not([type="radio"]), input[type="radio"]:checked, [tabindex="0"]',
+          'a[href], button:enabled, input:enabled:not([type="radio"]), input[type="radio"]:enabled:checked, select:enabled, textarea:enabled, [tabindex="0"]',
         )).filter(element => element.getClientRects().length > 0);
         const first = controls[0];
         const last = controls[controls.length - 1];

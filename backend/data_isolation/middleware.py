@@ -39,6 +39,17 @@ class IsolationBoundary:
                 response['Referrer-Policy'] = 'no-referrer'
                 return response
         response = self.transactional_response(request)
+        if getattr(request, '_basework_rooms_pending', None) and response.status_code == 200:
+            from basework.rooms import exchange, SourceUnavailable
+            actor, _, path = request._basework_rooms_pending
+            try:
+                request._basework_rooms_result = exchange(actor, 'GET', path, {}, uuid.uuid4())
+            except SourceUnavailable:
+                request._basework_rooms_result = (503, {'status': 'source_unavailable'})
+            for name in ('_cached_user', '_acached_user'):
+                if hasattr(request, name):
+                    delattr(request, name)
+            return self.transactional_response(request)
         if getattr(request, '_basework_faq_pending', False) and response.status_code == 200:
             from basework.faq import read_source, SourceUnavailable
             try:

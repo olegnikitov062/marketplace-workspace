@@ -1,6 +1,7 @@
 import { Component, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from './Dialog';
 import { Faq } from './Faq';
+import { Rooms } from './Rooms';
 import { applicationPanel, applicationPath, directory, panels, resolveRoute, searchApplications,
   type Application, type DirectoryEntry, type PanelKind, type Resource } from './model';
 import { Link, usePathname } from './navigation';
@@ -53,7 +54,7 @@ function StatePanel({ kind, retry }: { kind: PanelKind; retry?: () => void }) {
 }
 
 function statusLabel(entry: DirectoryEntry) {
-  return entry.access === 'unknown' ? 'Доступ не подтверждён' : entry.availability === 'unavailable' ? 'Модуль недоступен' : entry.id === 'faq' ? 'Доступен для чтения' : 'Ещё не подключено';
+  return entry.access === 'unknown' ? 'Доступ не подтверждён' : entry.availability === 'unavailable' ? 'Модуль недоступен' : entry.id === 'faq' ? 'Доступен для чтения' : entry.id === 'rooms' ? 'Открыть календарь' : 'Ещё не подключено';
 }
 
 function ApplicationList({ entries }: { entries: DirectoryEntry[] }) {
@@ -94,7 +95,7 @@ function Home({ resource, retry, onSearch }: { resource: Resource; retry: () => 
       </section>
     </div>
     <aside className="bw-aside bw-home-aside" aria-label="Встречи и справочник">
-      <section><h2>Ближайшие встречи</h2><p>Данные встреч появятся после подключения переговорок.</p>
+      <section><h2>Ближайшие встречи</h2><p>Расписание встреч доступно в календаре переговорок.</p>
         {entries.some(entry => entry.id === 'rooms') ? <Link href="/basework/apps/rooms">Открыть переговорки</Link> : null}</section>
       <section><h2>Найти ответственного</h2><p>Вопросы команды и контакты ответственных в справочнике.</p>
         {entries.some(entry => entry.id === 'faq') ? <Link href="/basework/apps/faq">Открыть справочник</Link> : null}</section>
@@ -102,8 +103,24 @@ function Home({ resource, retry, onSearch }: { resource: Resource; retry: () => 
   </div>;
 }
 
+function RoomsPage({ resource, retry }: { resource: Resource; retry: () => void }) {
+  const [identity, setIdentity] = useState<{ actor: string; csrf: string } | null>(null);
+  const allowed = resource.status === 'ready' && resource.data.applications.some(item => item.id === 'rooms' && item.access === 'allowed');
+  // Временная проверка скрывает модуль, но не уничтожает черновик. Отказ и смена
+  // пользователя сбрасывают его до показа следующего кадра.
+  if (allowed && resource.status === 'ready') {
+    const actor = resource.data.session.user.id, csrf = resource.data.csrfToken ?? '';
+    if (identity?.actor !== actor || identity.csrf !== csrf) setIdentity({ actor, csrf });
+  } else if (identity && !['loading', 'error', 'unavailable'].includes(resource.status)) {
+    setIdentity(null);
+  }
+  const panel = <StatePanel kind={applicationPanel(resource, 'rooms')} retry={retry} />;
+  return identity ? <Rooms key={identity.actor} actor={identity.actor} csrf={identity.csrf} authorized={allowed} accessPanel={panel} /> : panel;
+}
+
 function ApplicationPage({ application, resource, retry }: { application: Application; resource: Resource; retry: () => void }) {
   const kind = applicationPanel(resource, application.id);
+  if (application.id === 'rooms') return <RoomsPage resource={resource} retry={retry} />;
   if (application.id === 'faq' && resource.status === 'ready' &&
       resource.data.applications.some(item => item.id === 'faq' && item.access === 'allowed')) {
     return <Faq key={resource.data.session.user.id} />;

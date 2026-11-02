@@ -8,12 +8,13 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 
 from account_security import services as security
 from account_security.models import AccountSession
 from .services import catalog
 from . import faq
+from . import rooms
 
 
 @never_cache
@@ -95,3 +96,64 @@ def logout(request, all_sessions=False):
     if all_sessions:
         response.delete_cookie(settings.SECURITY_TRUST_COOKIE, path='/auth/')
     return response
+
+
+@require_http_methods(['GET', 'POST', 'PUT', 'DELETE'])
+@csrf_protect
+@guarded
+def rooms_events(request, event_id=None):
+    import json
+    import re
+    import uuid
+    from datetime import datetime, timedelta
+    from urllib.parse import urlencode
+    from .models import ApplicationAccess
+    if not ApplicationAccess.objects.filter(user=request.user, application='rooms', revoked_at__isnull=True).exists():
+        return JsonResponse({'status': 'denied'}, status=403)
+    if event_id is not None and not re.fullmatch('[a-f0-9]{32}', event_id):
+        return JsonResponse({'status': 'invalid_request'}, status=400)
+    if (request.method in ('GET', 'POST') and event_id is not None) or (request.method in ('PUT', 'DELETE') and event_id is None):
+        return JsonResponse({'status': 'invalid_request'}, status=400)
+    if request.method == 'GET':
+        try:
+            if set(request.GET) != {'from', 'to'} or any(len(v) != 1 for _, v in request.GET.lists()):
+                raise ValueError()
+            start, end = [datetime.fromisoformat(request.GET[k].replace('Z', '+00:00')) for k in ('from', 'to')]
+            if start.tzinfo is None or end.tzinfo is None or not timedelta(0) < end - start <= timedelta(days=35):
+                raise ValueError()
+        except (ValueError, TypeError):
+            return JsonResponse({'status': 'invalid_request'}, status=400)
+        if not hasattr(request, '_basework_rooms_result'):
+            request._basework_rooms_pending = (str(request.user.pk), str(request.security_session.pk),
+                '/api/events?' + urlencode({k: request.GET[k] for k in ('from', 'to')}))
+            return JsonResponse({'status': 'source_pending'})
+        actor, session, _ = request._basework_rooms_pending
+        if actor != str(request.user.pk) or session != str(request.security_session.pk):
+            return JsonResponse({'status': 'session_expired'}, status=401)
+        status, result = request._basework_rooms_result
+        return JsonResponse(result, status=status)
+    if not getattr(settings, 'BASEWORK_ROOMS_WRITES', False):
+        return JsonResponse({'status': 'read_only'}, status=403)
+    operation = rooms.operation_id(request.headers.get('Idempotency-Key'))
+    try:
+        if not operation or request.GET or request.content_type != 'application/json' or len(request.body) > 490_000:
+            raise ValueError()
+        body = json.loads(request.body)
+        if not isinstance(body, dict):
+            raise ValueError()
+    except (ValueError, UnicodeError):
+        return JsonResponse({'status': 'invalid_request'}, status=400)
+    # Отзыв и внешняя запись сериализуются прежней блокировкой пользователя.
+    # Сетевой запрос ограничен по времени; данные не копируются в PostgreSQL.
+    user, state = security.locked_user(request.user.pk)
+    record = AccountSession.objects.get(pk=request.security_session.pk, user=user)
+    if not security.record_valid(record, user, state):
+        return JsonResponse({'status': 'session_expired'}, status=401)
+    if not ApplicationAccess.objects.filter(user=user, application='rooms', revoked_at__isnull=True).exists():
+        return JsonResponse({'status': 'denied'}, status=403)
+    try:
+        status, result = rooms.exchange(user.pk, request.method, '/api/events' + ('/' + event_id if event_id else ''), body, operation)
+    except rooms.SourceUnavailable:
+        # Ответ потерян: браузер сохраняет тот же ключ и тело для проверки результата.
+        return JsonResponse({'status': 'operation_unknown'}, status=503)
+    return JsonResponse(result, status=status)

@@ -2339,6 +2339,48 @@ revert с сохранением поздней работы, блокирово
 проверить удалённый main; наличие локального merge не разрешает force push или
 обход доставки Git-файлов через согласованный git pull из main.
 
+## 2026-10-27 15:01 MSK (Europe/Moscow) — обычный push merge-коммита в GitHub main
+
+По отдельному поручению Олега повторно прочитан удалённый main: e076a561c71d41ca172eb9e0e70425013074faa2.
+Подтверждён fast-forward к a4de4ae2d2a96d7dfbed48b147a38e2d37105fe1;
+затем выполнен единственный обычный push этого точного SHA в refs/heads/main
+репозитория olegnikitov062/marketplace-workspace. Без force, тегов, изменения
+remotes, новых коммитов и выкладки. Push завершился exit 0: e076a56..a4de4ae.
+
+После отправки независимые git ls-remote и GitHub API подтвердили main=a4de4ae,
+родителей e076a561c71d41ca172eb9e0e70425013074faa2 и
+05e8318f453c6cfd2904ffdbec0e43ce45a365fa, дерево
+5f78f4dcddd974f115bf2c166920ef1ce3916261. Обе истории сохранены.
+Исходная папка marketplace-workspace: 319 файлов и индекс прежние, локальные
+ветки beta/main не менялись. После push её origin/main и origin/HEAD уже отражают
+a4de4ae; reflog указывает fetch: fast-forward. Агент fetch в этой папке не запускал.
+
+Артефакты: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-main-push-2026-10-27/
+push.txt, GitHub-после.json, Сохранность.json, Проверка.txt и README-до.txt.
+BaseWork/README.md дополнен итогом. Эта запись оставлена локально unstaged:
+поручение разрешало отправку конкретного a4de4ae, дополнительный коммит не создавался.
+Единственный изменённый файл подготовленной копии — CHANGELOG.md; точная копия
+до записи находится в .change-backups/main-push-20261027/CHANGELOG.md.
+Тесты повторно не запускались, код не менялся. Workflow GitHub Actions в дереве
+a4de4ae отсутствуют. SSH/Selectel, серверные настройки, Authelia, базы и права
+не затрагивались; фактическое состояние сервера повторно не исследовалось.
+
+Откат публикации — только отдельный согласованный адресный revert с сохранением
+истории и последующей обычной отправкой; не force push/reset удалённой ветки.
+Локальную запись журнала отменять адресно после сверки поздней работы, не
+перезаписывать журнал целиком из backup. Серверная доставка остаётся отдельным
+согласованным git pull из main; этот push не является выкладкой.
+
+## 2026-10-27 16:09:47 МСК (UTC+03:00) — Selectel: a4de4ae и изолированная репетиция BaseWork
+
+По отдельному текущему поручению доставлен a4de4ae2d2a96d7dfbed48b147a38e2d37105fe1 через git pull --ff-only origin main в /srv/projects/marketplace-workspace/main/repo; обе истории сохранены, checkout чистый. Собран backend image sha256:f149ea112df9f4f41417083988e1cab22d1c07f82ce7b66356334536a5d8b8ef; 195 файлов совпали с исходниками, pip check PASS. Созданы только /srv/projects/marketplace-workspace/main/config/basework-stage3/{compose,manifest,provider}.json и /etc/company-secrets/basework-stage3/{db_bootstrap_password,db_migrator_password,db_web_password,django_secret_key,isolation_signing_key,mfa_encryption_key,oidc_client_secret,oidc_ca,oidc_tls_key,oidc_tls_cert}, отдельные Docker project/network/volume basework-stage3-pg-20261027. Значения секретов не выводились и не переносились на ноутбук.
+
+Проверки: PostgreSQL 17.11 — 50 PASS, OIDC HTTPS — 78 PASS, миграции применены без model drift, 32/32 RLS-таблицы с FORCE RLS, web/migrator без superuser/BYPASSRLS. Исправлена ошибка созданного тестового сертификата (отсутствие AKI), прежние три TLS-файла сохранены в /etc/company-secrets/basework-stage3/.change-backups/tls-v1-20261027; сертификаты v2 прошли CA/hostname и полный OIDC-сценарий. Рабочая beta/Authelia/Caddy не менялись: IDs/StartedAt/RestartCount и hashes конфигов совпали, health 200. Только новый стенд остановлен exit=0, его том/секреты/образы сохранены.
+
+Доказательства и полный перечень файлов: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-Selectel-стенд-2026-10-27/Проверка.txt и файлы, перечисленные в конце протокола. BaseWork README дополнен ссылкой; его копия README-до.txt сохранена там же. Локально в этом checkout изменён только данный журнал, его исходная копия .change-backups/selectel-stand-20261027/CHANGELOG.md. Новых commit/push не выполнялось; журнал на сервер не переносился. Исходная локальная beta не изменялась.
+
+Откат: после сверки IDs/labels остановить только контейнеры нового стенда; не удалять том/секреты, не откатывать миграции и не менять рабочие БД. Git main оставить на доставленном коммите. Документы откатывать только обратным добавлением после сравнения с копиями и поздними правками. Старый TLS v1 для работы не восстанавливать. Синтетический IdP не публиковать наружу. Реальная Authelia, frontend/браузер и реальный IdP-отзыв остаются вне выполненной репетиции.
+
 ## 2026-10-27 — локальный patch Authelia, публикации и операторских команд
 
 Время: 17:02 МСК. Только marketplace-workspace-main-preparation, main a4de4ae.
@@ -2361,6 +2403,23 @@ revert с сохранением поздней работы, блокирово
 
 Authelia/Caddy/рабочая beta/рабочие БД не изменялись. Новых зависимостей и миграций нет. Настоящая Authelia, браузерная приёмка и доставка блокировки из IdP за <=60 секунд остаются открытыми. Откат только отдельным обратным изменением после проверки поздних правок; не использовать reset --hard/clean, не стирать журнал, историю привязок, том и секреты. Push и выкладка требуют нового поручения.
 
+## 2026-10-27 17:22 +03:00 — обычный push fe699f3 в main
+
+По текущему поручению повторно проверен GitHub main=a4de4ae, подтверждён fast-forward 0/1 и выполнен один обычный push точного fe699f3f703067c3011c1d958b31accd35d83fdf в refs/heads/main. Force, теги, другие ветки и переписывание истории не использовались. После push независимый ls-remote подтвердил main=fe699f3; GitHub connector подтвердил опубликованный commit. В дереве нет GitHub Actions workflows; произвольные внешние webhooks этим не проверялись.
+
+Локальные файлы/HEAD/branch/status подготовленного checkout и все 319 файлов исходной beta совпали со снимком до push. После проверки добавлена только эта unstaged-запись; прежние записи сохранены. Копия журнала: .change-backups/authelia-main-push-20261027/CHANGELOG.md. Протокол, результат push и снимок сохранности: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-Authelia-main-push-2026-10-27/. Код не менялся, новых commit и повторного push журнала нет.
+
+Выкладка, SSH/Selectel, Authelia, общий Caddy, рабочая beta и рабочие БД не затрагивались. Тесты приложения не повторялись: задача ограничена публикацией проверенного коммита. Откат опубликованного изменения — только отдельно согласованный revert и обычный push после свежей сверки, без reset/force. Локальное дополнение журнала отменять адресно после сравнения с копией и поздними изменениями. Доставка на сервер требует отдельного поручения и выполняется через git pull main.
+
+
+## 2026-10-28 10:26 +0300 — доставка fe699f3 на изолированный стенд Selectel
+
+По текущему поручению серверный main обновлён a4de4ae → fe699f3 обычным git pull --ff-only origin main; checkout чистый, remote подтверждён. Собраны backend/frontend из точного коммита, проверены revision/image IDs, pip check, tsc/Vite, Caddy validate и SHA backend. Созданы отдельные compose-fe699f3.json/public-fe699f3.json/operator-fe699f3.json в /srv/projects/marketplace-workspace/main/config/basework-stage3 и три новых синтетических секрета basework_uat_fe699f3_a/basework_uat_fe699f3_b/basework_identity_fe699f3.json в /etc/company-secrets/basework-stage3 после проверки отсутствия Git. Старые конфиги и секреты сохранены. Холодная копия только собственного pgdata: config/basework-stage3/.change-backups/pre-fe699f3/pgdata.tar (чтение/хеш проверены; restore не выполнялся).
+
+Проверки на Selectel: 50 PostgreSQL/RLS, 78 HTTPS OIDC, 29 CLI, 20 public HTTP + отказ недоверенного peer, 15 runtime/static PASS; migration check/drift и роли без superuser/bypassrls PASS. Тестовые права/привязка A отозваны с сохранением истории, B прав не получал. Все пять контейнеров стенда остановлены exit0 без OOM; том/образы/конфиги/секреты сохранены. Пять рабочих контейнеров и пять SHA конфигов совпали с началом, beta чистая/05e8318, health beta/Authelia=200. Рабочие БД не открывались и не изменялись нашими командами. Реальная Authelia/Caddy/публичный ingress/браузер не подключались; IdP-only отзыв <=60с остаётся открытым. После остановки metadata здоровья PostgreSQL unhealthy: следующий запуск требует readiness заново. Две локальные ошибки обвязки (cp1251 вывода и имя operator.py) исправлены без изменений приложения; серверные проверки прошли.
+
+Доказательства и полный перечень: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-fe699f3-Selectel-доставка-2026-10-28/. Локальные исходники сохранены, запись журнала без commit/push; копия предыдущего журнала .change-backups/fe699f3-selectel-20261028/CHANGELOG.md. Безопасный откат — остановленный собственный стенд с сохранёнными данными, уже выполнен. Не восстанавливать БД/отозванные права автоматически; отмена кода только отдельно согласованным revert в main и git pull. Уборка новых файлов — лишь после проверки потребителей и отдельного разрешения; местное дополнение журнала отменять адресно после сравнения с копией/поздними правками.
+
 ## 2026-10-28 13:55:24 МСК (Europe/Moscow, UTC+03:00) — обычный вход BaseWork по логину и паролю
 
 По уточнению Олега подготовлен локальный вход без зависимости от Authelia и внешнего IP. Использован существующий PersonalLogin: поля Логин/Пароль, понятная ошибка, возврат на /basework/. Добавлены кнопки входа на рабочем столе и в профиле. Существующие CSRF, ограничение попыток, реестр сессий и требования MFA для защищённых аккаунтов сохранены. Никаких новых зависимостей, миграций или рабочих пользователей.
@@ -2381,6 +2440,18 @@ Authelia/Caddy/рабочая beta/рабочие БД не изменялись
 
 Проверки приложения из предыдущего шага: 59 backend, 34 frontend и build PASS; исходники после проверок не менялись. Серверная сборка и приёмка записываются отдельным последующим результатом; эта запись не объявляет их выполненными. Новых миграций/зависимостей нет. Откат кода — согласованный revert в main и git pull, без reset/force и ручной доставки файлов. Изолированный стенд останавливается отдельно; история и рабочие базы сохраняются.
 
+## 2026-10-28 16:49:56 МСК (Europe/Moscow, UTC+03:00) — доставка c47cc9f и публикация парольного входа
+
+По разрешению Олега c47cc9f опубликован обычным push main и доставлен на Selectel через git pull --ff-only origin main. Собраны образы, проверены pip и хеши исходников, migrate --check PASS. Созданы отдельные внешние compose/public/operator-password-c47cc9f.json и тестовый observer basework-uat-admin в собственной базе стенда. OIDC выключен; прикладные права не назначались. Стенд оставлен запущенным.
+
+По отдельному подтверждению «Да, открой адрес BaseWork» применён проверенный diff внешних /srv/platform/gateway/Caddyfile и /srv/platform/config/compose.json после backup/проверки вне Git. Пересоздан только gateway. Открыт https://basework-test.136-234-15-125.sslip.io/auth/basework/login без IP allowlist. Старые маршруты шести групп сохранились; Authelia и рабочие beta-контейнеры/конфиги не изменились.
+
+Проверки: 22 внутренних HTTP, 16 публичных HTTPS и 8 edge-запретов PASS; с ноутбука HTTP200; gateway healthy, Authelia/beta health200. Проверен пароль/ошибка/logout/stale cookie. Браузерная проверка не выполнена. Автоматический reviewer потребовал отдельное согласие на перенос пароля в защищённый локальный файл; пароль в чат не выводился.
+
+Доказательства и точный список созданных файлов: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-пароль-выкладка-2026-10-28/. Backup перед дополнением журнала: .change-backups/20261028-password-deploy/CHANGELOG-before-result.md. Серверные backup: config/basework-stage3/.change-backups/pre-password-c47cc9f и pre-public-password-c47cc9f. Код приложения доставлен только Git, конфиги вне Git проверены отдельно.
+
+Откат: согласованный revert main и pull для кода; адресный обратный diff двух конфигов шлюза с проверкой поздних правок, validate/recreate gateway; остановка только собственного стенда без удаления тома/истории/секретов. Новый тестовый пользователь не удаляется в обход истории. Документы откатывать адресно; старую часть журнала не перезаписывать.
+
 ## 2026-10-28 17:19 МСК (UTC+3) — локальное выравнивание шапки и действий профиля BaseWork
 
 По замечаниям Олега к скриншотам: убран дублирующий пункт «Стол» (переход по логотипу сохранён), поиск и профиль получили одинаковую высоту 44 px, отступы, рамку и размер иконок; убраны круглая подложка и односторонний разделитель профиля. Удалены устаревшие конфликтующие правила шапки и сведён порог переключения навигации к 1250 px. На узкой ширине разрешён перенос группы действий без сжатия кнопок. Проверка сессии и выходы теперь в одном flex-ряду с одинаковым левым краем и переносом.
@@ -2400,6 +2471,16 @@ Commit/push, серверные подключения и выкладка не 
 
 Артефакты и операционные скрипты: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-интерфейс-выкладка-2026-10-28/. Локальный backup журнала: .change-backups/2026-10-28-ui-deploy/CHANGELOG.before.md. Откат UI на стенде: вернуть прежний image в сохранённом compose и пересоздать только frontend; исходники откатывать отдельным revert через main и git pull. Местные записи журнала сохранять, не выполнять reset/clean. Браузерная визуальная приёмка остаётся открытой.
 
+## 2026-10-28 17:27 МСК (UTC+3) — выравнивание BaseWork опубликовано
+
+По поручению «давай на сайт» создан c5ff26960f0842ca5208601f7d9177eb995f3552, выполнен обычный push main (c47cc9f → c5ff269), затем git pull --ff-only origin main на Selectel. GitHub и чистый серверный main повторно подтверждены на c5ff269. Коммит содержит только два UI-файла и 19 строк относящегося к ним журнала; прежние местные записи журнала сохранены unstaged. Соседний локальный beta-checkout не изменялся.
+
+Собран frontend sha256:f798bdce2cbe5913ceaa983bf4b01fd7cde5956261873934abced97dc3aab875. В проверенном вне Git compose-password-c47cc9f.json изменено только services.frontend.image; пересоздан только frontend basework-stage3-pg-20261027. Старый образ сохранён. Backup compose и снимок состояния: /srv/projects/marketplace-workspace/main/config/basework-stage3/.change-backups/frontend-c5ff269. Backend, БД, Authelia, общий Caddy, рабочая beta: контейнеры/время запуска и защищённые конфиги совпали с исходным снимком, health200.
+
+Проверено: 9 HTTPS-проверок на сервере и 4 с ноутбука — PASS, публичные index.html/CSS/JS совпали по SHA-256 с новым образом. Рабочий стол, профиль, уведомления, форма входа доступны, анонимный bootstrap 401, OIDC выключен. Сборка образа и Caddy validate PASS. 34 frontend-теста и локальная сборка прошли до коммита, исходники после них не изменялись. Вход с паролем повторно не выполнялся; браузерная визуальная приёмка через Chrome не выполнена из-за отсутствия согласованного подключения. HTTPS-проверки не заменяют её.
+
+Доказательства и новые операционные файлы: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-интерфейс-выкладка-2026-10-28/{remote.py,baseline.py,baseline.log,stage.py,read_stand.py,read_stand.log,deploy.py,deploy.log,final_read.py,final_read.log,verify_local.py,local_https.json,result.json,Проверка.txt}. Операционные команды не передавали файлы приложения; исходники получены только Git. Для отката сверить отсутствие поздних изменений compose, вернуть image sha256:64d95ad575d055f658edae1e3984097e772c807c136d8ad7ae035cd2f87541f4 из backup и пересоздать только frontend без зависимостей; БД/тома не менять. Историю Git откатывать отдельным согласованным revert через main. Местный журнал отменять адресно, исходные записи сохранены в .change-backups/2026-10-28-ui-deploy/CHANGELOG.before.md.
+
 ## 2026-10-28 17:39 МСК (UTC+3) — оформление защиты аккаунта и значок BaseWork, локально
 
 Причина подтверждена кодом: account_security/panel.html и связанные формы были самостоятельным HTML без оформления; frontend/index.html не содержал favicon. По скриншотам Олега добавлена общая оболочка с существующим логотипом, палитрой и сохранённым выбором темы BaseWork. Панель разбита на вход/MFA, сессии, доверенные устройства и выход; добавлены пустые состояния, читаемые даты с явным часовым поясом МСК, одинаковые кнопки и переносы на узкой ширине. Формы подтверждения, пароля, MFA и восстановления используют ту же оболочку; BaseWork login наследует её. Отзыв/выход в панели обрабатывает прежний JSON-ответ без ухода на страницу сырого JSON: CSRF сохраняется в urlencoded POST, успех подтверждается ответом status=ok, сетевые/403/429/500 ошибки показываются на странице, параллельная повторная отправка блокируется. Backend-проверки прав, сессий, паролей, MFA и маршруты не менялись.
@@ -2418,6 +2499,21 @@ Commit/push, серверные подключения и выкладка не 
 Доставка: обычный push main, затем git pull --ff-only origin main. Собираются backend и frontend, обновляются только web/frontend изолированного проекта basework-stage3-pg-20261027. Перед заменой двух image сохраняются compose и прежние образы. Миграции не запускаются. Базы, Authelia, общий Caddy и рабочая beta не меняются. Проверка публичного входа использует существующий тестовый аккаунт только на сервере, без передачи пароля и с завершением созданной проверкой сессии.
 
 Доказательства: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-защита-выкладка-2026-10-28/. Backup журнала: .change-backups/2026-10-28-security-deploy/CHANGELOG.before.md. Откат: вернуть прежние image из backup compose и пересоздать только web/frontend без зависимостей; Git откатывать отдельным revert через main, местный журнал — адресно. Факт выкладки и проверки будут записаны после исполнения; визуальная приёмка Chrome пока не выполнена.
+
+## 2026-10-28 17:49 МСК (UTC+3) — защита аккаунта и favicon опубликованы
+
+По поручению «обновляй» опубликован коммит 04243c7dc63a0b7b415c154859e38e8923467520 обычным push main, сервер получил его только git pull --ff-only origin main. В коммите 10 целевых файлов и относящиеся к задаче записи журнала; старые местные записи сохранены unstaged. GitHub после push и чистый серверный main подтвердили точный SHA.
+
+Образы: backend sha256:1e9c36722fedbe73bc3c615e0facd158217a8add61462764a638dd56e3aecfbe; frontend sha256:6d94f570a98df9776ec5e969000cd8f9d078db4711e337dc6c06cc537da31807. В проверенном вне Git compose-password-c47cc9f.json изменены только services.web.image и services.frontend.image. Пересозданы только web/frontend стенда basework-stage3-pg-20261027; миграций не было. Схема/данные рабочих БД, Authelia, общий Caddy, рабочая beta не изменялись. Тест входа создал и завершил только собственную сессию существующего аккаунта стенда; пароль оставался на сервере.
+
+Проверено: 16 серверных HTTPS-проверок PASS — публичная сборка и SVG, парольный вход, authenticated bootstrap, оформленные страницы /auth/security/, /auth/security/confirm/, /auth/security/password/, сохранённые CSRF/no-store, выход проверочной сессии. Публичные HTML/CSS/JS/SVG совпали по SHA-256 с новым frontend, шесть шаблонов backend совпали с исходниками; pip check и Caddy validate PASS. С ноутбука 5 HTTPS-проверок PASS, SVG имеет image/svg+xml. Общие контейнеры/время запуска и хеши защищённых конфигов совпали с baseline; Authelia и beta health200. Браузерная визуальная приёмка через Chrome не выполнена; HTTP не доказывает внешний вид/отрисовку favicon во вкладке.
+
+Ошибки и восстановление: первая попытка обновления автоматически вернулась на прежние web/frontend после ложного провала проверки русского заголовка (операционный генератор прочитал UTF-8 как Windows-кодировку). Возврат обоих прежних image и исходного compose подтверждён. Исправлено явное чтение UTF-8 только в локальном проверочном скрипте, повторная выкладка успешно проверена. GitHub и затем внешняя проверка с ноутбука один раз завершились ошибкой DNS; повторные проверки DNS/HTTPS успешны, системные настройки сети не менялись.
+
+Доказательства и операционные файлы: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-3-защита-выкладка-2026-10-28/ — remote.py, baseline.py/log, read_stand.py/log, stage.py, prepare_deploy.py, account_checks.txt, deploy.py/log, deploy-attempt1.py/log, final_read.py/log, verify_local.py, local_https.json, result.json, Проверка.txt. Backup на сервере: /srv/projects/marketplace-workspace/main/config/basework-stage3/.change-backups/security-ui-04243c7 и security-ui-04243c7-retry2. Backup местного журнала: .change-backups/2026-10-28-security-deploy/CHANGELOG.before.md.
+
+Откат: после сверки поздних правок вернуть два прежних image из backup compose (backend sha256:d6a45670f64412cc5cb84164e2317a97f315db12eebdc4d7ddc3315f3bec58f4; frontend sha256:f798bdce2cbe5913ceaa983bf4b01fd7cde5956261873934abced97dc3aab875), пересоздать только web/frontend без зависимостей. Базы и тома не откатывать. Исходники отменять отдельно согласованным revert через main и git pull; местный журнал — адресным обратным изменением, не общей заменой.
+
 
 ## 2026-10-29 10:59:53 Europe/Moscow (UTC+3) — BaseWork, этап 4: FAQ только чтение и поиск
 
@@ -2465,3 +2561,449 @@ HTTP маршруты проверены Django Client с полными middlew
 Согласованные файлы вне Git: /srv/projects/marketplace-workspace/main/config/basework-stage3/compose-password-c47cc9f.json (только images web/frontend, BASEWORK_FAQ_URL, extra_hosts web) и /srv/platform/gateway/Caddyfile (один FAQ import заменяется допуском GET /api/items от 172.28.0.3). Перед изменением — закрытые резервные копии и валидация полных конфигураций, сохранение inode Caddyfile и штатный reload. PostgreSQL, права, данные FAQ, Authelia и остальные контейнеры не изменяются; миграции не запускаются. Входы и назначения прав не выполняются.
 
 Доказательства и операционные скрипты: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-4-FAQ-выкладка-2026-10-29/. Код доставляется исключительно git pull --ff-only origin main. Фактический результат будет дописан после выкладки. Откат: после сравнения поздних изменений закрыть FAQ-исключение и reload Caddy, вернуть прежние поля compose/образы и пересоздать только web/frontend. Не откатывать данные, БД или права. Git — только отдельным согласованным revert через main, без reset/clean. Chrome отложен пользователем; полноценная приёмка прав в HTTP runtime стенда остаётся отдельным шагом.
+
+
+## 2026-10-29 12:07:57 МСК (UTC+3) — FAQ опубликован и подключён к живому источнику
+
+Коммит 6f033d8bb4694a2857f02383c93aaa74b5e22b76 опубликован обычным push main и доставлен на Selectel только git pull --ff-only origin main. Локальные исходники и серверный чистый main совпали. Прежние местные записи журнала сохранены побайтно и оставлены unstaged. Обновлены только web/frontend; backend image sha256:48d8615e4cda867ffcf9016a2d5469b6743c67542fa123109dd6807922f2b556, frontend image sha256:95744ef302c9b75927d8451de58c00e7a02e74f154a4b5fd014583bd01fc8613. В двух проверенных негитовых конфигах применены только согласованные image/BASEWORK_FAQ_URL/extra_hosts и один FAQ GET matcher. Caddy reload без пересоздания gateway; PostgreSQL и остальные контейнеры сохранили ID/image/start/restart. Данные/редактор FAQ и права не изменялись, миграций и входов не выполнялось.
+
+Проверки: pip check, хеши 8 backend-файлов образа, frontend validate, полные Compose/Caddy validate PASS; адаптированный и активный Caddy совпали, изменён только один matcher. Живой HTTPS FAQ из штатного адаптера: версия 118, 47 вопросов, 9 категорий, 18 людей, 67 контактов; полные хеши совпали с источником. 75 проверок поиска PASS; 12 HTTPS на сервере и 8 с ноутбука PASS, анонимный FAQ 401/no-store, парольная форма 200, OIDC disabled. GET корня FAQ из backend и GET API из namespace frontend запрещены. Хеши кода/данных и PID службы FAQ сохранены.
+
+Промежуточная ошибка до замены стенда: ограничительный umask git pull создал 16 файлов с режимом 600; исправлены только разрешения до 644 с проверкой содержимого против Git, образы пересобраны. Рабочие контейнеры тогда не переключались. Попытки commit без identity, push без origin и первая диагностическая обработка вложенного Caddy match не прошли; причины устранены, итоговые операции и проверки прошли. Зависимости и код не менялись при устранении этих ошибок.
+
+Артефакты: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-4-FAQ-выкладка-2026-10-29/ — README-до.txt, apply.log, apply.py, build.log, build.py, common.py, final_read.log, final_read.py, finish.py, local-https.json, local-preparation.json, local_https.py, preflight.log, preflight.py, prepare.log, prepare.py, remote.py, repair_build_modes.log, repair_build_modes.py, stage.py, verify.log, verify.py, Проверка.txt, result.json, artifact-manifest.json. BaseWork/README.md дополнен, резерв README-до.txt. Backup журнала: .change-backups/2026-10-29-faq-deploy/CHANGELOG.before.md и CHANGELOG.before-result.md. Серверный закрытый backup: /srv/projects/marketplace-workspace/main/config/basework-stage3/.change-backups/faq-20261029. Секреты и редакторские пути в локальные доказательства не выгружались.
+
+Откат после сверки поздних правок: закрыть FAQ-исключение, сохранив inode Caddyfile, проверить хеш в контейнере и reload; вернуть прежние image/поля compose и пересоздать только web/frontend --no-deps --pull never. Старые images сохранены в backup/before.json. Git возвращать только отдельным согласованным revert main и git pull, без прямых правок кода/reset/clean. БД, FAQ и права не откатывать. Документы возвращать адресно, не перезаписывая журнал. Полная HTTP-приёмка прав/отзыва на синтетических аккаунтах стенда требует отдельного допуска; Chrome отложен. Локальные 39/39 FAQ PostgreSQL и 50/50 регрессий не подменяют этот шаг; три исторические ошибки SQLite остаются открыты. Этапы 3/4 целиком не закрыты.
+
+
+## 2026-10-29 12:26:17 МСК (UTC+3) — FAQ: HTTP-приёмка и отзыв на синтетических аккаунтах Selectel
+
+По поручению «делай» проверен уже выложенный main 6f033d8bb4694a2857f02383c93aaa74b5e22b76 через настоящий публичный HTTPS/gateway/gunicorn. Код, зависимости, конфиги, контейнеры BaseWork и данные FAQ не изменялись, commit/push/pull/миграций нет. Штатный оператор с отдельным roster двух UUID создавал только синтетические account/observer-фикстуры и FAQ ApplicationAccess; реальные пользователи/права не затронуты. Использован скилл supabase-postgres-best-practices с сохранением существующих guard/SQL-подписей/RLS.
+
+Прикладные проверки прошли: парольный вход/защищённая cookie; FAQ reader 200, без права 403 и ноль обращений к живому источнику; точное совпадение версии 118 (47 вопросов, 9 категорий, 18 людей, 67 контактов); 75 HTTP-поисков; POST/PUT/PATCH/DELETE BaseWork API с валидным CSRF — 405 без чтения источника. После commit операторского отзыва отказ 401 за 0.443299 с. Три повтора прежней cookie отклонены; второй пользователь сохранил сессию; новый вход без права — 403; повторное тестовое право старую cookie не оживляет, свежий вход — 200.
+
+Финальный сценарий: 39 PASS, 1 FAIL (all_containers_unchanged), общий exit1. Причина последнего FAIL отдельно подтверждена: во время прогона посторонним действием заменён closed-fbs; его не исследовали и не меняли. Заключительное чтение BaseWork/PostgreSQL/gateway, конфигов, FAQ и Git — PASS. Первая попытка остановлена на ошибочном ожидании sessionid вместо mw_beta_session, вторая — на deepcopy CookieJar/RLock; это ошибки нового тестового клиента, исправлены только в локальных операционных скриптах. Три последовательные пары закрыты после каждой попытки: всего 6 архивированных синтетических пользователей, 7 отозванных сессий, пароли unusable, активных FAQ-прав/сессий нет. Прежние users/contacts/security/sessions/access/membership/grants сверены агрегированными хешами и не изменились.
+
+Новые файлы доказательств: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-4-FAQ-HTTP-приёмка-2026-10-29/ — README-до.txt, acceptance.log, acceptance.py, acceptance_final.log, acceptance_final.py, acceptance_retry.log, acceptance_retry.py, final_read.log, final_read.py, finish.py, operator_code.py, preflight.log, preflight.py, remote.py, Проверка.txt, result.json, artifact-manifest.json. BaseWork/README.md дополнен; исходник README-до.txt. Резерв CHANGELOG.md: .change-backups/2026-10-29-faq-http/CHANGELOG.before.md; прежний журнал сохранён побайтно. Закрытые серверные материалы только вне Git: /srv/projects/marketplace-workspace/main/config/basework-stage3/.change-backups/faq-http-20261029, faq-http-20261029-retry2, faq-http-20261029-retry3 (roster, неиспользуемые после отключения пароли, операторские пути, baseline, cleanup, checks). Секреты/cookie/персональные данные источника локально не сохранялись.
+
+Откат приложения не нужен: оно не менялось. Тестовые права/сессии уже отозваны, учётные записи и observer-фикстуры архивированы; не оживлять отозванное и не удалять историю. Документы отменять только обратным дополнением после сравнения поздней работы; журнал целиком не заменять. Chrome, живой отзыв строго во время чтения источника и все прочие пункты этапа 3 не приняты этим прогоном; локальная конкурентная репетиция остаётся отдельным доказательством. Три прежние ошибки SQLite не исправлены. Следующий шаг — согласованная визуальная приёмка; реальные права только отдельным поручением.
+
+
+## 2026-10-29 12:53:04 МСК (UTC+3) — FAQ: приёмка Chrome через расширение
+
+Пользователь разрешил встроенный Chrome-инструмент вместо browser-client с отсутствующим SKILL.md и затем отдельно согласовал временный перенос двух синтетических паролей на ноутбук. Первую команду переноса автоматическая проверка отклонила, она не выполнялась. После согласия создан закрытый ACL-файл BaseWork/.local-faq-chrome-20261029/credentials.json; после вводов удалён. Значения не выводились, в Git/журнал не сохранялись. Cookie исходной сессии держались только в памяти и в конце отброшены.
+
+17 проверенных браузерных/завершающих пунктов: загрузка 47 вопросов версии 118, категории, выбор/контакты, поиск вопроса и должности, пустая выдача, ошибка запроса и восстановление, темы, клавиатура, узкий viewport 390 без горизонтального переполнения. Ошибка запроса моделировалась блокировкой FAQ API только в тестовой вкладке, не на сервере; CDP-блокировка снята. После отзыва тестового права активная вкладка без reload убрала данные за консервативные <=35 с от начала операторской команды. Пользователь без права видит Нет доступа. Скриншоты сохранены через расширение Chrome; Playwright CLI/новых зависимостей нет.
+
+Существенный побочный эффект: первый тестовый вход в общем профиле отозвал прежнюю сессию существующего синтетического UAT-аккаунта штатным register_session (12:41:42 МСК). Сохранение cookie не могло сохранить её серверную действительность; прежняя сессия не восстановлена, пользователю нужен повторный вход. В сверке старых данных отличается только sessions; users/contacts/security/access/membership/grants совпали. Полную сохранность старых сессий не объявляем. Два новых тестовых пользователя и observer-фикстуры архивированы, 2 сессии отозваны, FAQ-прав нет, пароли unusable. Реальные права и данные FAQ не менялись.
+
+Код/образы/конфиги не менялись, main 6f033d8bb4694a2857f02383c93aaa74b5e22b76, commit/push/выкладки/миграций нет. BaseWork/PostgreSQL/gateway и хеши FAQ/конфигов сохранены. Новые доказательства: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-4-FAQ-Chrome-2026-10-29/ — 01-original-no-access.png, 02-faq-loaded.png, 03-category.png, 04-empty.png, 05-contact-search.png, 06-browser-request-error.png, 07-dark.png, 08-narrow-dark.png, 09-narrow-full.png, 10-before-revoke.png, 11-revoked.png, 12-test-no-access.png, README-до.txt, browser-cleanup.json, browser-revoke.json, cleanup.log, finish.py, operate.py, operator_code.before-audit.py, operator_code.py, remote.py, revoke.log, setup.log, setup.py, state.log, Проверка.txt, result.json, artifact-manifest.json. README.md BaseWork дополнен, резерв README-до.txt; backup журнала .change-backups/2026-10-29-faq-chrome/CHANGELOG.before.md. Серверная закрытая папка вне Git: /srv/projects/marketplace-workspace/main/config/basework-stage3/.change-backups/faq-chrome-20261029. Локальный пустой каталог временных секретов сохранён, файла паролей нет.
+
+Откат приложения не нужен. Отозванные сессии не оживлять, синтетическую историю не удалять; документы откатывать адресным дополнением после сравнения поздних изменений. Блокировка запросов/viewport сброшены, исходная светлая тема возвращена. Фоновые вкладки, другие браузеры и все прочие пункты этапа 3 не проверены; три старые ошибки SQLite остаются. Следующий рабочий вопрос — отдельно согласованные реальные права FAQ; самостоятельно не назначались.
+
+
+## 2026-10-29T13:06:40+03:00 — Доступ ко всем разделам BaseWork
+
+По явному поручению Олега аккаунту basework-uat-admin назначены семь ApplicationAccess; после отдельного согласия — только synthetic_record/view собственного синтетического кабинета. Проверены повторное чтение PostgreSQL, неизменность чужих прав и сессий, файлов и контейнеров; Chrome показал семь разделов, FAQ версии 118 (47 вопросов), поиск «обучение» — 1 результат. Шесть остальных модулей пока не подключены. Полные административные права внешних систем не выдавались. Код, FAQ-данные, Caddy, Authelia не изменялись; commit/push не выполнялись.
+
+Изменены системы: только ApplicationAccess и один Grant данного аккаунта в изолированном PostgreSQL стенда; локально этот CHANGELOG.md. Копия журнала: .change-backups/access-sections-20261029/CHANGELOG.md. Новые доказательства: C:/Users/krolo/Documents/BaseWork/artifacts/Этап-4-доступ-разделы-2026-10-29/ — 01-все-разделы.png, 02-поиск-FAQ.png, access_operation.before-review.txt, access_operation.py, apply.log, cabinet.log, finish.py, inspect.log, remote.py, server.py, verify.log, Проверка.txt, artifact-manifest.json.
+
+Первичная автоматическая проверка отклонила совмещённое назначение; кабинет выдан только после дополнительного явного согласия. До SSH была исправлена ошибка имени локального файла operator.py. Подробности и ограничения: Проверка.txt в указанном каталоге.
+
+Откат: по новому разрешению сверить UUID из apply.log/cabinet.log и применить штатные revoke_application/revoke_grant только к созданным назначениям. Отзыв разделов завершает сессии. Резервные снимки до записи: серверные .change-backups/access-sections-20261029 и access-sections-20261029-cabinet в config/basework-stage3. Локальную запись журнала отменять только обратным дополнением после сравнения, не затирать поздние записи. Новые доказательства удалять лишь если их хранение больше не требуется; это не отменяет серверных прав.
+
+
+## 2026-10-31T15:24:11+03:00 — Локальная подготовка переговорок BaseWork, этап 5
+
+Реализованы календарь день/неделя, фильтр, просмотр/запись своих броней и серий через прежний
+API/SQLite. Права BaseWork и прежние роли/владельцы проверяются сервером. Москва, Пн–Пт
+08:00–19:00; старый UI сохраняет прежние правила. HMAC-канал, явная привязка UUID,
+атомарные квитанции повторов, защита от устаревших изменений. Новых зависимостей нет.
+Серверы, рабочие данные, реальные права, Authelia/Caddy не затронуты; нет commit/push/stage.
+
+Изменённые существующие файлы: CHANGELOG.md, backend/basework/services.py, backend/basework/urls.py, backend/basework/views.py, backend/config/settings.py, backend/data_isolation/middleware.py, frontend/package.json, frontend/src/basework/BaseWork.tsx, frontend/src/basework/Dialog.tsx, frontend/src/basework/basework.css, frontend/src/basework/model.ts.
+Копии исходного содержимого: .change-backups/basework-rooms-20261031/ с теми же относительными путями.
+Новые файлы: backend/basework/rooms.py, backend/basework/tests/rooms_browser_fixture.py, backend/basework/tests/test_rooms.py, backend/basework/tests/test_rooms_integration.py, backend/tools/basework_rooms_postgresql_rehearsal.py, backend/tools/rooms_fixture.py, beta/deploy/compose.rooms.json, docs/BASEWORK_ROOMS.md, frontend/src/basework/Rooms.tsx, frontend/src/basework/roomsApi.ts, frontend/tests/rooms.test.mjs, frontend/tests/serve-rooms.mjs.
+Смежные изменения: peregovorki;
+документы BaseWork/README.md (копия artifacts/Этап-5-переговорки-2026-10-31/README-до.txt),
+новые доказательства/скрипты в BaseWork/artifacts/Этап-5-переговорки-2026-10-31/;
+точный перечень файлов и SHA-256 — file-manifest.json. Новый локальный Docker-кластер
+basework-stage5-rooms-pg-20261031 остановлен, том и тестовые секреты сохранены отдельно
+в BaseWork/.local-stage5-rooms-pg-20261031. Исходный marketplace-workspace не редактировался.
+
+Проверки: 28/28 source HTTP/SQLite; 27/27 backend (включая FAQ); 56/56 frontend;
+2/2 HTTP-интеграция/завершение fixture; TypeScript/Vite сборка PASS; 38/38 PostgreSQL/RLS
+переговорок + 50/50 прежних регрессий. Отзыв 0,027215 с, конкурентный 0,033765 с.
+Chrome: создание/изменение/серия/конфликт/skip/отмена, ошибка источника, потеря ответа
+после commit и повтор без дубля, отзыв и новый вход без права, 320/390/768, две темы.
+Ранние ограничения loopback и ошибки test fixture не скрыты: см. Проверка.txt.
+Старые ошибки общего SQLite-набора и прочие пункты этапа 3 не объявляются закрытыми.
+
+Откат локально: сначала сравнить текущие файлы с копиями и file-manifest.json, затем
+применить только обратный diff этапа. Новые файлы удалять лишь при совпадении SHA и
+отсутствии поздних зависимых изменений. Старые записи CHANGELOG сохранены; журнал
+откатывать обратным дополнением, не заменять целиком. Не использовать reset/clean.
+Код на сервер не доставлялся. Будущий откат стенда сохраняет текущую SQLite и новые
+брони; выключает канал BaseWork и возвращает прежние образы/интерфейс после согласования.
+Следующий шаг: отдельный read-only аудит Selectel, затем согласованная доставка Git main.
+
+
+## 2026-11-01 13:55 (Europe/Moscow) — восстановление таблицы переговорок
+
+По замечанию Олега исправлена локальная замена исходного календаря карточками.
+Восстановлены день с колонками комнат, неделя с часовой шкалой, месяц, фильтры,
+выделение интервала, перенос/resize и расширенные повторы. Стили используют
+переменные BaseWork. Москва, будни 08:00–19:00, прежние права, версии и
+идемпотентность сохранены. Backend передаёт только безопасный hex-цвет комнаты.
+
+Изменены: frontend/src/basework/Rooms.tsx, roomsApi.ts, basework.css;
+frontend/tests/rooms.test.mjs; backend/basework/rooms.py;
+backend/basework/tests/test_rooms.py; docs/BASEWORK_ROOMS.md; CHANGELOG.md.
+Новые файлы: frontend/src/basework/RoomsGrid.tsx, frontend/src/basework/rooms.css.
+Копии существующих файлов до коррекции: .change-backups/rooms-ui-20261101/.
+Дополнены BaseWork/README.md (копия README-до.txt) и доказательства в
+BaseWork/artifacts/Этап-5-календарь-исправление-2026-11-01/;
+их перечень/хеши — file-manifest.json в этой папке. Исходник peregovorki при
+коррекции не менялся. Серверы/рабочие БД/реальные права не затрагивались.
+
+Проверено: 63/63 frontend, TypeScript/Vite PASS, 28/28 backend rooms+FAQ,
+1/1 настоящая локальная HTTP-интеграция с временной SQLite. Первый backend-запуск
+дал SourceUnavailable в FAQ loopback; после разрешения локальной сети 28 PASS.
+Chrome через расширение: вход синтетическим аккаунтом и панель календаря;
+затем связь инструмента прервалась (Codex app tool request failed).
+Перенос/resize, вид окончательной сетки и адаптивность в Chrome НЕ приняты.
+Прежние проверки Chrome 31.10 не распространяются на исправленную сетку.
+PostgreSQL-код не менялся, новые RLS-прогоны не выполнялись. Этап не закрыт.
+Общий diff --check содержит прежние замечания к пробелам в журнале; их сохранили.
+
+Откат: сравнить текущие файлы с копиями и манифестом, применить адресный обратный
+дифф только этой коррекции. Новые RoomsGrid.tsx/rooms.css удалять только при
+совпадении хеша и отсутствии поздних изменений/ссылок. Журнал откатывать обратным
+дополнением, не заменять целиком. Не использовать reset/clean, не стирать этап 5.
+Следующий шаг: восстановить связь с Chrome, пройти список сценариев в Проверка.txt,
+снять скриншоты и получить визуальную приёмку. Commit/push/выкладки не было.
+
+## 2026-11-01 16:52 (Europe/Moscow) — Chrome-проверка восстановленного календаря
+
+После восстановления расширения Chrome локальная браузерная проверка новой
+таблицы завершена. Исправлены отмена перетаскивания Escape (двойной обработчик),
+горячие клавиши при фокусе кнопки и начальная прокрутка при возвращении комнат.
+Изменены frontend/src/basework/Rooms.tsx и RoomsGrid.tsx.
+
+В backend/basework/tests/rooms_browser_fixture.py добавлены диагностика класса
+ошибки и сериализация запросов/отзыва только одноразовой SQLite-фикстуры.
+Параллельный месяц воспроизвёл InterfaceError/IndexError на общем in-memory
+соединении Django LiveServer; runtime-адаптер, PostgreSQL и источник не изменены.
+Обновлены docs/BASEWORK_ROOMS.md, CHANGELOG.md и BaseWork/README.md.
+Копии: .change-backups/rooms-ui-qa-20261101/; копия README и доказательства:
+BaseWork/artifacts/Этап-5-календарь-приёмка-2026-11-01/. Хеши — file-manifest.json.
+
+Проверено в Chrome: день/неделя/месяц, создание выделением, перенос комнаты/времени,
+resize, конфликт без переноса, повтор после потери ответа без дубля, быстрые
+длительности/повторы, фильтры/ещё, Escape без PUT, горячие клавиши, две темы,
+ширины 320/390/768. Отказ источника скрывает старую сетку; отзыв синтетического
+права убрал календарь не позднее 25 с от команды, свежий вход — «Нет доступа».
+Повторные frontend 63/63 и сборка PASS. Финальная фикстура: 1 test OK, временная
+БД уничтожена. Это завершение фикстуры, не автоматические утверждения всех UI-сценариев.
+Ранний browser-backend.log завершился FAIL по лимиту времени; ошибки диагностики
+сохранены, не скрыты. HMR при изменении массива зависимостей выдал предупреждение;
+после полной перезагрузки сценарий повторён успешно. PostgreSQL заново не прогонялся.
+
+Все изменения локальные; main/HEAD 6f033d8 сохранён. Серверы/рабочие БД/реальные
+права не затронуты, commit/push отсутствуют. Визуальная приёмка Олегом и живое
+подключение не объявлены завершёнными. Следующий шаг — визуальная оценка снимка,
+затем отдельно разрешённый аудит Selectel перед актуализацией плана выкладки.
+Откат: сравнить текущие файлы с копиями/манифестом, применить только обратный diff
+этой проверки. Журнал не заменять целиком; reset/clean не использовать.
+
+## 2026-11-01 17:01 (Europe/Moscow) — приглушение цветов переговорок
+
+По замечанию Олега уменьшена насыщенность комнат и заливок календаря.
+frontend/src/basework/roomsApi.ts: исходный оттенок комнаты смешивается с
+--bw-muted текущей темы (25%/75%); резервные оттенки также приглушены.
+frontend/src/basework/rooms.css: доля акцента в фильтре 12→7%, бронях 22→10%,
+месяце 14→8%. Размеры, сетка, действия и данные источника не менялись.
+Копии: .change-backups/rooms-colors-20261101/ (оба файла и CHANGELOG.md).
+
+TypeScript/Vite PASS; diff --check без журнала PASS. Расчётный контраст текста
+для двух тестовых комнат: светлая тема 13.18/13.21, тёмная 11.12/11.08;
+границы к заливке: 4.44–5.24. Это расчёт, не браузерный замер.
+Chrome-проверка НЕ выполнена: канал не вернул список браузеров даже после
+сброса REPL. Скриншоты предыдущей версии не доказывают новые цвета.
+Первый локальный источник не запустился в ограниченной среде; повторный запуск
+с разрешённым loopback завершён штатно, без действий в браузере. Логи сохранены.
+
+Доказательства: BaseWork/artifacts/Этап-5-цвета-2026-11-01/Проверка.txt,
+build.log, browser.log, browser-final.log, файлы готовности/остановки и
+file-manifest.json. Все данные синтетические; локальные процессы остановлены.
+Сервер, рабочие БД и права не затронуты, commit/push не выполнялись.
+Откат: сравнить с копиями и применить только обратные изменения палитры,
+не заменять целиком позднее изменённые файлы или журнал; reset/clean запрещены.
+Остаётся посмотреть новую палитру в Chrome и получить визуальную оценку Олега.
+
+## 2026-11-01 21:19 (Europe/Moscow) — повторный локальный запуск для просмотра цветов
+
+Chrome через расширение ответил списком вкладок, но после таймаута открытия
+локальной страницы канал снова перестал отвечать. Frontend перезапущен с
+разрешённым loopback: GET /basework/apps/rooms — 200, штатная форма
+/auth/basework/login — 200. Первоначальный запрос ошибочного /auth/login/ дал 404.
+Код приложения не менялся. Временные синтетические backend/frontend оставлены
+на время ручного открытия страницы пользователем; фикстура ограничена 2 часами.
+Новых скриншотов пока нет, визуальная проверка новой палитры не завершена.
+Доказательства: BaseWork/artifacts/Этап-5-цвета-2026-11-01/browser-view.json,
+browser-view.log, local-launch-check.json и local-login-check.json.
+Копия журнала: .change-backups/rooms-colors-browser-20261101/CHANGELOG.md.
+Откат записи — обратное дополнение, без замены журнала или сброса чужих изменений.
+Серверы, рабочие базы, права, commit/push не затрагивались.
+
+## 2026-11-01 21:27 (Europe/Moscow) — восстановление привычных действий переговорок
+
+Эталон по уточнению Олега — исходные peregovorki/public/app.js и index.html.
+Локально исправлены подтверждённые кодом отличия: новая бронь использует последнюю
+видимую комнату, при скрытой/удалённой выбирает видимую; день/неделя/месяц учитывают
+этот выбор, явный клик по комнате имеет приоритет. Кнопка создания предлагает
+следующий час сегодня, 10:00 в другой день, в рамках 08:00–19:00. В коротких
+бронях восстановлено время начала. Область изменения серии снова видна сразу
+радиокнопками. Внизу формы возвращена Отмена; при неизвестном результате она
+заблокирована вместе с формой, как и прежде.
+Файлы: frontend/src/basework/Rooms.tsx, RoomsGrid.tsx, roomsApi.ts, rooms.css,
+frontend/tests/rooms.test.mjs, CHANGELOG.md. Копии: .change-backups/rooms-parity-20261101/.
+65/65 frontend-тестов, TypeScript/Vite и diff --check вне журнала PASS.
+Браузерная приёмка НЕ завершена: расширение снова возвращает ошибку соединения.
+Полное соответствие исходному интерфейсу не объявляется достигнутым. Права,
+подписи, версии, повторы записи и согласованные рабочие часы сохранены.
+Доказательства: BaseWork/artifacts/Этап-5-поведение-2026-11-01/Проверка.txt,
+tests.log, build.log, file-manifest.json. Сервер/рабочие БД/реальные права не менялись;
+commit/push отсутствуют. Откат — адресный обратный diff по копиям после сравнения,
+сохранить поздние изменения, журнал не заменять, reset/clean не использовать.
+
+
+## 2026-11-01 21:34 (Europe/Moscow) — клик по свободной ячейке в выходной
+
+По скриншоту Олега проверена блокировка клика: RoomsGrid.permitted включал
+будний день и применялся не только к записи/переносу, но и к открытию формы.
+Теперь открытие новой формы в дне/неделе/месяце доступно также на выходных при
+наличии права и отсутствии неподтверждённой операции. Выбранная дата сохраняется;
+Rooms.tsx сразу объясняет необходимость буднего дня. Перенос существующей брони
+на выходной и сохранение новой брони по-прежнему запрещены прежними проверками.
+Дата на обрезанном скриншоте неизвестна: связь именно этого случая с воскресеньем
+— гипотеза, блокировка выходных подтверждена кодом.
+Файлы: frontend/src/basework/RoomsGrid.tsx, Rooms.tsx, CHANGELOG.md.
+Копии: .change-backups/rooms-grid-click-20261101/.
+65/65 frontend-тестов, TypeScript/Vite и diff --check вне журнала PASS.
+Chrome вновь не ответил; фактическое открытие формы кликом после исправления
+в браузере не подтверждено. Доказательства: BaseWork/artifacts/Этап-5-клик-2026-11-01/.
+Серверы/рабочие БД/права не менялись, commit/push отсутствуют. Откат: обратный
+дифф этих двух файлов после сравнения с копиями; сохранить поздние изменения,
+журнал не заменять целиком, reset/clean не использовать.
+
+
+## 2026-11-01 21:38 (Europe/Moscow) — компактная форма переговорок
+
+По скриншоту Олега уменьшены вертикальные отступы и размеры элементов только
+формы бронирования: gap 14→8, поля 44→34 px, кнопки 44→32 px; сокращены отступы
+заголовка, пояснения, повторов и действий. Основной шрифт сохранён. Для coarse
+pointer высота целей 44 px сохранена. На desktop сокращены отступы над календарём,
+его высота привязана к высоте окна вместо 68vh. Часовая сетка/координаты жестов
+не менялись. Остальные диалоги не затронуты (селектор :has(.bw-room-form)).
+Файлы: frontend/src/basework/rooms.css, CHANGELOG.md.
+Копии: .change-backups/rooms-density-20261101/.
+TypeScript/Vite и diff --check вне журнала PASS. Изменение только CSS, новые тесты
+не добавлялись. Chrome опять не возвращает вкладки; фактическое отсутствие
+прокрутки на экране пользователя НЕ подтверждено. На маленькой высоте и при
+крупном масштабе прокрутка остаётся необходимой, ограничение max-height сохранено.
+Доказательства: BaseWork/artifacts/Этап-5-компактность-2026-11-01/build.log,
+Проверка.txt и file-manifest.json. Без серверных действий, commit/push и прав.
+Откат: сравнить CSS с копией и убрать только блок компактности; журнал сохранить,
+не применять reset/clean и не затирать предыдущие правки.
+
+## 2026-11-01 22:40 (Europe/Moscow) — детали поведения переговорок и Chrome
+
+Восстановлены сохранение прокрутки между датами/видами, возврат к утру по
+«Сегодня», срок повторов по умолчанию три месяца, дата/время последнего изменения
+и подробности до трёх конфликтов (комната, дата, интервал, название). Адаптер
+пропускает только разрешённые поля конфликтов, проверяет даты с часовым поясом.
+Исходные данные/редактор/права не изменены. Рабочие базы и серверы не затронуты.
+Копии семи изменяемых файлов: .change-backups/rooms-details-20261101/.
+67/67 frontend-тестов, TypeScript/Vite, 31/31 backend-тестов (включая временный
+локальный HTTP-источник), diff --check вне журнала PASS.
+Chrome через расширение: клик по сетке открывает форму на выбранные 10:00–11:00;
+создание вымышленной брони успешно; пересечение показывает её название/комнату/
+время; метаданные показывают дату/время изменения. Прокрутка 558 сохраняется при
+смене даты и переходе на неделю; «Сегодня» возвращает 360. Клик по выходному
+открывает форму с предупреждением, ограничения записи не снимались.
+Компактная форма с раскрытыми повторами проверена: viewport 1864x949 CSS px,
+clientHeight=scrollHeight=748, верх 99.75, низ 849.25 — внутренней прокрутки нет.
+Доказательства: BaseWork/artifacts/Этап-5-детали-2026-11-01/.
+Осталось отличие: при возврате на вкладку черновик формы сбрасывается вместе
+с перепроверкой доступа; в этой правке механизм не менялся. Маленькие окна и
+масштаб браузера требуют отдельной визуальной проверки. Полная приёмка этапа
+и живой источник этим не подтверждены. Commit/push/выкладки нет.
+Откат: сравнить семь файлов с копиями и убрать только этот дифф; сохранить
+предыдущие и более поздние изменения, журнал не заменять целиком, reset/clean
+не применять. Локальный браузерный стенд одноразовый, максимум два часа.
+## 2026-11-01 22:45 (Europe/Moscow) — черновик при возврате на вкладку
+
+По поручению Олега сохранено состояние BookingForm в оперативной памяти при
+перепроверке доступа. RoomsPage удерживает экземпляр Rooms только для временных
+loading/error/unavailable; отказ/завершение сессии удаляют его, другой actor
+меняет key. На время проверки/ошибки форма не рендерится, записи блокируются.
+После bootstrap выполняется новый запрос календаря. Обновляются canWrite/canEdit,
+исходная revision сохраняется. Серверные проверки и useBootstrap не менялись.
+Файлы: frontend/src/basework/BaseWork.tsx, frontend/src/basework/Rooms.tsx,
+CHANGELOG.md. Копии: .change-backups/rooms-draft-20261101/.
+67/67 тестов, TypeScript/Vite, diff --check вне журнала PASS. Chrome подтвердил
+сохранение всех полей/повторов, повторные GET доступа и календаря, отсутствие
+формы при ошибке источника и offline, восстановление после повторной проверки,
+сохранение восстановленной брони, сохранение черновика редактирования.
+Отзыв только синтетического права завершил сессию/скрыл форму; новый вход
+получил «Нет доступа». Временная фикстура штатно завершилась (1 test OK), Vite
+остановлен, тестовые вкладки закрыты. При HMR наблюдались предупреждения о
+изменении длины массива зависимостей старого эффекта; подробности в протоколе.
+Доказательства и новые файлы: BaseWork/artifacts/Этап-5-черновик-2026-11-01/
+(build.log, tests.log, browser-fixture.log, Проверка.txt, file-manifest.json,
+01-before.png, 02-restored.png, 03-source-down.png, 04-access-offline.png,
+05-edit-restored.png, 06-revoked.png, 07-no-access.png).
+Управляющие .control/.stop старой одноразовой browser-details фикстуры изменены
+только для её завершения/сценариев. Ни серверов, ни рабочих данных/прав,
+commit/push или новых зависимостей. После F5 черновик не сохраняется.
+Откат: обратный дифф двух файлов относительно копий с сохранением предыдущей
+и поздней работы; журнал не заменять целиком, reset/clean не использовать.
+Артефакты удалять лишь отдельно как ненужный комплект доказательств.
+## 2026-11-01 22:56 (Europe/Moscow) — локальная готовность переговорок к выкладке
+
+По запросу Олега проведена проверка и составлен точный поэтапный план; runtime-код
+не менялся. Свежие frontend 67/67, backend/HTTP 31/31, source HTTP/SQLite 28/28,
+TypeScript/Vite PASS. Diff check PASS вне прежних пробелов журнала. Docker Desktop
+не отвечает по локальному named pipe; PG заново не запускался. Хеши критических
+серверных файлов сверены с 31.10, прежние 38+50 проверок не выданы за свежие.
+В Chrome воспроизведён блокер: после commit отмены и потери ответа, затем
+перепроверки календаря, readonly блокирует «Проверить результат», unknown не даёт
+закрыть форму. Независимая вкладка подтверждает отмену. Исправление не включено
+в аудит; текущая версия не готова к выкладке с записью. PUT за диапазон — риск
+по тому же условию, отдельная будущая проверка. План начинает с этого фикса.
+Обновлены только docs/BASEWORK_ROOMS.md и CHANGELOG.md; копии:
+.change-backups/rooms-readiness-20261101/. Новые доказательства/план:
+BaseWork/artifacts/Этап-5-готовность-2026-11-01/ (План до выкладки.txt, Проверка.txt,
+release-files.json, previous-proof-comparison.json, frontend-tests.log, build.log,
+backend-tests.log, source-tests.log, browser.log, browser-ready.json/.control/.stop,
+blocked-delete-retry.png, blocked-delete-retry-confirmed.png, deleted-source-readback.png).
+Тестовая фикстура штатно остановлена (1 test OK), Vite остановлен, вкладки закрыты;
+рабочие БД/права/данные/серверы не затронуты, commit/push отсутствуют. Откат:
+убрать только новый блок документов после сравнения с копиями, сохранить более
+позднюю работу; журнал не заменять целиком, reset/clean не использовать. Новую
+папку доказательств удалять отдельно лишь если этот комплект больше не нужен.
+## 2026-11-01 23:09:27 +03:00 — восстановление потерянного ответа переговорок (локально)
+
+По поручению Олега исправлен повтор неизвестного результата: отсутствие брони
+в текущем диапазоне после удаления/переноса не блокирует прежний запрос.
+Разрешён только сохранённый объект операции того же actor; новые запросы требуют
+canEdit. Проверки canWrite, активности вкладки, завершённой перепроверки доступа,
+параллельной отправки и серверной авторизации сохранены. Runtime backend не менялся.
+Файлы: frontend/src/basework/Rooms.tsx, frontend/tests/rooms.test.mjs,
+backend/basework/tests/test_rooms.py, backend/basework/tests/test_rooms_integration.py,
+docs/BASEWORK_ROOMS.md, CHANGELOG.md. Резервные копии всех шести файлов:
+.change-backups/rooms-recovery-20261101/. Точное время начала изменения кода не
+восстанавливается; эта отметка — время документирования.
+Проверки: frontend 67/67, backend/HTTP 32/32, TypeScript/Vite PASS. Три метода
+проверены на одинаковые ключ/тело при повторе и отказ до источника после отзыва
+сессии/выключения записи; HTTP проверил перенос за диапазон и повтор отмены.
+Новые доказательства: BaseWork/artifacts/Этап-5-восстановление-2026-11-01/
+(frontend-tests.log, backend-tests.log, build.log, browser.log, browser-ready.json,
+Проверка.txt, file-manifest.json). Браузерная приёмка нового фикса не завершена:
+инструмент остановился из-за невозможности проверить URL; это не PASS интерфейса.
+Тестовый адрес 5195 при продолжении не слушает. PostgreSQL заново не запускался.
+Нет новых зависимостей, серверных действий, рабочих данных/прав и commit/push.
+Откат: сравнить файлы с копиями, применить только обратный дифф этого изменения,
+сохраняя прежнюю и более позднюю работу. Журнал не заменять целиком; reset/clean
+не использовать. Новые артефакты удалять только отдельно, если доказательства
+больше не нужны; они не являются рабочими данными.
+
+Уточнение 2026-11-01 23:10:55 +03:00: отсутствие вывода Get-NetTCPConnection НЕ доказывало остановку
+стенда. Прямой localhost HTTP запрещён ограничением доступа к сокету, CIM
+также недоступен. Сессии backend 99912 и Vite 72224 ещё работали. Расширение
+Chrome повторно вернуло Codex app tool request failed. Создан только управляющий
+browser-ready.stop одноразовой фикстуры для штатного завершения. Vite остановлен
+через Ctrl+C (код 1 ожидаем для прерывания). Снимки документов перед продолжением:
+.change-backups/rooms-recovery-continuation-20261101/.
+
+Тестовая backend-фикстура завершилась штатно, код 0; временная тестовая БД
+уничтожена runner. Это проверка завершения стенда, не браузерная приёмка.
+Новая браузерная приёмка всё ещё не выполнена. Код после успешных 67/32 тестов
+и сборки не менялся. Следующий шаг: восстановить канал Chrome, заново поднять
+одноразовый стенд и проверить POST/PUT/DELETE с потерей ответа и отзыв доступа.
+
+## 2026-11-01 23:27:45 +03:00 — браузерная приёмка восстановления операций переговорок
+
+Chrome через штатное расширение: POST/PUT/DELETE с потерянным ответом восстановлены;
+дублей нет. PUT за диапазон и DELETE повторены после обновления календаря.
+Отзыв синтетического права при unknown блокирует повтор; свежий вход — Нет доступа.
+Надёжного нового доказательства hidden→visible нет; это ограничение указано явно.
+Runtime/тесты не менялись, хеши совпадают с версией 67/32 PASS и build PASS.
+Обновлены docs/BASEWORK_ROOMS.md и CHANGELOG.md. Копии до этой записи:
+.change-backups/rooms-recovery-browser-20261101/. Артефакты в
+BaseWork/artifacts/Этап-5-восстановление-2026-11-01/: дополнены Проверка.txt,
+file-manifest.json; добавлены browser-retry.log (ранний неуспешный запуск),
+browser-retry-local.log, browser-retry.json/.control/.stop, no-access-dom.txt,
+01-post-restored.png, 02-put-retry-enabled.png, 03-put-restored.png,
+04-delete-retry-enabled.png, 05-delete-restored.png, 06-put-after-refresh.png,
+07-put-after-refresh-restored.png, 08-revoked-session.png, 09-no-access.png,
+10-no-access-confirmed.png. Снимок 07 — промежуточный старый кадр, не доказательство
+нового дня; подробные ограничения и ошибки инструмента записаны в протоколе.
+Замечание вне фикса: старое уведомление об успехе не скрывается сразу при отказе
+сессии; не исправлялось. Итоговая PostgreSQL-проверка ещё впереди.
+Fixture штатно завершён (1 test OK), временная БД удалена runner, Vite остановлен.
+Нет серверных действий, рабочих прав/данных, зависимостей, commit/push.
+Откат: убрать только добавленные блоки документов после сравнения с копиями,
+сохранив позднюю/постороннюю работу; журнал не заменять целиком, reset/clean
+не использовать. Новые артефакты удалять только отдельно как ненужные доказательства.
+
+## 2026-11-02 09:22:02 +03:00 — уведомление, возврат на вкладку и финальный локальный PostgreSQL
+
+По поручению Олега Rooms.tsx очищает старое уведомление при !authorized и
+expired/forbidden/unbound; показывает его только при готовом календаре.
+Права, черновик и backend не менялись. Изменены frontend/src/basework/Rooms.tsx,
+docs/BASEWORK_ROOMS.md и CHANGELOG.md. Копии: .change-backups/rooms-final-20261102/.
+Chrome: реальный hidden/visible, новые GET bootstrap/rooms, сохранение шести
+значений формы и последующее сохранение PASS. Отзыв синтетического права при
+unknown-отмене: сессия завершена, notice и форма отсутствуют; свежий вход запрещён.
+Временная эмуляция фокуса восстановлена, вкладки закрыты. Диагностические timeout
+инструмента описаны в протоколе; события/права приложения не подделывались.
+67 frontend и build PASS. На новой изолированной PostgreSQL 17.11: 38 rooms,
+50 регрессий и итоговый контракт FORCE RLS/ACL PASS. Отзыв 0.03731/0.039479 с.
+Новые файлы в BaseWork/artifacts/Этап-5-финальная-проверка-2026-11-02/:
+01-draft-restored.png, 02-success-before-revoke.png, 03-expired-clean.png, 04-no-access.png, Проверка.txt, browser-ready.control, browser-ready.json, browser-ready.stop, browser.log, build.log, compose.json, draft-return-state.json, expired-check.json, expired-dom.txt, frontend-tests.log, manifest.json, no-access-dom.txt, pg-bootstrap.log, pg-configure.log, pg-contract.log, pg-legacy.log, pg-network-internal.json, pg-ports.json, pg-scenario.log, pg-stop.log, pg-stopped.json, prepare-pg.py, visibility-hidden.json, visibility-return.json, file-manifest.json.
+Локальный prepare-pg.py создаёт только новый compose/синтетические секреты;
+использует прежние установленные образы, pull_policy=never. Созданы отдельные
+Docker-проект/том/сеть basework-stage5-rooms-final-20261102 и закрытый каталог
+BaseWork/.local-rooms-final-20261102/ (db_bootstrap_password, db_migrator_password,
+db_web_password, django_secret_key, isolation_signing_key, mfa_encryption_key).
+Секреты не журналируются и не добавляются в Git. Docker Desktop запущен локально.
+Fixture штатно завершён, временная SQLite удалена runner; Vite остановлен.
+PostgreSQL остановлен, синтетический том и закрытые секреты сохранены; рабочих
+контейнеров/БД не меняли. Серверы, commit/push, новые зависимости и реальные права
+не затронуты. Следующий шаг — отдельно разрешённая read-only сверка стенда.
+Откат: сравнить три файла с копиями и убрать только этот дифф/добавленные блоки,
+сохраняя прежнюю и позднюю работу; журнал не перезаписывать, reset/clean не делать.
+Новые доказательства и закрытые тестовые секреты удалять только отдельно, когда
+этот тестовый комплект больше не нужен; перед удалением тома проверить точное имя
+и метку compose-проекта. Повторный запуск проверки требует нового пустого тома.
+
+## 2026-11-02 09:41:03 +03:00 — выпуск переговорок с выключенной записью
+
+По прямому поручению Олега подготовлена публикация накопленной и проверенной
+реализации переговорок в main. Состав: manifest из
+BaseWork/artifacts/Этап-5-Selectel-чтение-2026-11-02/local-release-files.json;
+код не изменён после локальной приёмки. Предыдущие записи журнала сохранены,
+копия перед дополнением: .change-backups/rooms-release-20261102/CHANGELOG.md.
+Разрешены commit/push, git pull main, настройки подключения и Caddy,
+добавление basework_receipts. Запись BaseWork остаётся выключенной,
+bindings пустыми; права и реальные профили не назначаются.
+План и исходная сверка: BaseWork/artifacts/Этап-5-Selectel-чтение-2026-11-02/.
+Проверки до выпуска: неизменность 34 файлов относительно проверенного состава;
+прежние 67 frontend, build, 38 PostgreSQL rooms и 50 регрессий — локальные,
+не приёмка стенда. Серверная приёмка и точные SHA/образы будут сохранены отдельно
+в BaseWork/artifacts/Этап-5-выкладка-2026-11-02/.
+Откат: сохранить текущую SQLite и квитанции; выключить подключение,
+вернуть прежние образы и адресные негитовые настройки. Код откатывать только
+обратным коммитом main и git pull. Не возвращать старую БД поверх новых броней.

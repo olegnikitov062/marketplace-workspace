@@ -79,7 +79,8 @@ def catalog(user):
         if not grants.exists():
             permitted.discard('marketplace')
     from .faq import configured
+    from .rooms import configured as rooms_configured
     # Конфигурация означает возможность чтения, а не подтверждённое здоровье источника.
     return [{'id': app, 'access': 'allowed',
-             'availability': 'available' if app == 'faq' and configured() else 'unavailable'}
+             'availability': 'available' if (app == 'faq' and configured()) or (app == 'rooms' and rooms_configured()) else 'unavailable'}
             for app in APPLICATIONS if app in permitted]
