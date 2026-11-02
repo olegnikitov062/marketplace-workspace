@@ -16,6 +16,7 @@ export type Entitlement = {
   availability: 'available' | 'unavailable';
 };
 export type Bootstrap = {
+  canManageUsers?: boolean;
   csrfToken?: string;
   session: { status: 'authenticated'; user: { id: string; displayName: string } };
   applications: Entitlement[];
@@ -61,6 +62,7 @@ export function parseBootstrap(value: unknown): Resource {
   return {
     status: 'ready',
     data: { session: { status: 'authenticated', user: { id, displayName } }, applications: entitlements,
+      ...(value.canManageUsers === true ? { canManageUsers: true } : {}),
       ...(typeof value.csrfToken === 'string' ? { csrfToken: value.csrfToken } : {}) },
   };
 }

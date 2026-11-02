@@ -50,11 +50,13 @@ def guarded(view=None, *, full=True):
 @require_GET
 @guarded
 def bootstrap(request):
+    from .user_admin import is_administrator
     return JsonResponse({
         'session': {'status': 'authenticated', 'user': {
             'id': str(request.user.pk), 'displayName': request.user.username}},
         'applications': catalog(request.user),
         'csrfToken': get_token(request),
+        'canManageUsers': is_administrator(request.user),
     })
 
 

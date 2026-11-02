@@ -24,5 +24,6 @@
       <button type="submit">{% if wizard.steps.current == 'token' %}Подтвердить{% else %}Войти{% endif %}</button>
     </form>
     </section>
+    {% if wizard.steps.current == 'auth' %}<p><a href="/auth/basework/access">Первый вход или восстановление пароля</a></p>{% endif %}
     <a class="back" href="/basework/">На рабочий стол</a>
 {% endblock %}

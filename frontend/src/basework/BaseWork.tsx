@@ -73,7 +73,7 @@ function ApplicationList({ entries }: { entries: DirectoryEntry[] }) {
 }
 
 function SessionSummary({ resource }: { resource: Resource }) {
-  if (resource.status === 'ready') return <><p className="bw-session-name">{resource.data.session.user.displayName}</p><p>Сессия подтверждена сервисом доступа.</p></>;
+  if (resource.status === 'ready') return <><p className="bw-session-name">Логин: {resource.data.session.user.displayName}</p><p>Сессия подтверждена сервисом доступа.</p></>;
   if (resource.status === 'loading') return <p>Проверяем сессию…</p>;
   if (resource.status === 'error' || resource.status === 'unavailable') return <><p className="bw-session-name">Статус сессии неизвестен</p><p>Сервис доступа не вернул подтверждение.</p></>;
   return <><p className="bw-session-name">{panels[resource.status].title}</p><p>{panels[resource.status].description}</p></>;
@@ -164,6 +164,7 @@ function Profile({ resource, retry, logout }: { resource: Resource; retry: () =>
           {authOptions === 'enabled' ? <a href={oidcLoginPath}>Войти через Authelia</a> : null}</> : null}
       {resource.status === 'mfa_required' ? <a className="bw-button" href="/auth/mfa/setup/">Завершить настройку MFA</a> : null}
       {resource.status === 'ready' ? <a href="/auth/security/">Безопасность и подтверждение MFA</a> : null}
+      {resource.status === 'ready' && resource.data.canManageUsers ? <a className="bw-button" href="/auth/basework/users/">Управление пользователями</a> : null}
     </div>
     <p role="status" aria-live="polite">{pending ? 'Сервер завершает сессию…' : message}</p>
   </section><aside className="bw-aside"><section><h2>Вход в аккаунт</h2>

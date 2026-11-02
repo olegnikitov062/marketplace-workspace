@@ -10,6 +10,18 @@ from account_security.crypto import EncryptedTextField
 APPLICATIONS = ('marketplace', 'reports', 'sources', 'airflow', 'bloggers', 'faq', 'rooms')
 
 
+class Administrator(models.Model):
+    """Отдельное назначение BaseWork; не выводится из роли источника или платформы."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey('ownership.User', on_delete=models.PROTECT)
+    created_at = models.DateTimeField(default=timezone.now)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['user'], condition=Q(revoked_at__isnull=True),
+                                              name='basework_one_administrator')]
+
+
 class OIDCAttempt(models.Model):
     """Одноразовая попытка; токены провайдера здесь никогда не сохраняются."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -1,0 +1,86 @@
+{% extends "account_security/base.html" %}
+{% block title %}Пользователи{% endblock %}
+{% block content %}
+<div id="user-management">
+  <a class="back" href="/basework/profile">Профиль BaseWork</a>
+  <h1>{% if creating %}Новый пользователь{% elif invitation %}Приглашение готово{% else %}Пользователи{% endif %}</h1>
+  {% if error %}
+    <p role="alert">{{ error }}</p><a class="button" href="/auth/basework/login">Войти в BaseWork</a>
+    <a class="back" href="/auth/basework/users/">Проверить список пользователей</a>
+  {% elif confirmation_required %}
+    <p role="alert">Для изменения пользователей подтвердите пароль и код из приложения. Затем вернитесь к управлению пользователями.</p>
+    <a class="button" href="/auth/security/confirm/">Подтвердить вход</a>
+  {% elif invitation %}
+    <p>Логин для входа: <strong>{{ account.username }}</strong>. Код действует 30 минут, до {{ expires_at }} МСК, и используется один раз.</p>
+    <label for="invitation">Передайте это приглашение только владельцу аккаунта</label>
+    <textarea id="invitation" readonly rows="8" style="width:100%;padding:14px;font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:5px;resize:vertical">{{ invitation }}</textarea>
+    <p class="muted">Код показан только здесь. После ухода со страницы его нельзя просмотреть повторно. Новый код отключит прежний пароль и завершит старые сессии.</p>
+    <div class="actions"><button type="button" id="copy-invitation">Скопировать приглашение</button><a class="button" href="/auth/basework/users/{{ account.pk }}/">К пользователю</a></div>
+    <p id="copy-status" role="status"></p>
+  {% elif listing %}
+    <p class="intro">Личные аккаунты BaseWork, доступ к FAQ и переговоркам. Роль администратора назначается отдельно.</p>
+    <div class="actions"><a class="button" href="/auth/basework/users/new/">Создать пользователя</a></div>
+    <form method="get" class="section"><label for="user-search">Поиск по логину</label><div class="actions"><input id="user-search" name="q" value="{{ query }}" maxlength="64" style="max-width:380px"><button type="submit">Найти</button></div></form>
+    {% if rows %}
+    <div class="section" style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:left">
+      <thead><tr><th scope="col">Логин</th><th scope="col">Роль BaseWork</th><th scope="col">Состояние входа</th><th scope="col">Разделы</th></tr></thead>
+      <tbody>{% for row in rows %}<tr style="border-top:1px solid var(--line)"><td style="padding:14px 12px 14px 0"><a href="/auth/basework/users/{{ row.pk }}/">{{ row.username }}</a></td><td>{% if row.is_basework_admin %}Администратор{% else %}Пользователь{% endif %}</td><td>{% if row.waiting %}Ожидает установки пароля{% else %}Пароль установлен{% endif %}</td><td>{{ row.section_names|join:", "|default:"Нет доступа" }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    <nav class="actions" aria-label="Страницы списка">{% if page.has_previous %}<a class="back" href="?q={{ query|urlencode }}&amp;page={{ page.previous_page_number }}">Назад</a>{% endif %}<p>Страница {{ page.number }} из {{ page.paginator.num_pages }}</p>{% if page.has_next %}<a class="back" href="?q={{ query|urlencode }}&amp;page={{ page.next_page_number }}">Далее</a>{% endif %}</nav>
+    {% else %}<p class="section" role="status">{% if query %}По этому логину никого не найдено.{% else %}Личных пользователей пока нет. Создайте первый аккаунт.{% endif %}</p>{% endif %}
+  {% else %}
+    {% if account %}<h2>Логин: {{ account.username }}</h2><p>{% if waiting %}Ожидает установки пароля.{% else %}Пароль установлен.{% endif %}</p>{% endif %}
+    {% if saved %}<p role="status">Права сохранены. Если доступ изменился, прежние сессии пользователя завершены.{% if waiting %} Для установки пароля выдайте новый код с актуальными правами.{% endif %}</p>{% endif %}
+    {% if protected %}
+      <p>Это защищённый административный аккаунт. Его полномочия меняются отдельной операторской процедурой; свой пароль меняйте в разделе безопасности.</p>
+    {% else %}
+      <form method="post" class="section" style="max-width:640px">{% csrf_token %}
+        {% if form.non_field_errors %}<div role="alert">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}{% if field.is_hidden %}{{ field }}{% else %}
+          <div class="field">{{ field.label_tag }}{{ field }}{% if field.help_text %}<p class="helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}{% if field.errors %}<div role="alert">{{ field.errors }}</div>{% endif %}</div>
+        {% endif %}{% endfor %}
+        <p class="muted">Для работы с переговорками аккаунт также должен быть связан с существующим профилем переговорок. Выдача доступа здесь не меняет роль и данные этого профиля.</p>
+        {% if creating %}<button type="submit">Создать и выдать код</button>{% else %}<button type="submit" name="action" value="access">Сохранить права</button>{% endif %}
+      </form>
+      {% if account %}<section class="section" style="max-width:640px"><h2>Новый код доступа</h2><p>Прежний код и пароль перестанут действовать, все старые сессии завершатся. Второй фактор и права сохранятся.</p>
+      <form method="post">{% csrf_token %}<input type="hidden" name="version" value="{{ version }}"><button type="submit" name="action" value="code">Выдать новый код</button></form></section>{% endif %}
+    {% endif %}
+    <a class="back" href="/auth/basework/users/">К списку пользователей</a>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(() => {
+  const root = document.getElementById('user-management');
+  const invitation = document.getElementById('invitation');
+  const copy = document.getElementById('copy-invitation');
+  copy?.addEventListener('click', async () => {
+    const status = document.getElementById('copy-status');
+    try { await navigator.clipboard.writeText(invitation.value); status.textContent = 'Приглашение скопировано.'; }
+    catch { invitation.focus(); invitation.select(); status.textContent = 'Выделен текст приглашения. Скопируйте его вручную.'; }
+  });
+  const clear = () => { if (invitation) invitation.value = ''; };
+  addEventListener('pagehide', clear);
+  addEventListener('pageshow', event => { if (event.persisted) { root.hidden = true; location.reload(); } });
+  let pending = false;
+  const verify = async () => {
+    if (pending || document.hidden) return;
+    pending = true;
+    try {
+      const response = await fetch('/api/v1/basework/bootstrap', {credentials:'same-origin', cache:'no-store'});
+      const data = response.ok ? await response.json() : null;
+      if (!data?.canManageUsers) throw new Error();
+    } catch {
+      clear(); root.replaceChildren();
+      const message = document.createElement('p'); message.setAttribute('role','alert');
+      message.textContent = 'Доступ не подтверждён. Обновите страницу или войдите заново.';
+      const link = document.createElement('a'); link.href = '/auth/basework/users/'; link.textContent = 'Проверить доступ';
+      root.append(message, link);
+    } finally { pending = false; }
+  };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) void verify(); });
+  setInterval(verify, 30000);
+})();
+</script>
+{% endblock %}

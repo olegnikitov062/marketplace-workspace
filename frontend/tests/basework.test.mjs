@@ -13,6 +13,19 @@ const ready = items => parseBootstrap(authenticated(items));
 const response = (status, body, type = 'application/json') => new Response(type === 'application/json' ? JSON.stringify(body) : body, { status, headers: { 'Content-Type': type } });
 const signal = () => new AbortController().signal;
 
+test('Управление пользователями доступно только по явному серверному флагу полной сессии', () => {
+  for (const flag of [true, false, undefined, 'true', 1, {}]) {
+    const resource = parseBootstrap({ ...authenticated(), canManageUsers: flag });
+    assert.equal(resource.status, 'ready');
+    assert.equal(resource.data.canManageUsers === true, flag === true);
+  }
+  for (const status of ['anonymous', 'expired', 'mfa_required']) {
+    const resource = parseBootstrap({ ...authenticated(), session: { status }, canManageUsers: true });
+    assert.equal(resource.status, status);
+    assert.equal(resource.data, undefined);
+  }
+});
+
 test('Вход Authelia доступен только по явному boolean флагу; адрес фиксирован', async () => {
   assert.equal(oidcLoginPath, '/auth/basework/oidc/login');
   for (const [body, expected] of [[{ oidcEnabled: true }, 'enabled'], [{ oidcEnabled: false }, 'disabled'],

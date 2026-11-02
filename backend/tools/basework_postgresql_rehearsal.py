@@ -74,6 +74,8 @@ def configure():
         apply(cursor, Path('/run/secrets/isolation_signing_key').read_bytes())
         from tools.financial_web_contract import apply as finance
         finance(cursor)
+        from tools.basework_user_admin_contract import apply as user_admin
+        user_admin(cursor)
     contract()
 
 
