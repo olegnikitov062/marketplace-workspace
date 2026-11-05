@@ -10,8 +10,13 @@ import { useTheme } from './theme';
 import { useAuthOptions } from './useAuthOptions';
 import { oidcLoginPath } from './authOptions';
 import './basework.css';
+import { WorkspaceHeader } from './WorkspaceHeader';
+import { WorkspaceIcon } from './WorkspaceIcon';
+import { workspaceDescriptions, workspaceOrder } from './workspaceCatalog';
 
 const icons: Record<string, ReactNode> = {
+  home: <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" />,
+  sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1 1m12 12 1 1M5 19l1-1M18 6l1-1" /></>,
   chart: <path d="M4 3v17h17M8 15v-4m5 4V6m5 9v-6" />,
   file: <path d="M14 3H5v18h14V8Zm0 0v5h5M8 13h8m-8 4h5" />,
   database: <><ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0" /></>,
@@ -27,7 +32,6 @@ const icons: Record<string, ReactNode> = {
 const applicationIcons: Record<Application['id'], string> = {
   marketplace: 'chart', reports: 'file', sources: 'database', airflow: 'refresh', bloggers: 'users', faq: 'book', rooms: 'calendar',
 };
-const desktopOrder = ['marketplace', 'reports', 'bloggers', 'faq', 'rooms', 'airflow', 'sources'];
 function Icon({ name }: { name: string }) {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{icons[name]}</svg>;
 }
@@ -40,7 +44,7 @@ function Today() {
   const month = parts.find(part => part.type === 'month')?.value;
   const weekday = new Intl.DateTimeFormat('ru-RU', { ...options, weekday: 'long' }).format(now);
   const date = new Intl.DateTimeFormat('sv-SE', { ...options, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
-  return <time className="bw-today" dateTime={date}><strong>{day}</strong><span>{month}<br />{weekday}</span></time>;
+  return <time className="bw-today" dateTime={date}><WorkspaceIcon name="calendar" size={18} /><span>{weekday.charAt(0).toLocaleUpperCase('ru-RU') + weekday.slice(1)}, {day} {month}</span></time>;
 }
 
 function StatePanel({ kind, retry }: { kind: PanelKind; retry?: () => void }) {
@@ -58,17 +62,16 @@ function statusLabel(entry: DirectoryEntry) {
 }
 
 function ApplicationList({ entries }: { entries: DirectoryEntry[] }) {
-  const ordered = [...entries].sort((a, b) => desktopOrder.indexOf(a.id) - desktopOrder.indexOf(b.id));
-  const sources = ordered.find(entry => entry.id === 'sources');
+  const ordered = [...entries].sort((a, b) => workspaceOrder.indexOf(a.id) - workspaceOrder.indexOf(b.id));
   return <>
-    <div className="bw-app-grid">{ordered.filter(entry => entry.id !== 'sources').map(entry =>
+    <div className="bw-app-grid">{ordered.map(entry =>
       <Link className="bw-app-link" key={entry.id} href={applicationPath(entry.id)}>
-        <span className="bw-app-icon"><Icon name={applicationIcons[entry.id]} /></span>
-        <span><strong>{entry.title}</strong><small>{entry.description}</small>
+        <span className="bw-app-icon"><WorkspaceIcon name={entry.id} /></span>
+        <span><strong>{entry.id === 'faq' ? 'Справочник команды' : entry.title}</strong><small>{workspaceDescriptions[entry.id]}</small>
           {entry.access === 'allowed' && entry.availability === 'unavailable' ? <small>Модуль недоступен</small> : <span className="bw-sr-only">{statusLabel(entry)}</span>}
         </span>
       </Link>)}</div>
-    {sources ? <Link className="bw-sources-link" href={applicationPath(sources.id)}>Источники данных<span className="bw-sr-only">: {statusLabel(sources)}</span></Link> : null}
+
   </>;
 }
 
@@ -79,27 +82,19 @@ function SessionSummary({ resource }: { resource: Resource }) {
   return <><p className="bw-session-name">{panels[resource.status].title}</p><p>{panels[resource.status].description}</p></>;
 }
 
-function Home({ resource, retry, onSearch }: { resource: Resource; retry: () => void; onSearch: () => void }) {
+function Home({ resource, retry }: { resource: Resource; retry: () => void }) {
   const entries = directory(resource);
-  return <div className="bw-columns bw-home-columns">
-    <div className="bw-surface bw-home-sheet">
-      <section className="bw-home-section" aria-labelledby="work-title">
-        <h2 id="work-title">Продолжить работу</h2>
-        <div className="bw-work-empty"><Icon name="file" /><div><strong>Рабочие задачи пока недоступны</strong><p>Они появятся после подключения приложений.</p></div></div>
-        {resource.status !== 'ready' ? <div className="bw-home-status"><StatePanel kind={resource.status} retry={retry} /></div> : null}
-      </section>
-      <section className="bw-home-section" aria-labelledby="applications-title">
-        <div className="bw-home-section-head"><h2 id="applications-title">Приложения</h2><button type="button" className="bw-find" aria-haspopup="dialog" onClick={onSearch}>Найти <Icon name="search" /></button></div>
-        {entries.length > 0 ? <><p className="bw-home-note">{resource.status === 'ready' ? 'Выберите рабочий раздел.' : 'Доступ к приложениям не подтверждён.'}</p><ApplicationList entries={entries} /></> :
-          resource.status === 'ready' ? <StatePanel kind="empty" /> : null}
-      </section>
-    </div>
-    <aside className="bw-aside bw-home-aside" aria-label="Встречи и справочник">
-      <section><h2>Ближайшие встречи</h2><p>Расписание встреч доступно в календаре переговорок.</p>
-        {entries.some(entry => entry.id === 'rooms') ? <Link href="/basework/apps/rooms">Открыть переговорки</Link> : null}</section>
-      <section><h2>Найти ответственного</h2><p>Вопросы команды и контакты ответственных в справочнике.</p>
-        {entries.some(entry => entry.id === 'faq') ? <Link href="/basework/apps/faq">Открыть справочник</Link> : null}</section>
-    </aside>
+  const rooms = entries.find(entry => entry.id === 'rooms' && entry.access === 'allowed');
+  return <div className="bw-workspace">
+    {resource.status !== 'ready' ? <div className="bw-surface"><StatePanel kind={resource.status} retry={retry} /></div> : null}
+    {rooms ? <section className="bw-meeting-hero" aria-label="Переговорки">
+      <div className="bw-meeting-map"><h2>Переговорки</h2><div className="bw-meeting-art" role="img" aria-label="Условная схема двух переговорок" /><span className="workspace-room-label workspace-room-large">Большая</span><span className="workspace-room-label workspace-room-small">Малая</span><small><WorkspaceIcon name="map" size={15} />Условная схема офиса</small></div>
+      <div className="bw-meeting-agenda"><h2>Расписание встреч</h2><p><span>Занятость комнат и ваши встречи</span><span>доступны в приложении переговорок.</span></p><Link className="bw-button" href={applicationPath(rooms.id)}>Открыть календарь</Link></div>
+    </section> : null}
+    <section aria-labelledby="applications-title">
+      <div className="bw-home-section-head"><h2 id="applications-title">Приложения</h2></div>
+      {entries.length > 0 ? <ApplicationList entries={entries} /> : resource.status === 'ready' ? <div className="bw-surface"><StatePanel kind="empty" /></div> : null}
+    </section>
   </div>;
 }
 
@@ -208,7 +203,7 @@ class ModuleBoundary extends Component<{ children: ReactNode }, { failed: boolea
   }
 }
 
-type OpenDialog = 'search' | 'theme' | 'menu' | null;
+type OpenDialog = 'search' | 'theme' | 'menu' | 'profile' | null;
 export function BaseWork() {
   const pathname = usePathname();
   const route = resolveRoute(pathname);
@@ -242,35 +237,32 @@ export function BaseWork() {
     return order.indexOf(a.id) - order.indexOf(b.id);
   });
   const navigation = navigationEntries.map(entry => <Link key={entry.id} href={applicationPath(entry.id)} onClick={closeDialog} aria-label={entry.title}
-    aria-current={route.kind === 'application' && route.application.id === entry.id ? 'page' : undefined}>{entry.id === 'sources' ? 'Данные' : entry.title}</Link>);
+    aria-current={route.kind === 'application' && route.application.id === entry.id ? 'page' : undefined}><Icon name={applicationIcons[entry.id]} /><span>{entry.id === 'sources' ? 'Данные' : entry.title}</span></Link>);
   return <div className="bw-suite">
     <a className="bw-skip" href="#main-content">К содержимому</a>
-    <header className="bw-topbar">
-      <button type="button" className="bw-top-action bw-menu" aria-label="Меню" aria-haspopup="dialog" onClick={() => setDialog('menu')}><Icon name="menu" /></button>
-      <Link href="/basework/" className="bw-brand" aria-label="BaseWork, рабочий стол"><span className="bw-brand-mark" aria-hidden="true"><i /><i /><i /></span><span translate="no">BaseWork</span></Link>
-      {navigationEntries.length > 0 ? <nav className="bw-desktop-nav" aria-label="Приложения BaseWork">{navigation}</nav> : null}
-      <div className="bw-actions">
-        <button type="button" className="bw-top-search" aria-label="Поиск" aria-haspopup="dialog" aria-keyshortcuts="Control+k Meta+k" onClick={() => setDialog('search')}><Icon name="search" /><span className="bw-search-caption">Поиск</span><span className="bw-shortcut" aria-hidden="true">Ctrl K</span></button>
-        <button type="button" className="bw-top-action" aria-label="Тема" aria-haspopup="dialog" onClick={() => setDialog('theme')}><Icon name="moon" /></button>
-        <Link className="bw-top-action bw-notification-action" href="/basework/notifications" aria-label="Уведомления" aria-current={route.kind === 'notifications' ? 'page' : undefined}><Icon name="bell" /></Link>
-        <Link className="bw-profile-action" href="/basework/profile" aria-label="Профиль" aria-current={route.kind === 'profile' ? 'page' : undefined}><Icon name="users" /><span>Профиль</span></Link>
-      </div>
-    </header>
+    <WorkspaceHeader name={resource.status === 'ready' ? resource.data.session.user.displayName : ''}
+      preference={preference} choose={choose} profileOpen={dialog === 'profile'} onSearch={() => setDialog('search')} onProfile={() => setDialog('profile')} />
+    <nav className="bw-rail" aria-label="Приложения BaseWork"><Link href="/basework/" aria-label="Рабочий стол" title="Рабочий стол" aria-current={route.kind === 'home' ? 'page' : undefined}><WorkspaceIcon name="home" size={23} /></Link>{navigationEntries.map(entry => <Link key={entry.id} href={applicationPath(entry.id)} aria-label={entry.title} title={entry.title} aria-current={route.kind === 'application' && route.application.id === entry.id ? 'page' : undefined}><WorkspaceIcon name={entry.id} /></Link>)}<Link className="workspace-notifications" href="/basework/notifications" title="Уведомления" aria-label="Уведомления" aria-current={route.kind === 'notifications' ? 'page' : undefined}><Icon name="bell" /></Link></nav>
     <main id="main-content" className="bw-main" tabIndex={-1}>
-      <div className="bw-page-head"><div><h1 ref={heading} tabIndex={-1}>{title}</h1><p>{description}</p></div>
+      <div className="bw-page-head"><div><h1 ref={heading} tabIndex={-1}>{title}</h1>{route.kind !== 'home' ? <p>{description}</p> : null}</div>
         {route.kind === 'home' ? <Today /> : null}
       </div>
       <ModuleBoundary key={pathname}>
-        {route.kind === 'home' ? <Home resource={resource} retry={retry} onSearch={() => setDialog('search')} /> :
+        {route.kind === 'home' ? <Home resource={resource} retry={retry} /> :
           route.kind === 'profile' ? <Profile resource={resource} retry={retry} logout={logout} /> :
           route.kind === 'notifications' ? <Notifications /> :
           route.kind === 'application' ? <ApplicationPage application={route.application} resource={resource} retry={retry} /> :
           <div className="bw-surface"><StatePanel kind="missing" /><div className="bw-section-footer"><Link href="/basework/">На рабочий стол</Link></div></div>}
       </ModuleBoundary>
     </main>
-    <footer className="bw-footer"><span translate="no">BaseWork</span><span>Подключение приложений выполняется поэтапно.</span></footer>
-    {dialog ? <Dialog key={dialog} title={{ search: 'Поиск приложений', theme: 'Тема оформления', menu: 'Приложения BaseWork' }[dialog]} onClose={closeDialog}>
-      {dialog === 'search' ? <Search entries={entries} onNavigate={closeDialog} /> : dialog === 'menu' ? <>
+
+    {dialog ? <Dialog key={dialog} title={{ search: 'Поиск приложений', theme: 'Тема оформления', menu: 'Приложения BaseWork', profile: 'Профиль' }[dialog]} onClose={closeDialog}>
+      {dialog === 'profile' ? <div className="bw-profile-menu">
+        <SessionSummary resource={resource} />
+        <Link data-dialog-focus className="bw-button" href="/basework/profile" onClick={closeDialog}>Профиль и безопасность</Link>
+        <Link className="bw-button" href="/basework/notifications" onClick={closeDialog}>Уведомления</Link>
+        <button type="button" className="bw-button" onClick={() => setDialog('theme')}>Настройки темы</button>
+      </div> : dialog === 'search' ? <Search entries={entries} onNavigate={closeDialog} /> : dialog === 'menu' ? <>
         {resource.status !== 'ready' ? <p className="bw-muted">{resource.status === 'error' || resource.status === 'unavailable' ? 'Доступ к разделам не подтверждён.' : panels[resource.status].title}</p> : null}
         <nav className="bw-mobile-nav" aria-label="Навигация по разделам">{navigation}<Link href="/basework/profile" onClick={closeDialog}>Профиль</Link><Link href="/basework/notifications" onClick={closeDialog}>Уведомления</Link></nav>
       </> : <fieldset className="bw-theme-options"><legend>Выберите оформление</legend>

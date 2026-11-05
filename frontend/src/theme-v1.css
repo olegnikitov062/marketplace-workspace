@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'Golos Text';
+  src: url('/fonts/golos-text.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+}
+/* BaseWork theme 1.0.0 — палитра и типографика исходной оболочки. */
+:root {
+  font-family: 'Golos Text', 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color-scheme: light;
+  --bw-canvas: #f3f4f3;
+  --bw-surface: #fff;
+  --bw-subtle: #e9ecec;
+  --bw-text: #1d252b;
+  --bw-muted: #505e67;
+  --bw-line: #cdd4d6;
+  --bw-accent: #09608f;
+  --bw-selected: #d1e9f5;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bw-canvas: #1b1d20;
+  --bw-surface: #24272b;
+  --bw-subtle: #303439;
+  --bw-text: #f4f5f5;
+  --bw-muted: #aeb7be;
+  --bw-line: #363a3f;
+  --bw-accent: #85d2ff;
+  --bw-selected: #204762;
+}

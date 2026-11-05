@@ -5,9 +5,9 @@ const key = 'basework.theme.v1';
 export function readTheme(): ThemePreference {
   try {
     const value = localStorage.getItem(key);
-    if (value === 'light' || value === 'dark') return value;
+    if (value === 'light' || value === 'dark' || value === 'system') return value;
   } catch { /* Настройка работает и при недоступном хранилище браузера. */ }
-  return 'system';
+  return 'dark';
 }
 export function useTheme() {
   const [preference, setPreference] = useState<ThemePreference>(readTheme);
@@ -16,7 +16,7 @@ export function useTheme() {
     const apply = () => {
       const theme = preference === 'system' ? (media.matches ? 'dark' : 'light') : preference;
       document.documentElement.dataset.theme = theme;
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#171d19' : '#f2f3f0');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#1b1d20' : '#f3f4f3');
     };
     apply();
     media.addEventListener('change', apply);

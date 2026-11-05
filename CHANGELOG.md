@@ -3167,3 +3167,8 @@ backend/account_security/views.py и CHANGELOG.md. Личные аккаунты
 и не сбрасывать; их длина повторно проверяется только при следующей смене.
 Новый файл удалять лишь после проверки отсутствия последующей работы; журнал
 сохранить. Негитовые артефакты перечислены artifact-manifest.json текущего выпуска.
+
+
+## 2026-11-05T17:27:39+03:00 — графитовый дизайн BaseWork
+
+Причина — согласованный макет Figma и поручение на публикацию. Перенесены рабочий стол, общая шапка WorkspaceHeader, пиктограммы WorkspaceIcon, workspaceCatalog/workspace.css, локальный Golos Text и OFL, обе SVG-схемы, палитра, инициализация темы и меню профиля. Точки входа — frontend/src/main.tsx и frontend/index.html. RoomsPage, ApplicationPage, Faq.tsx, Rooms.tsx, API и проверки доступа сохранены. Проверки — 68 frontend-тестов PASS и TypeScript/Vite build PASS. Исходные файлы в .change-backups/design-20261105. Новые файлы frontend/src/basework/WorkspaceHeader.tsx, WorkspaceIcon.tsx, workspaceCatalog.ts, workspace.css, frontend/src/theme-v1.css, frontend/public/rooms-dark.svg, rooms-light.svg, fonts/golos-text.ttf и fonts/OFL.txt. Адресный откат — обратный коммит только этой правки после сверки последующей работы. На стенде вернуть предыдущий image frontend из закрытой резервной копии конфигурации и пересоздать только frontend. Старые образы сохраняются до приёмки.
